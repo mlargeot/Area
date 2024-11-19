@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.17",
+    "@tamagui/build": "^1.116.15",
     "@tamagui/config": "^1.116.15",
     "@tamagui/lucide-icons": "^1.116.15",
     "@tamagui/toast": "^1.116.15",
