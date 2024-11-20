@@ -8,4 +8,4 @@ RUN pnpm i
 
 EXPOSE 8080
 
-CMD pnpm run start
+CMD pnpm run start:prod
