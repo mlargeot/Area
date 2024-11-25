@@ -1,0 +1,18 @@
+meta {
+  name: auth-register
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "alexis.boitel@epitech.eu",
+    "password": "test"
+  }
+}
