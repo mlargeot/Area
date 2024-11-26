@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import * as mongoose from 'mongoose';
 import { AuthModule } from './auth/auth.module';
+import { AboutModule } from './about/about.module'
 
 mongoose.set('debug', true);
 
@@ -13,6 +14,7 @@ mongoose.set('debug', true);
       'mongodb://admin:secret@localhost:27017/ar3m-mongodb?authSource=admin',
     ),
     AuthModule,
+    AboutModule,
   ],
   controllers: [AppController],
   providers: [AppService],
