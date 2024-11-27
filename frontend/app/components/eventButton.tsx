@@ -1,13 +1,7 @@
-import { Button, Stack, YStack, Text, View, XStack, Square } from 'tamagui'
-import { EventButton } from '../components/eventButton'
+import { Button, Stack, YStack, Text, XStack } from 'tamagui'
 
-
-export default function TabTwoScreen() {
+export function EventButton({ index } : { index : number }) {
   return (
-    <View flex={1} alignItems="center" justifyContent="center" bg="$background">
-      <YStack gap="$1" alignItems="center" width="fit-content">
-        <EventButton index={1}/>
-        <Square height={20} width={4} backgroundColor="$color" opacity={0.5} />
         <Button
           borderWidth="$1"
           borderColor="$color"
@@ -26,15 +20,13 @@ export default function TabTwoScreen() {
                 padding="$2"
                 borderRadius="$2"
               >
-                <Text>Action</Text>
+                <Text>Trigger</Text>
               </Stack>
             </XStack>
             <Text
               opacity={0.60}
-            >{2}. Select the event to run</Text>
+            >{index}. Select the event that start the workflow</Text>
           </YStack>
         </Button>
-      </YStack>
-    </View>
   )
 }
