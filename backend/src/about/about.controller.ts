@@ -1,13 +1,14 @@
-import { Request, Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, Request } from '@nestjs/common';
+import { AboutService } from './about.service';
 
 @Controller()
 export class AboutController {
+  constructor(private readonly aboutService: AboutService) {}
+
   @Get('about.json')
-  getAbout() {
-    return {
-      message: 'This is the about endpoint',
-      version: '1.0.0',
-      author: 'Your Name',
-    };
+  @HttpCode(200)
+  async getAbout(@Request() req) {
+    const clientIp: string = req.ip.split(":")[3];
+    return await this.aboutService.getFormatedAbout(clientIp);
   }
 }
