@@ -8,7 +8,7 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: false }) // Optional for Google OAuth users
+  @Prop({ required: false })
   password?: string;
 
   @Prop({ default: false })
@@ -16,6 +16,12 @@ export class User {
 
   @Prop()
   googleId?: string;
+
+  @Prop({ required: false })
+  isDiscordUser: boolean;
+
+  @Prop()
+  discordId?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
