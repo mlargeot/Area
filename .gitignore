@@ -1,5 +1,6 @@
 # ENV FILES
-./env/mongo.env
+/env/mongo.env
 
 # IDE FILES
 .idea
+.vscode
