@@ -40,7 +40,7 @@ export default function TabOneScreen() {
         </XStack>
 
         <Paragraph fos="$5" ta="center">
-          to configure your themes and tokens.
+          to configure your themes and tokens for connexion and password.
         </Paragraph>
       </XStack>
     </YStack>

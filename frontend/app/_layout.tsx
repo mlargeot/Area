@@ -64,9 +64,9 @@ function RootLayoutNav() {
         />
 
         <Stack.Screen
-          name="modal"
+          name="login/page"
           options={{
-            headerShown: false, // Désactive l'en-tête
+            headerShown: false,
             presentation: 'modal',
             animation: 'slide_from_right',
             gestureEnabled: true,
@@ -76,6 +76,35 @@ function RootLayoutNav() {
             },
           }}
         />
+
+        <Stack.Screen
+          name="forgotpassword/page"
+          options={{
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_right',
+            gestureEnabled: true,
+            gestureDirection: 'horizontal',
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+
+        <Stack.Screen
+          name="signup/page"
+          options={{
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_right',
+            gestureEnabled: true,
+            gestureDirection: 'horizontal',
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        
       </Stack>
     </ThemeProvider>
   )

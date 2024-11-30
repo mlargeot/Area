@@ -29,7 +29,7 @@ export default function TabLayout() {
               </Link>
           ),
           headerLeft : () => (
-            <H2 ml="$4">M3RA</H2>
+            <H2 ml="$4">AR3M</H2>
           ),
       }}
     >
@@ -39,9 +39,9 @@ export default function TabLayout() {
           title: 'Explore',
           tabBarIcon: ({ color }) => <Compass color={color} />,
           headerRight: () => (
-            <Link href="/modal" asChild>
+            <Link href="./login/page">
               <Button mr="$4" bg="$purple8" color="$purple12">
-                Hello!
+                login
               </Button>
             </Link>
           ),
