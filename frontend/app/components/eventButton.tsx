@@ -20,12 +20,12 @@ export function EventButton({ index } : { index : number }) {
                 padding="$2"
                 borderRadius="$2"
               >
-                <Text>Trigger</Text>
+                <Button.Text>Trigger</Button.Text>
               </Stack>
             </XStack>
             <Text
               opacity={0.60}
-            >{index}. Select the event that start the workflow</Text>
+            >{index.toString()}. Select the event that start the workflow</Text>
           </YStack>
         </Button>
   )

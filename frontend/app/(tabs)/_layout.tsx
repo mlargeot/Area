@@ -29,7 +29,7 @@ export default function TabLayout() {
               </Link>
           ),
           headerLeft : () => (
-            <H2 ml="$4">M3RA</H2>
+            <H2 ml="$4">AR3M</H2>
           ),
       }}
     >
