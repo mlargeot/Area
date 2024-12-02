@@ -1,5 +1,6 @@
 # ENV FILES
 ./env/mongo.env
+./env/back.env
 
 # IDE FILES
 .idea
