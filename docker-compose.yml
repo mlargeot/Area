@@ -4,12 +4,11 @@ services:
     container_name: "ar3m-db"
     env_file:
       - ./env/mongo.env
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
     networks:
-      - ar3m-db-network
+      - ar3m-db-networ
+    restart: unless-stopped
 
   server:
     container_name: ar3m-backend
@@ -18,6 +17,9 @@ services:
       - "8080:8080"
     depends_on:
       - db
+    networks:
+      - ar3m-db-network
+    restart: unless-stopped
 
   client_web:
     container_name: ar3m-frontend
@@ -26,9 +28,10 @@ services:
       - "8081:8081"
     depends_on:
       - server
+    restart: unless-stopped
 
 volumes:
-  mongo-data:
+  mongo-data-dev:
 
 networks:
   ar3m-db-network:

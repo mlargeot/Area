@@ -1,6 +1,6 @@
 FROM node:23.2.0-bullseye-slim
 
-WORKDIR /usr/src/app
+WORKDIR /app
 COPY . .
 
 RUN npm i -g pnpm
