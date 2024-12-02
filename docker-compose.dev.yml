@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mongo:8.0.3
+    container_name: "ar3m-db-dev"
+    env_file:
+      - ./env/mongo.env
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data-dev:/data/db
+
+  server:
+    container_name: ar3m-backend-dev
+    build: ./backend/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+
+  # client_web:
+  #   container_name: ar3m-frontend-dev
+  #   build: ./frontend/Dockerfile.frontend
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     - server
+  #   volumes:
+  #     - ./frontend:/app
+  
+  # client_mobile:
+  #   container_name: ar3m-mobile-dev
+  #   build: ./frontend/Dockerfile.mobile
+  #   depends_on:
+  #     - client_web
+  #   volumes:
+  #     - ./frontend:/app
+
+volumes:
+  mongo-data-dev:
