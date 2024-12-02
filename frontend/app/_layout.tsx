@@ -66,7 +66,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="modal"
           options={{
-            title: 'Tamagui + Expo',
+            headerShown: false, // Désactive l'en-tête
             presentation: 'modal',
             animation: 'slide_from_right',
             gestureEnabled: true,
