@@ -11,7 +11,7 @@ mongoose.set('debug', true);
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb://admin:secret@localhost:27017/ar3m-mongodb?authSource=admin',
+      'mongodb://admin:secret@ar3m-db:27017/ar3m-db?authSource=admin',
     ),
     AuthModule,
     AboutModule,
