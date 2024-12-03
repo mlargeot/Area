@@ -1,7 +1,11 @@
+# docker compose up db server --build
+
 services:
+
+# docker compose up db --build
   db:
     image: mongo:8.0.3
-    container_name: "ar3m-db"
+    container_name: ar3m-db
     env_file:
       - ./env/mongo.env
     ports:
@@ -16,6 +20,8 @@ services:
     build: ./backend/
     ports:
       - "8080:8080"
+    networks:
+      - ar3m-db-network
     depends_on:
       - db
 

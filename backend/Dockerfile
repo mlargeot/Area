@@ -3,9 +3,8 @@ FROM node:23.2.0-bullseye-slim
 WORKDIR /usr/src/app
 COPY . .
 
-RUN npm i -g pnpm
-RUN pnpm i
+RUN yarn install
 
 EXPOSE 8080
 
-CMD pnpm run start:prod
+CMD yarn run start
