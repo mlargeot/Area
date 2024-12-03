@@ -9,7 +9,7 @@ export function Card({ index, name } : { index : number, name : string }) {
     borderRadius="$2"
     borderStyle='dotted'
     height="fit-content"
-    width="100%"
+    width="80%"
     justifyContent='flex-start'
     >
       <YStack gap="$2">

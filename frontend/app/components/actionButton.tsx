@@ -10,7 +10,7 @@ export function ActionButton({ index, action } : { index : number, action : any 
     borderRadius="$2"
     borderStyle='dotted'
     height="fit-content"
-    width="100%"
+    width="80%"
     justifyContent='flex-start'
     >
       <YStack gap="$2">
