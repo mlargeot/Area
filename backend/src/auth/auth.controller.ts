@@ -75,6 +75,29 @@ export class AuthController {
     return this.authService.discordLogin(req.user);
   }
 
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  @ApiResponse({
+    status: 200,
+    description: 'Discord authentication successful',
+  })
+  @ApiBody({ type: CreateUserDto })
+  async githubAuth(@Req() req) {
+    console.log('githubdAuth');
+  }
+
+  @Get('github/callback')
+  @UseGuards(AuthGuard('github'))
+  @ApiResponse({
+    status: 200,
+    description: 'Github authentication sucessful',
+  })
+  @ApiBody({ type: CreateUserDto })
+  async githubAuthRedirect(@Req() req) {
+    console.log('githubAuthRedirect');
+    return this.authService.githubLogin(req.user);
+  }
+
   @Get('protected')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Protected resource' })

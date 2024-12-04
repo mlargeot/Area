@@ -107,4 +107,26 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+  async githubLogin(user: any) {
+    console.log('githubLogin');
+    console.log(user);
+
+    const { email, firstName, lastName, picture, accessToken } = user;
+    let existingUser = await this.userModel.findOne({ email });
+
+    if (!existingUser) {
+      existingUser = await this.userModel.create({
+        email,
+        password: null,
+        isGoogleUser: true,
+        googleId: user.id,
+      });
+    }
+
+    const payload = { email: existingUser.email, sub: existingUser._id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
 }
