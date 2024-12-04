@@ -1,33 +1,15 @@
-import { Controller, Get, HttpCode, Request } from '@nestjs/common';
+import { Controller, Get, Request } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger'
 import { ActionsService } from './actions.service';
-import { ActionsDto } from './dto/default_actions.dto';
-
-
-const defaultActions: Array<{
-    service: string;
-    actions: Array<ActionsDto>;
-  }> = [
-    {
-      service: "discord",
-      actions: [
-        {
-          name: "mention_recieved",
-          description: "A mention is recieved on a discord server.",
-          argumentsNumber: 0,
-          argumentsExample: [],
-        },
-      ],
-    },
-  ];
 
 
 @Controller()
-export class actionsController {
+export class ActionsController {
   constructor(private readonly actionsService: ActionsService) {}
 
   @Get('actions')
-  @HttpCode(200)
+  @ApiResponse({ status: 200 })
   async getactions(@Request() req) {
-    return defaultActions;
+    return this.actionsService.getDefaultActions();
   }
 }
