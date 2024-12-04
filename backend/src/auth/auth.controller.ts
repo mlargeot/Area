@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
+import {Controller, Post, Body, Get, UseGuards, Req, Res} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -47,9 +47,11 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   @ApiResponse({ status: 200, description: 'Google authentication successful' })
   @ApiBody({ type: CreateUserDto })
-  async googleAuthRedirect(@Req() req) {
+  async googleAuthRedirect(@Req() req, @Res() res) {
     console.log('googleAuthRedirect');
-    return this.authService.googleLogin(req.user);
+    const user: any = await this.authService.googleLogin(req.user);
+    const token = user.token;
+    res.redirect(`${process.env.FRONTEND_URL}/login?token=${token}`);
   }
 
   @Get('discord')
@@ -72,7 +74,8 @@ export class AuthController {
   @ApiBody({ type: CreateUserDto })
   async discordAuthRedirect(@Req() req) {
     console.log('discordAuthRedirect');
-    return this.authService.discordLogin(req.user);
+    const user: any = await this.authService.discordLogin(req.user);
+    return user;
   }
 
   @Get('protected')
