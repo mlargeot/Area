@@ -1,34 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ActionsDto {
-  @ApiProperty({
-    description: "The name of the action.",
-    example: "new_message_in_group"
-  })
+  @ApiProperty({ example: 'mention_recieved', description: 'The name of the action.' })
   name: string;
 
-  @ApiProperty({
-    description: 'The description of the action',
-    example: 'A new message is posted in the group',
-  })
+  @ApiProperty({ example: 'A mention is received on a Discord server.', description: 'The description of the action.' })
   description: string;
 
-
-  @ApiProperty({
-    description: "Requiered number of arguments for the action",
-    example: 1,
-  })
+  @ApiProperty({ example: 1, description: 'The number of arguments required for this action.' })
   argumentsNumber: number;
 
-  @ApiProperty({
-    description: "Arguments examples if arguments are required",
-    example: [{
-        argumentName: "group",
-        argumentDescription: "Group to seek if a message is sent."
-    }]
-  })
-  argumentsExample: Array<{
-    argumentName: string,
-    argumentDescription: string
-  }>
+  @ApiProperty({ example: [
+    {
+        name: "email",
+        description: "Email to seek.",
+        example: "example@gmail.com"
+    }
+  ], description: 'Examples of arguments for the targeted action.' })
+  argumentsExample: any[];
 }
