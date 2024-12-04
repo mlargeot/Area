@@ -5,3 +5,5 @@
 
 # IDE FILES
 .idea
+.yarn
+.pnp*
