@@ -18,12 +18,14 @@ export class ReactionsService {
             {
               name: "webhook_url",
               description: "URL of the discord webhook to send message to.",
-              example: "https://discord/webhook/dzkadlzakjdlzakjdlzakjdlzakjd"
+              example: "https://discord/webhook/dzkadlzakjdlzakjdlzakjdlzakjd",
+              required: true
             },
             {
               name: "message_content",
               description: "Content of the message to send.",
-              example: "A new Issue as been assigned."
+              example: "A new Issue as been assigned.",
+              required: true
             }
           ],
         },
