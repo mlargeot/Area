@@ -8,30 +8,16 @@ export class ActionsService {
     actions: Array<ActionsDto>;
   }> = [
     {
-      service: "discord",
+      service: "github",
       actions: [
         {
-          name: "mention_recieved",
-          description: "A mention is received on a Discord server.",
+          name: "issue_assigned",
+          description: "Triggered when an issue is assigned to the user.",
           argumentsNumber: 0,
           argumentsExample: [],
         },
       ],
-    },
-    {
-      service: "google",
-      actions: [
-        {
-          name: "new_email",
-          description: "A new email is received in your Gmail account.",
-          argumentsNumber: 1,
-          argumentsExample: [{
-            argumentName: "email",
-            argumentDescription: "Email to seek."
-          }],
-        },
-      ],
-    },
+    }
   ];
 
   getDefaultActions() {
