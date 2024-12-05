@@ -6,6 +6,7 @@ import * as mongoose from 'mongoose';
 import { AuthModule } from './auth/auth.module';
 import { AboutModule } from './about/about.module'
 import { ActionsModule } from './actions/actions.module';
+import { ReactionsModule } from './reactions/reactions.module';
 
 mongoose.set('debug', true);
 
@@ -16,7 +17,8 @@ mongoose.set('debug', true);
     ),
     AuthModule,
     AboutModule,
-    ActionsModule
+    ActionsModule,
+    ReactionsModule
   ],
   controllers: [AppController],
   providers: [AppService],
