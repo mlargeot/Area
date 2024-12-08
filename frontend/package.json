@@ -18,11 +18,13 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-navigation/native": "^6.1.17",
     "@tamagui/build": "^1.116.15",
     "@tamagui/config": "^1.116.15",
     "@tamagui/lucide-icons": "^1.116.15",
     "@tamagui/toast": "^1.116.15",
+    "axios": "^1.7.9",
     "babel-preset-expo": "^11.0.6",
     "burnt": "^0.12.2",
     "expo": "~51.0.32",

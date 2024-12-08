@@ -14,6 +14,31 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  generateStateForUser(user: any): string {
+    if (!user) {
+      return null;
+    }
+    const state = JSON.stringify({
+      email: user.email,
+      connectionMethod: user.connectionMethod,
+      _id: user._id,
+    });
+    return state;
+  }
+
+  async findUserByState(state: string): Promise<any> {
+    if (!state) {
+      return null;
+    }
+    const { email, connectionMethod, id } = JSON.parse(state);
+    const user = await this.userModel.findOne({
+      email,
+      connectionMethod,
+      _id: id,
+    });
+    return user;
+  }
+
   async register(createUserDto: CreateUserDto): Promise<any> {
     const { email, password } = createUserDto;
 
@@ -53,30 +78,37 @@ export class AuthService {
     };
   }
 
-  async logout(body: any) {
-    const { email } = body;
-    console.log(email + ' logged out');
-    const user = await this.userModel.findOne({ email });
-    if (!user) {
-      return { message: 'User not found' };
-    }
-
-    return { message: 'Logged out' };
-  }
-
-  async googleLogin(user: any) {
+  async googleLogin(user: any, state: any) {
     console.log('googleLogin');
     console.log(user);
+    console.log(state);
 
-    const { email, firstName, lastName, picture, accessToken } = user;
-    let existingUser = await this.userModel.findOne({ email });
+    const userState = await this.findUserByState(state);
+
+    const { email, firstName, lastName, picture, accessToken, refreshToken } =
+      user;
+
+    let existingUser;
+
+    if (userState) {
+      existingUser = await this.userModel.findOne({
+        _id: userState._id,
+      });
+    }
 
     if (!existingUser) {
       existingUser = await this.userModel.create({
         email,
         password: null,
-        isGoogleUser: true,
-        googleId: user.id,
+        connectionMethod: 'google',
+        oauthProviders: [
+          {
+            provider: 'google',
+            email,
+            accessToken,
+            refreshToken,
+          },
+        ],
       });
     }
 

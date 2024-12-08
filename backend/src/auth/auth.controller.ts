@@ -26,21 +26,17 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
-  @Post('logout')
-  @UseGuards(JwtAuthGuard)
-  @ApiResponse({ status: 200, description: 'Logout successful' })
-  @ApiBody({ type: LoginUserDto })
-  async logout(@Body() user) {
-    console.log('logout');
-    return this.authService.logout(user);
-  }
-
   @Get('google')
   @UseGuards(AuthGuard('google'))
   @ApiResponse({ status: 200, description: 'Google authentication successful' })
   @ApiBody({ type: CreateUserDto })
   async googleAuth(@Req() req) {
     console.log('googleAuth');
+    if (!req.user) {
+      return null;
+    }
+    const state = this.authService.generateStateForUser(req.user);
+    return state;
   }
 
   @Get('google/callback')
@@ -48,10 +44,11 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Google authentication successful' })
   @ApiBody({ type: CreateUserDto })
   async googleAuthRedirect(@Req() req, @Res() res) {
+    const state = req.query.state;
     console.log('googleAuthRedirect');
-    const user: any = await this.authService.googleLogin(req.user);
+    const user: any = await this.authService.googleLogin(req.user, state);
     const token = user.token;
-    res.redirect(`${process.env.FRONTEND_URL}/login?token=${token}`);
+    res.redirect(`${process.env.FRONTEND_URL}/auth-handler?token=${token}`);
   }
 
   @Get('discord')

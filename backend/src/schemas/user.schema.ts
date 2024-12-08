@@ -22,6 +22,23 @@ export class User {
 
   @Prop()
   discordId?: string;
+
+  @Prop()
+  connectionMethod: string;
+
+  @Prop()
+  oauthProviders: {
+    provider: string;
+    email: string;
+    accessToken: string;
+    refreshToken: string;
+  }[];
+
+  @Prop()
+  createdAt: Date;
+
+  @Prop()
+  updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
