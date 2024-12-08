@@ -90,8 +90,17 @@ docker-compose down -v
 ```
 
 ## Documentation
+### API Documentation
 
-You can find the detailed documentation for this project [here](link-to-docs). It provides information about the architecture, endpoints, and other relevant details.
+For more details about the API, feel free to check out the [AR3M API documentation](./docs/README_API.md). If you cloned the repository, you can view this documentation locally by running the following command:
+
+```bash
+cat ./docs/README_API.md
+```
+
+### Global Documentation
+
+The complete documentation for the project is available on the [project wiki](https://github.com/mlargeot/Area/wiki).
 
 ## Cheat Warning
 
