@@ -19,12 +19,28 @@ sudo apt install docker docker-compose
 
 ### Installation on Windows
 
-1. Download and install Docker Desktop from [Docker's official website](https://www.docker.com/products/docker-desktop).
-2. Follow the installation instructions and ensure Docker Desktop is running.
+1. **Download Docker Desktop**:  
+   Go to the [official Docker website](https://www.docker.com/products/docker-desktop) and download Docker Desktop for Windows.
+
+2. **Install Docker Desktop**:  
+   Follow the installation instructions and ensure Docker Desktop is configured to use WSL 2 (if applicable). You may need to enable virtualization in your system's BIOS if it isn't already enabled.
+
+3. **Start Docker Desktop**:  
+   After installation, launch Docker Desktop. Ensure it is running by checking its status in the taskbar.
+
+4. **Verify Installation**:  
+   Open a command prompt or PowerShell and run:
+
+   ```powershell
+   docker --version
+   docker-compose --version
+   ```
+
+   This will confirm that Docker and Docker Compose are correctly installed.
 
 ### Using Curl (Alternative)
 
-If you prefer using `curl`, you can install Docker with this command:
+If you prefer using `curl`, you can install Docker with this command (Linux):
 
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -33,35 +49,55 @@ sudo sh get-docker.sh
 
 ## Run the Project
 
-Once the prerequisites are installed, you can build and run the project using the following commands:
+Once the prerequisites are installed, you can build and run the project using the following commands.
+
+### Linux / macOS
 
 ```bash
 # Build and run the project
-sudo docker compose up --build
+sudo docker-compose up --build
 
 # Build and run the project in the background
-sudo docker compose up --build -d
+sudo docker-compose up --build -d
+```
+
+### Windows (Command Prompt or PowerShell)
+
+For Windows, `sudo` is not required. Use the following commands:
+
+```powershell
+# Build and run the project
+docker-compose up --build
+
+# Build and run the project in the background
+docker-compose up --build -d
 ```
 
 ## Stop and Remove the Project
 
-If you want to stop and remove the project, run the following command:
+To stop and remove the project, use the following command:
+
+### Linux / macOS
 
 ```bash
-sudo docker compose down -v
+sudo docker-compose down -v
 ```
 
-# Documentation
+### Windows (Command Prompt or PowerShell)
 
-- [README API]()
-- [AR3M wiki]()
+```powershell
+docker-compose down -v
+```
 
+## Documentation
 
-# Cheat Warning
+You can find the detailed documentation for this project [here](link-to-docs). It provides information about the architecture, endpoints, and other relevant details.
+
+## Cheat Warning
 
 This repository is public for several reasons. As it is part of a third-year school project at EPITECH, please refrain from using it for your own EPITECH projects to avoid being flagged for cheating (-42). We are not responsible for any misuse of our repository.
 
-# Authors
+## Authors
 
 <table>
     <tbody>
