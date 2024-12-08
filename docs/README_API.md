@@ -93,6 +93,48 @@ In this documentation, each API route will be described using the following form
 ```
 ---
 ### Authentication
+---
+**Route Name**: *localhost:8080/register*<br>
+**Method**: GET<br>
+**Body**:
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+**Status Code**: *201*<br>
+**Response**: 
+```json
+{
+  "email": "user@example.com",
+  "password": "$hashed_password",
+  "isGoogleUser": false,
+  "_id": "675628e68b37fadf8ff9b9b4",
+  "__v": 0
+}
+```
+
+---
+
+**Route Name**: *localhost:8080/login*<br>
+**Method**: GET<br>
+**Body**:
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Status Code**: *200*<br>
+**Response**: 
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJzdWIiOiI2NzU2MjhlNjhiMzdmYWRmOGZmOWI5YjQiLCJpYXQiOjE3MzM2OTk5MDAsImV4cCI6MTczMzcwMzUwMH0.kCxXVMs0XtaYvwK1VTc0WiDKsQNPzikWQQFqiRspNcM"
+}
+```
+---
 ### Actions
 
 ---
