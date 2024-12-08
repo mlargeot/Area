@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ReactionsDto } from './dto/default_reactions.dto';
+import { ReactionsDiscordService } from './discord/r_discord.service';
 
 @Injectable()
 export class ReactionsService {
+  constructor (
+    private readonly discordServices : ReactionsDiscordService
+  ) {}
+
   private defaultReactions: Array<{
     service: string;
     reactions: Array<ReactionsDto>;
@@ -33,7 +38,20 @@ export class ReactionsService {
     }
   ];
 
+  private reactionServiceRegistry: Record<string, Function> = {
+    send_webhook_message : this.discordServices.sendMessageToWebhook.bind(this.discordServices)
+  }
+
   getDefaultReactions() {
     return this.defaultReactions;
+  }
+
+  async executeReaction(name: string, params: {}) {
+    const reactionFunction = this.reactionServiceRegistry[name];
+
+    if (!reactionFunction) {
+        throw new Error(`Reaction "${name}" not found.`);
+    }
+    return reactionFunction(params);
   }
 }
