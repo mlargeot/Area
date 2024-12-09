@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../../schemas/user.schema';
-import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
@@ -12,7 +11,6 @@ import { ConfigService } from '@nestjs/config';
 export class GithubActionsService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private jwtService: JwtService,
     private readonly httpService: HttpService,
     private configService: ConfigService
   ) {}

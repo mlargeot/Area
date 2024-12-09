@@ -11,14 +11,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     providers: [GithubActionsService],
     controllers: [GithubActionsController],
     imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => ({
-            secret: configService.get<string>('JWT_SECRET'),
-            signOptions: { expiresIn: '1h' },
-            }),
-            inject: [ConfigService],
-        }),
         HttpModule],
         
     exports: [GithubActionsService]
