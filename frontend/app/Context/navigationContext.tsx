@@ -6,7 +6,8 @@ const NavigationContext = createContext<{
 }>({
   navigationData: {
     actionType: "",
-    currentService: ""
+    currentService: "",
+    id: ""
   },
   setNavigationData: () => {}
 });
@@ -14,13 +15,15 @@ const NavigationContext = createContext<{
 export type NavigationData = {
   actionType: string;
   currentService: string;
+  id: string;
 };
 
 export const NavigationProvider = ({ children }) => {
   const [navigationData, setNavigationData] = useState<NavigationData>(
     {
       actionType: "",
-      currentService: ""
+      currentService: "",
+      id: ""
     });
   return (
     <NavigationContext.Provider value={{ navigationData, setNavigationData }}>

@@ -10,7 +10,12 @@ export function ReactionButton({ index, reaction } : { index : number, reaction:
   return (
     <Link href="/Pages/Create/services" asChild>
       <Button
-      onPress={() => {setNavigationData({currentService: reaction.service, actionType: "reaction" })}}
+      onPress={() => {
+        setNavigationData({
+          currentService: reaction.service,
+          actionType: !reaction.service ? "reaction" : "modify",
+          id: reaction.id ? reaction.id : ""
+        })}}
       borderWidth="$1"
       borderColor="$color"
       padding="$3"

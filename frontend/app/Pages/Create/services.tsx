@@ -30,6 +30,14 @@ export default function ServicesScreen() {
     })
   }}
 
+  const selectPage = () => {
+    if (navigationData.actionType === "reaction" ||
+        navigationData.actionType === "modify") {
+      return "/Pages/Create/reactions";
+    }
+    return "/Pages/Create/actions";
+  }
+
   return (
     <ScrollView
     contentContainerStyle={{
@@ -39,12 +47,13 @@ export default function ServicesScreen() {
     style={{ flex: 1 }}>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
         {services.flatMap((a, i) => [
-          <Link key={`button-${a.id}`} href={navigationData.actionType === "action" ? "/Pages/Create/actions" : "/Pages/Create/reactions"} asChild>
+          <Link key={`button-${a.id}`} href={selectPage()} asChild>
             <Button
               onPress={() => {
                 setNavigationData({
                 currentService: a.name,
-                actionType: a.name})
+                actionType: navigationData.actionType,
+                id: navigationData.id});
                 resetAction(a.name);
               }}
               width="80%"

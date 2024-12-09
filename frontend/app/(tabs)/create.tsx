@@ -15,10 +15,6 @@ export default function TabTwoScreen() {
   const { actions } = useAction()
   const { applet, setApplet } = useApplet();
 
-  useEffect(() => {
-    console.log(applet)
-  }, [applet])
-
   return (
     <ScrollView
     contentContainerStyle={{

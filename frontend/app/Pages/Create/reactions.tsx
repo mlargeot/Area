@@ -1,6 +1,5 @@
-import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square, H2 } from 'tamagui'
-import { act, useEffect, useState } from 'react'
-import { useApplet, Applet } from 'app/Context/appletContext'
+import { Button, ScrollView, YStack, H2 } from 'tamagui'
+import { useApplet } from 'app/Context/appletContext'
 import { useNavigationData, NavigationData } from 'app/Context/navigationContext'
 import { Link } from 'expo-router'
 
@@ -13,6 +12,59 @@ export default function ServicesScreen() {
     {id:"2", name:"On ping"}
   ]
   const { navigationData } = useNavigationData();
+
+  const newReaction = ({id, name} : {id : string, name : string}) => {
+    const newId = `reaction-${navigationData.currentService}-${name}`;
+
+    for (let i = 0; i < applet.reactions.length; i++) {
+      if (applet.reactions[i].id === newId) {
+        alert("Reaction already exists");
+        return;
+      }
+    }
+
+    setApplet(
+      {
+        id: applet.id,
+        action: applet.action,
+        reactions: [...applet.reactions, 
+          {
+            id : newId,
+            name: name,
+            service: navigationData.currentService
+          }
+        ]
+      }
+    )
+  }
+
+  const modifyReaction = ({id, name} : {id : string, name : string}) => {
+    const newId = `reaction-${navigationData.currentService}-${name}`;
+
+    for (let i = 0; i < applet.reactions.length; i++) {
+      if (applet.reactions[i].id === newId) {
+        alert("Reaction already exists");
+        return;
+      }
+    }
+
+    setApplet(
+      {
+        id: applet.id,
+        action: applet.action,
+        reactions: applet.reactions.map((reaction) => {
+          if (reaction.id === navigationData.id) {
+            return {
+              id: newId,
+              name: name,
+              service: navigationData.currentService
+            }
+          }
+          return reaction
+        })
+      }
+    )
+  }
 
   return (
     <ScrollView
@@ -27,19 +79,11 @@ export default function ServicesScreen() {
             <Link key={`button-${reaction.id}`} href="/create" asChild >
                 <Button
                     onPress={() => {
-                      setApplet(
-                        {
-                          id: applet.id,
-                          action: applet.action,
-                          reactions: [...applet.reactions, 
-                            {
-                              id : `reaction-${reactions.length.toString()}`,
-                              name: reaction.name,
-                              service: navigationData.currentService
-                            }
-                          ]
-                        }
-                      )
+                      if (navigationData.actionType === "reaction") {
+                        newReaction(reaction)
+                      } else {
+                        modifyReaction(reaction)
+                      }
                     }}
                     width="80%"
                     size={navigationData.currentService === reaction.name ? "$8" : "$6"}
