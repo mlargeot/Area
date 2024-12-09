@@ -6,7 +6,7 @@
 
 ## Prerequisites
 
-The only prerequisite needed to run the project are `Docker` and `ngrok`. Please ensure Docker and ngrok are installed on your system.
+The only prerequisites for running this project are `Docker` and `ngrok`. Please ensure both Docker and ngrok are installed on your system.
 
 ### Docker Installation on Linux
 
@@ -56,9 +56,29 @@ To install **ngrok** on your system, follow the official documentation correspon
 
 For additional installation methods or troubleshooting, visit the [ngrok installation documentation](https://download.ngrok.com/).
 
+Then follow the `ngrok` configuration:
+```bash
+ngrok config add-authtoken <token>
+```
+
 ## Run the Project
 
-Once the prerequisites are installed, you can build and run the project using the following commands.
+### Setup Ngrok
+
+After installing the prerequisites, configure ngrok to expose `localhost:8080` to the internet.
+
+```bash
+ngrok http 8080
+```
+
+Copy the generated link and add it to the .env file located in the `backend/` directory using the following format:
+
+```bash
+WEBHOOK_ENDPOINT=$ENDPOINT 
+#(e.g : WEBHOOK_ENDPOINT=https://644a-163-5-2-51.ngrok-free.app/)
+```
+
+Once ngrok is configured, you can proceed to build and run the project using the following commands.
 
 ### Linux / macOS
 
