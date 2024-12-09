@@ -30,6 +30,7 @@
     "@nestjs/swagger": "^8.0.7",
     "bcryptjs": "^2.4.3",
     "mongoose": "^8.8.2",
+    "nodemailer": "^6.9.16",
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
     "passport-google-oauth20": "^2.0.0",

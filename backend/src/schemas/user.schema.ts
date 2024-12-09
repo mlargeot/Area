@@ -11,18 +11,6 @@ export class User {
   @Prop({ required: false })
   password?: string;
 
-  @Prop({ default: false })
-  isGoogleUser: boolean;
-
-  @Prop()
-  googleId?: string;
-
-  @Prop({ required: false })
-  isDiscordUser: boolean;
-
-  @Prop()
-  discordId?: string;
-
   @Prop()
   connectionMethod: string;
 

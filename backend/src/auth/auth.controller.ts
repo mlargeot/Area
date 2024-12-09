@@ -1,10 +1,20 @@
-import {Controller, Post, Body, Get, UseGuards, Req, Res} from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,17 +36,26 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
+  @Post('forgot-password')
+  @ApiResponse({ status: 200, description: 'Password reset email sent' })
+  @ApiBody({ type: ForgotPasswordDto })
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Post('reset-password')
+  @ApiResponse({ status: 200, description: 'Password reset successful' })
+  @ApiBody({ type: ResetPasswordDto })
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   @ApiResponse({ status: 200, description: 'Google authentication successful' })
   @ApiBody({ type: CreateUserDto })
   async googleAuth(@Req() req) {
     console.log('googleAuth');
-    if (!req.user) {
-      return null;
-    }
-    const state = this.authService.generateStateForUser(req.user);
-    return state;
   }
 
   @Get('google/callback')
@@ -44,9 +63,8 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Google authentication successful' })
   @ApiBody({ type: CreateUserDto })
   async googleAuthRedirect(@Req() req, @Res() res) {
-    const state = req.query.state;
     console.log('googleAuthRedirect');
-    const user: any = await this.authService.googleLogin(req.user, state);
+    const user: any = await this.authService.googleLogin(req.user);
     const token = user.token;
     res.redirect(`${process.env.FRONTEND_URL}/auth-handler?token=${token}`);
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
@@ -6,6 +6,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { LoginUserDto } from './dto/login-user.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import nodemailer from 'nodemailer';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,31 +16,6 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
   ) {}
-
-  generateStateForUser(user: any): string {
-    if (!user) {
-      return null;
-    }
-    const state = JSON.stringify({
-      email: user.email,
-      connectionMethod: user.connectionMethod,
-      _id: user._id,
-    });
-    return state;
-  }
-
-  async findUserByState(state: string): Promise<any> {
-    if (!state) {
-      return null;
-    }
-    const { email, connectionMethod, id } = JSON.parse(state);
-    const user = await this.userModel.findOne({
-      email,
-      connectionMethod,
-      _id: id,
-    });
-    return user;
-  }
 
   async register(createUserDto: CreateUserDto): Promise<any> {
     const { email, password } = createUserDto;
@@ -52,7 +30,7 @@ export class AuthService {
     const user = await this.userModel.create({
       email,
       password: hashedPassword,
-      isGoogleUser: false,
+      connectionMethod: 'local',
     });
 
     return user;
@@ -78,23 +56,81 @@ export class AuthService {
     };
   }
 
-  async googleLogin(user: any, state: any) {
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const { email } = forgotPasswordDto;
+    const user = await this.userModel.findOne({
+      email,
+      connectionMethod: 'local',
+    });
+
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    const resetToken = this.jwtService.sign({
+      email: user.email,
+      _id: user._id,
+    });
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'alexisboitel.ab19@gmail.com',
+        pass: process.env.GOOGLE_APP_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: 'alexisboitel.ab19@gmail.com',
+      to: email,
+      subject: 'AR3M - Password Reset Request',
+      text: `You requested a password reset. Click the link below to reset your password: \n\n ${resetUrl}`,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      return { message: 'Password reset email sent successfully!' };
+    } catch (error) {
+      console.error('Error sending email:', error);
+      throw new HttpException(
+        'Failed to send email',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async resetPassword(resetPassword: ResetPasswordDto) {
+    const { token, password } = resetPassword;
+    const decoded = this.jwtService.verify(token);
+
+    const user = await this.userModel.findOne({
+      email: decoded.email,
+      connectionMethod: 'local',
+    });
+
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return { message: 'Password reset successful!' };
+  }
+
+  async googleLogin(user: any) {
     console.log('googleLogin');
     console.log(user);
-    console.log(state);
-
-    const userState = await this.findUserByState(state);
 
     const { email, firstName, lastName, picture, accessToken, refreshToken } =
       user;
-
-    let existingUser;
-
-    if (userState) {
-      existingUser = await this.userModel.findOne({
-        _id: userState._id,
-      });
-    }
+    let existingUser = await this.userModel.findOne({
+      email,
+      connectionMethod: 'google',
+    });
 
     if (!existingUser) {
       existingUser = await this.userModel.create({
@@ -122,15 +158,26 @@ export class AuthService {
     console.log('discordLogin');
     console.log(user);
 
-    const { email, firstName, lastName, picture, accessToken } = user;
-    let existingUser = await this.userModel.findOne({ email });
+    const { email, firstName, lastName, picture, accessToken, refreshToken } =
+      user;
+    let existingUser = await this.userModel.findOne({
+      email,
+      connectionMethod: 'discord',
+    });
 
     if (!existingUser) {
       existingUser = await this.userModel.create({
         email,
         password: null,
-        isDiscordUser: true,
-        discordId: user.id,
+        connectionMethod: 'discord',
+        oauthProviders: [
+          {
+            provider: 'discord',
+            email,
+            accessToken,
+            refreshToken,
+          },
+        ],
       });
     }
 
