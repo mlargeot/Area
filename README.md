@@ -6,9 +6,9 @@
 
 ## Prerequisites
 
-The only prerequisite needed to run the project is `Docker`. Please ensure Docker is installed on your system.
+The only prerequisite needed to run the project are `Docker` and `ngrok`. Please ensure Docker and ngrok are installed on your system.
 
-### Installation on Linux
+### Docker Installation on Linux
 
 You can install Docker using the following command:
 
@@ -17,7 +17,7 @@ sudo apt update
 sudo apt install docker docker-compose
 ```
 
-### Installation on Windows
+### Docker Installation on Windows
 
 1. **Download Docker Desktop**:  
    Go to the [official Docker website](https://www.docker.com/products/docker-desktop) and download Docker Desktop for Windows.
@@ -46,6 +46,15 @@ If you prefer using `curl`, you can install Docker with this command (Linux):
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 ```
+
+### Ngrok Installation
+
+To install **ngrok** on your system, follow the official documentation corresponding to your operating system:
+
+- **Linux**: Refer to the [official Linux installation guide](https://download.ngrok.com/linux) for step-by-step instructions.
+- **Windows**: Follow the [official Windows installation guide](https://download.ngrok.com/windows?tab=download) to download and set up ngrok.
+
+For additional installation methods or troubleshooting, visit the [ngrok installation documentation](https://download.ngrok.com/).
 
 ## Run the Project
 
