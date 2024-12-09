@@ -26,8 +26,8 @@ services:
       - db
 
   client_web:
-    container_name: ar3m-frontend
-    build: ./frontend/
+    container_name: ar3m-deprecated-frontend
+    build: frontend/
     ports:
       - "8081:8081"
     depends_on:
