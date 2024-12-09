@@ -14,7 +14,6 @@ export {
 } from 'expo-router'
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 }
 
@@ -50,54 +49,48 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme()
-  const theme = useTheme()
+  const colorScheme = useColorScheme();
+  const theme = useTheme();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
       <Stack>
-        <Stack.Screen
+      <Stack.Screen
           name="(tabs)"
           options={{
             headerShown: false,
           }}
         />
-
         <Stack.Screen
           name="login/page"
           options={{
-              headerShown: false,
-              presentation: 'modal',
-              animation: 'slide_from_right',
-              gestureEnabled: true,
-              gestureDirection: 'horizontal',
-              contentStyle: {
-                  backgroundColor: theme.background.val,
-              },
+            headerShown: false,
+            animation: 'none',
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
           }}
         />
-
-          <Stack.Screen
-              name="forgotpassword/page"
-              options={{
-                  headerShown: false,
-                  presentation: 'modal',
-                  animation: 'slide_from_right',
-                  gestureEnabled: true,
-                  gestureDirection: 'horizontal',
-                  contentStyle: {
-                      backgroundColor: theme.background.val,
-                  },
-              }}
-          />
-
-          <Stack.Screen
-              name="signup/page"
-              options={{
-                  headerShown: false,
-                  presentation: 'modal',
-                  animation: 'slide_from_right',
-                  gestureEnabled: true,
+        <Stack.Screen
+          name="forgotpassword/page"
+          options={{
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_right',
+            gestureEnabled: true,
+            gestureDirection: 'horizontal',
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="signup/page"
+          options={{
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_right',
+            gestureEnabled: true,
             gestureDirection: 'horizontal',
             contentStyle: {
               backgroundColor: theme.background.val,
@@ -106,5 +99,5 @@ function RootLayoutNav() {
         />
       </Stack>
     </ThemeProvider>
-  )
+  );
 }
