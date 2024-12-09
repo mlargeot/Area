@@ -15,15 +15,16 @@ export class GithubActionsService {
     private configService: ConfigService
   ) {}
 
-  async init_assign(email: string, body: Record<string, any>) {
+  async init_assign(params: {email: string; githubRepoUrl: string}) {
     //TODO Remplacer email par unique ID ?
+    const { email, githubRepoUrl } = params;
     const user = await this.userModel.findOne({ email });
 
     if (!user) {
       throw new NotFoundException('InitAssign: ${userID} not found.');
     }
 
-    const repoUrl = body.githubRepoUrl
+    const repoUrl = githubRepoUrl
     const regex = /https:\/\/github\.com\/([^\/]+)\/([^\/]+)/;
     const match = repoUrl.match(regex);
     if (!match)
