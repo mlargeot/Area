@@ -7,11 +7,11 @@ export class AppletModuleDto {
 }
 
 export class AppletDto {
-    @ApiProperty({ example: 10, description: "Applet id."})
-    appletId: number;
+    @ApiProperty({ example: "675628e68b37fadf8ffeaeaczeceq565", description: "Applet id."})
+    appletId: string;
 
-    @ApiProperty({ example: 1, description: "applet user id."})
-    userId: number;
+    @ApiProperty({ example: "675628e68b37fadf8ff9b9b4", description: "applet user id."})
+    userId: string;
 
     @ApiProperty({ example: {
         service: "github",
