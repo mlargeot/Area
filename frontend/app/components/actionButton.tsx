@@ -3,14 +3,18 @@ import { Link } from 'expo-router'
 import { useNavigationData } from '../Context/navigationContext'
 import { useApplet } from 'app/Context/appletContext';
 
-export function EventButton({ index } : { index : number }) {
+export function ActionButton({ index } : { index : number }) {
   const { setNavigationData, navigationData } = useNavigationData();
   const { applet } = useApplet();
 
   return (
     <Link href="/Pages/Create/services" asChild>
       <Button
-      onPress={() => {setNavigationData({currentService: applet.action.service, actionType: "action" })}}
+      onPress={() => {setNavigationData({
+        currentService: applet.action.service,
+        actionType: "action",
+        id: applet.action.id ? applet.action.id : ""
+      })}}
       borderWidth="$1"
       borderColor="$color"
       padding="$3"
@@ -33,7 +37,7 @@ export function EventButton({ index } : { index : number }) {
           </XStack>
           <Button.Text
             opacity={0.60}
-          >{index.toString()}. { applet.action.name ? applet.action.name : ". Select the event that start the workflow"}</Button.Text>
+          >{index.toString()}. { applet.action.name ? applet.action.name : " Select the event that start the workflow"}</Button.Text>
         </YStack>
       </Button>
     </Link>

@@ -1,4 +1,4 @@
-import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square } from 'tamagui'
+import { Button, ScrollView, Stack, YStack, Image, Text, View, XStack, Square } from 'tamagui'
 import { act, useEffect, useState } from 'react'
 import { Link } from 'expo-router'
 import { useNavigationData, NavigationData } from 'app/Context/navigationContext'
@@ -47,13 +47,14 @@ export default function ServicesScreen() {
     style={{ flex: 1 }}>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
         {services.flatMap((a, i) => [
-          <Link key={`button-${a.id}`} href={selectPage()} asChild>
+          <Link key={`button-${i}`} href={selectPage()} asChild>
             <Button
               onPress={() => {
                 setNavigationData({
-                currentService: a.name,
-                actionType: navigationData.actionType,
-                id: navigationData.id});
+                  currentService: a.name,
+                  actionType: navigationData.actionType,
+                  id: navigationData.id}
+                );
                 resetAction(a.name);
               }}
               width="80%"

@@ -12,7 +12,7 @@ export function ReactionButton({ index, reaction } : { index : number, reaction:
       <Button
       onPress={() => {
         setNavigationData({
-          currentService: reaction.service,
+          currentService: reaction.service ? reaction.service : "",
           actionType: !reaction.service ? "reaction" : "modify",
           id: reaction.id ? reaction.id : ""
         })}}
