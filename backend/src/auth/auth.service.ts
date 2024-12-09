@@ -7,8 +7,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import nodemailer from 'nodemailer';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class AuthService {
@@ -77,13 +77,13 @@ export class AuthService {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'alexisboitel.ab19@gmail.com',
+        user: 'alexisdiabolo19@gmail.com',
         pass: process.env.GOOGLE_APP_PASSWORD,
       },
     });
 
     const mailOptions = {
-      from: 'alexisboitel.ab19@gmail.com',
+      from: 'alexisdiabolo19@gmail.com',
       to: email,
       subject: 'AR3M - Password Reset Request',
       text: `You requested a password reset. Click the link below to reset your password: \n\n ${resetUrl}`,
