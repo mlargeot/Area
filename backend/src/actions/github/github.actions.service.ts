@@ -33,7 +33,7 @@ export class GithubActionsService {
     const data = {
       name: "web",
       config: {
-        url: this.configService.get<string>('ASSIGN_ENDPOINT'),
+        url: this.configService.get<string>('WEBHOOK_ENDPOINT') + "actions/github/assign",
         content_type: 'json',
       },
       events: ["pull_request"],
