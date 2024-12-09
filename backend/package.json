@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^8.0.7",
     "bcryptjs": "^2.4.3",
+    "google-auth-library": "^9.15.0",
     "mongoose": "^8.8.2",
     "nodemailer": "^6.9.16",
     "passport": "^0.7.0",
