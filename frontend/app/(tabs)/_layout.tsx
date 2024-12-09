@@ -18,19 +18,19 @@ export default function TabLayout() {
           borderBottomColor: theme.borderColor.val,
         },
         headerTintColor: theme.color.val,
-          headerTitleStyle: {
-              fontWeight: 'bold',
-          },
-          headerRight: () => (
-              <Link href="/modal" asChild>
-                  <Button mr="$4" bg="$purple8" color="$purple12">
-                      Settings
-                  </Button>
-              </Link>
-          ),
-          headerLeft : () => (
-            <H2 ml="$4">AR3M</H2>
-          ),
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+        headerRight: () => (
+          <Link href="/modal" asChild>
+            <Button mr="$4" bg="$purple8" color="$purple12">
+              Settings
+            </Button>
+          </Link>
+        ),
+        headerLeft: () => (
+          <H2 ml="$4">AR3M</H2>
+        ),
       }}
     >
       <Tabs.Screen
@@ -47,28 +47,27 @@ export default function TabLayout() {
           ),
         }}
       />
-    <Tabs.Screen
+      <Tabs.Screen
         name="library"
         options={{
-            title: 'Library',
-            tabBarIcon: ({ color }) => <Library color={color} />,
+          title: 'Library',
+          tabBarIcon: ({ color }) => <Library color={color} />,
         }}
-    />
+      />
       <Tabs.Screen
-        name="two"
+        name="create"
         options={{
           title: 'Create',
           tabBarIcon: ({ color }) => <BadgePlus color={color} />,
         }}
       />
-        <Tabs.Screen
-            name="profile"
-            options={{
-                title: 'Profile',
-                tabBarIcon: ({ color }) => <User color={color} />,
-            }}
-        />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <User color={color} />,
+        }}
+      />
     </Tabs>
-
   )
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, XStack, YStack, Stack, Text } from 'tamagui';
 import { ArrowLeft, X } from '@tamagui/lucide-icons';
 
-const ReturnButton = () => {
+const ReturnButton = ({action} : {action : () => void}) => {
   return (
     <YStack paddingBottom="$4" alignItems="center" gap="$1" width="100%" >
         <XStack
@@ -15,6 +15,7 @@ const ReturnButton = () => {
                 margin="$1"
                 borderRadius="$6"
                 alignContent='center'
+                onPress={action}
             >
                 <Button.Icon>
                     <ArrowLeft />

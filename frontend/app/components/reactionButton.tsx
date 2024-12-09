@@ -1,16 +1,16 @@
 import { Button, Stack, YStack, Text, XStack } from 'tamagui'
 import { Link } from 'expo-router'
 import { useNavigationData } from '../Context/navigationContext'
-import { useApplet } from 'app/Context/appletContext';
+import { Reaction } from "../Context/reactionContext"
 
-export function EventButton({ index } : { index : number }) {
+
+export function ReactionButton({ index, reaction } : { index : number, reaction: Reaction }) {
   const { setNavigationData, navigationData } = useNavigationData();
-  const { applet } = useApplet();
 
   return (
     <Link href="/Pages/Create/services" asChild>
       <Button
-      onPress={() => {setNavigationData({currentService: applet.action.service, actionType: "action" })}}
+      onPress={() => {setNavigationData({currentService: reaction.service, actionType: "reaction" })}}
       borderWidth="$1"
       borderColor="$color"
       padding="$3"
@@ -28,12 +28,12 @@ export function EventButton({ index } : { index : number }) {
               padding="$2"
               borderRadius="$2"
             >
-              <Button.Text>{applet.action.service ? applet.action.service : "Trigger"}</Button.Text>
+              <Button.Text>{reaction.service !== "" ? reaction.service : 'Reaction'}</Button.Text>
             </Stack>
           </XStack>
-          <Button.Text
+          <Text
             opacity={0.60}
-          >{index.toString()}. { applet.action.name ? applet.action.name : ". Select the event that start the workflow"}</Button.Text>
+          >{index.toString()}. { reaction.name ? reaction.name : "Select the reaction"}</Text>
         </YStack>
       </Button>
     </Link>

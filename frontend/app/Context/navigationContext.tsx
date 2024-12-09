@@ -1,0 +1,32 @@
+import React, { createContext, useState, useContext } from 'react';
+
+const NavigationContext = createContext<{
+  navigationData: NavigationData;
+  setNavigationData: React.Dispatch<React.SetStateAction<NavigationData>>;
+}>({
+  navigationData: {
+    actionType: "",
+    currentService: ""
+  },
+  setNavigationData: () => {}
+});
+
+export type NavigationData = {
+  actionType: string;
+  currentService: string;
+};
+
+export const NavigationProvider = ({ children }) => {
+  const [navigationData, setNavigationData] = useState<NavigationData>(
+    {
+      actionType: "",
+      currentService: ""
+    });
+  return (
+    <NavigationContext.Provider value={{ navigationData, setNavigationData }}>
+      {children}
+    </NavigationContext.Provider>
+  );
+};
+
+export const useNavigationData = () => useContext(NavigationContext);
