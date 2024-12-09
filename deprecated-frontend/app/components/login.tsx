@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'expo-router';
-import { Alert } from 'react-native';
-import { Button, Input, Stack, Text, XStack, YStack } from 'tamagui';
+import {Alert, Linking, Platform} from 'react-native';
+import {Button, Input, Stack, Text, XStack, YStack} from 'tamagui';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Constants from 'expo-constants';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -12,11 +13,15 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:8080/auth/google';
+        if (Platform.OS === 'web') {
+            window.location.href = `http://localhost:8080/auth/google`;
+        } else {
+            Linking.openURL(`http://localhost:8080/auth/google`);
+        }
+
     }
 
     const handleDiscordLogin = () => {
-        window.location.href = 'http://localhost:8080/auth/discord';
     }
 
     const handleEmailPasswordLogin = async () => {
@@ -76,6 +81,7 @@ export default function Login() {
                 </Text>
 
             <XStack width="100%" marginBottom="$4" justifyContent="center" gap={15}>
+
                 <Button
                     borderRadius="$3"
                     paddingHorizontal="$4"
@@ -83,6 +89,8 @@ export default function Login() {
                     icon={<FontAwesome name="google" size={24}/>}
                     onPress={handleGoogleLogin}
                 />
+
+
                 <Button
                     borderRadius="$3"
                     paddingHorizontal="$4"
