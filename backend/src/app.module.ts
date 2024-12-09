@@ -8,6 +8,7 @@ import { AboutModule } from './about/about.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ActionsModule } from './actions/actions.module';
 import { ReactionsModule } from './reactions/reactions.module';
+import { AppletsModule } from './applets/applets.module';
 
 mongoose.set('debug', true);
 
@@ -25,7 +26,8 @@ mongoose.set('debug', true);
     AuthModule,
     AboutModule,
     ActionsModule,
-    ReactionsModule
+    ReactionsModule,
+    AppletsModule
   ],
   controllers: [AppController],
   providers: [AppService],
