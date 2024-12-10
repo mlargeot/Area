@@ -12,17 +12,22 @@ export class User {
   @Prop({ required: false })
   password?: string;
 
-  @Prop({ default: false })
-  isGoogleUser: boolean;
+  @Prop()
+  connectionMethod: string;
 
   @Prop()
-  googleId?: string;
-
-  @Prop({ required: false })
-  isDiscordUser: boolean;
+  oauthProviders: {
+    provider: string;
+    email: string;
+    accessToken: string;
+    refreshToken: string;
+  }[];
 
   @Prop()
-  discordId?: string;
+  createdAt: Date;
+
+  @Prop()
+  updatedAt: Date;
 
   @Prop()
   githubId?: number;
