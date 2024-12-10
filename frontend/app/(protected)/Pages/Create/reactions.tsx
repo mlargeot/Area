@@ -1,6 +1,6 @@
 import { Button, ScrollView, YStack, H2 } from 'tamagui'
-import { useApplet } from '../../context/appletContext'
-import { useNavigationData } from '../../context/navigationContext'
+import { useApplet } from '../../../context/appletContext'
+import { useNavigationData } from '../../../context/navigationContext'
 import { Link } from 'expo-router'
 
 

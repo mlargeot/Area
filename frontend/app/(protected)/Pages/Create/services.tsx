@@ -1,7 +1,7 @@
 import { Button, ScrollView, YStack, } from 'tamagui'
 import { Link } from 'expo-router'
-import { useNavigationData } from '../../context/navigationContext'
-import { useApplet } from '../../context/appletContext';
+import { useNavigationData } from '../../../context/navigationContext'
+import { useApplet } from '../../../context/appletContext';
 
 
 export default function ServicesScreen() {

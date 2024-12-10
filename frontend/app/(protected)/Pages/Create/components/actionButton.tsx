@@ -1,7 +1,7 @@
 import { Button, Stack, YStack, Text, XStack } from 'tamagui';
 import { Link } from 'expo-router';
-import { useNavigationData } from '../../../context/navigationContext';
-import { useApplet } from '../../../context/appletContext';
+import { useNavigationData } from '../../../../context/navigationContext';
+import { useApplet } from '../../../../context/appletContext';
 
 export function ActionButton({ index } : { index : number }) {
   const { setNavigationData } = useNavigationData();
@@ -13,7 +13,7 @@ export function ActionButton({ index } : { index : number }) {
       onPress={() => {setNavigationData({
         currentService: applet.action.service,
         actionType: "action",
-        id: applet.action.id ? applet.action.id : ""
+        reactionId: applet.action.id ? applet.action.id : ""
       })}}
       borderWidth="$1"
       borderColor="$color"
