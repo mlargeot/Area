@@ -1,5 +1,5 @@
 import { YStack } from 'tamagui';
-import SignUp from './components/signup';
+import SignUp from '../../components/signup';
 
 export default function signupScreen() {
     return (

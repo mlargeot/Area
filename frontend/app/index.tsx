@@ -3,7 +3,7 @@ import { Link } from "expo-router";
 import { Linking, Platform, View } from "react-native";
 import { Button, Text } from "tamagui";
 import { useRouter } from "expo-router";
-import { useAuth } from "./hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();

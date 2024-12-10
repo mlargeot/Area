@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { YStack } from 'tamagui';
-import ForgotPassword from './components/forgotpassword';
+import ForgotPassword from '../../components/forgotpassword';
 
 export default function forgotpasswordscreen() {
     return (
