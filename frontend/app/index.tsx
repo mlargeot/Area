@@ -4,6 +4,7 @@ import { Linking, Platform, View } from "react-native";
 import { Button } from "tamagui";
 
 export default function Home() {
+
   const signInWithGoogle = async () => {
     const url = `http://localhost:8080/auth/google?device=${Platform.OS}`;
     Linking.openURL(url);

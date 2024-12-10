@@ -1,66 +1,66 @@
 import { useState } from 'react';
 import { Link } from 'expo-router';
-import {Alert, Linking, Platform} from 'react-native';
+import {Alert, Linking, Platform, TouchableOpacity} from 'react-native';
 import {Button, Input, Stack, Text, XStack, YStack} from 'tamagui';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-// import axios from 'axios';
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import * as Constants from 'expo-constants';
+import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from 'expo-router';
 
 export default function Login() {
-    const [username, setUsername] = useState('');
+    const router = useRouter();
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleGoogleLogin = () => {
-        if (Platform.OS === 'web') {
-            window.location.href = `http://localhost:8080/auth/google`;
-        } else {
-            Linking.openURL(`http://localhost:8080/auth/google`);
-        }
-
+        Linking.openURL(`${process.env.REACT_APP_API_URL}/auth/google?device=${Platform.OS}`);
     }
 
     const handleDiscordLogin = () => {
+        console.log("Discord login");
+        Linking.openURL(`${process.env.REACT_APP_API_URL}/auth/discord?device=${Platform.OS}`);
     }
 
-    // const handleEmailPasswordLogin = async () => {
-    //     if (!username || !password) {
-    //         Alert.alert('Error', 'Please enter both username and password');
-    //         return;
-    //     }
+    const handlerResetPassword = () => {
+        if (email === '') {
+            alert('Please enter your email address');
+            Alert.alert('Please enter your email address');
+            return;
+        }
+        try {
+            axios.post(`${process.env.REACT_APP_API_URL}/auth/forgot-password`, {
+                email
+            });
+            alert('Password reset email sent');
+            Alert.alert('Password reset email sent');
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred');
+            Alert.alert('An error occurred');
+        }
+    }
 
-    //     setIsLoading(true);
+    const handleLogin = async () => {
 
-    //     try {
-    //         const response = await axios.post('http://localhost:8080/auth/login', {
-    //             username,
-    //             password,
-    //         });
-
-    //         const token = response.data.token;
-
-    //         await AsyncStorage.setItem('token', token);
-
-    //         // @ts-ignore
-    //         navigation.navigate('login/page');
-
-    //         Alert.alert('Success', response.data.message);
-    //         setUsername('');
-    //         setPassword('');
-    //     } catch (error) {
-    //         if (axios.isAxiosError(error)) {
-    //             const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
-    //             Alert.alert('Login Error', errorMessage);
-    //         } else {
-    //             Alert.alert('Error', 'An unexpected error occurred');
-    //         }
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-
-
-    //};
+        try {
+            setIsLoading(true);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
+                email,
+                password
+            });
+            console.log(response);
+            await AsyncStorage.setItem('access_token', response.data.access_token);
+            setIsLoading(false);
+            console.log("Logged in" + email + " with token " + response.data.access_token);
+            router.push('/explore');
+        } catch (error) {
+            setIsLoading(false);
+            console.error(error);
+            setErrorMessage("Invalid credentials");
+        }
+    }
 
     return (
             <YStack
@@ -108,9 +108,9 @@ export default function Login() {
 
                 <Stack gap="$4" marginBottom="$4">
                     <Input
-                        placeholder="Username"
-                        value={username}
-                        onChangeText={setUsername}
+                        placeholder="Email"
+                        value={email}
+                        onChangeText={setEmail}
                         borderWidth={1}
                         borderRadius="$3"
                         paddingHorizontal="$4"
@@ -130,16 +130,14 @@ export default function Login() {
 
 
 
-                <XStack alignItems="center" justifyContent="center" marginVertical="$3">
-                <Link
-                        href="../forgotpassword/page"
-                    >
-                        <Text
-                            fontSize="$2"
-                            >
-                            Forgotten Password ?
-                            </Text>
-                    </Link>
+                <XStack alignItems="center" justifyContent="center" marginVertical="$2">
+                <TouchableOpacity onPress={handlerResetPassword}>
+                    <Text
+                        fontStyle='italic'
+                        fontSize="$2">
+                    Forgotten Password ?
+                    </Text>
+                </TouchableOpacity>
                 </XStack>
 
                 <Button
@@ -147,13 +145,15 @@ export default function Login() {
                     paddingHorizontal="$6"
                     borderRadius="$3"
                     fontWeight="700"
+                    onPress={handleLogin}
                 >
                     Sign In
                 </Button>
+                {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
 
                 <XStack alignItems="center" justifyContent="center" marginTop="$4">
                     <Link
-                        href="../signup/page"
+                        href={"/explore"}
                     >
                         <Text
                             fontSize="$2"
