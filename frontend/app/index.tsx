@@ -1,22 +1,22 @@
 import React, { useEffect } from "react";
 import { Link } from "expo-router";
 import { Linking, Platform, View } from "react-native";
-import { Button } from "tamagui";
+import { Button, Text } from "tamagui";
+import { useRouter } from "expo-router";
 
 export default function Home() {
 
-  const signInWithGoogle = async () => {
-    const url = `http://localhost:8080/auth/google?device=${Platform.OS}`;
-    Linking.openURL(url);
+  const router = useRouter();
+  if (Platform.OS !== "web") {
+    router.push("/login");
   }
 
   return (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
-      <Link href={"/explore"} asChild>
-        <Button color="green">{Platform.OS === 'web' ? "web" : "mobile"}</Button>
+      <Text>AR3M Home Page</Text>
+      <Link href={"/login"} asChild>
+        <Button color="green">Login</Button>
       </Link>
-      <Button color="red" onPress={signInWithGoogle}>Google</Button>
-      <Button color="blue">Discord</Button>
     </View>
   );
 }
