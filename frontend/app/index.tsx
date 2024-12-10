@@ -3,13 +3,22 @@ import { Link } from "expo-router";
 import { Linking, Platform, View } from "react-native";
 import { Button, Text } from "tamagui";
 import { useRouter } from "expo-router";
+import { useAuth } from "./hooks/useAuth";
 
 export default function Home() {
-
+  const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
+
   if (Platform.OS !== "web") {
     router.push("/login");
   }
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      Linking.openURL("/explore");
+    }
+  }, [loading, isAuthenticated]);
+
 
   return (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
