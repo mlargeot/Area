@@ -6,24 +6,28 @@ import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { Applet } from 'src/schemas/applet.schema';
+import { ReactionsService } from 'src/reactions/reactions.service';
 
 @Injectable()
 export class GithubActionsService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly httpService: HttpService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private readonly reactionsService : ReactionsService
   ) {}
 
-  async init_assign(email: string, body: Record<string, any>) {
+  async init_assign(params: {email: string; githubRepoUrl: string}) {
     //TODO Remplacer email par unique ID ?
+    const { email, githubRepoUrl } = params;
     const user = await this.userModel.findOne({ email });
 
     if (!user) {
       throw new NotFoundException('InitAssign: ${userID} not found.');
     }
 
-    const repoUrl = body.githubRepoUrl
+    const repoUrl = githubRepoUrl
     const regex = /https:\/\/github\.com\/([^\/]+)\/([^\/]+)/;
     const match = repoUrl.match(regex);
     if (!match)
@@ -32,7 +36,7 @@ export class GithubActionsService {
     const data = {
       name: "web",
       config: {
-        url: this.configService.get<string>('ASSIGN_ENDPOINT'),
+        url: this.configService.get<string>('WEBHOOK_ENDPOINT') + "actions/github/assign",
         content_type: 'json',
       },
       events: ["pull_request"],
@@ -51,7 +55,28 @@ export class GithubActionsService {
     }
   }
 
-  async triggerAssign() {
-    console.log("PULL REQUEST IS TRIGGER!")
+  async findTriggeredApplets(githubId: string): Promise<Applet[]> {
+    return await this.userModel.aggregate([
+      { $match: { 'githubId': githubId } },
+      { $unwind: '$applets' },
+      { $match: { 
+          'applets.active': true, 
+          'applets.action.name': 'pr_assigned' 
+      } },
+  
+      { $replaceRoot: { newRoot: '$applets' } }
+    ]);
+  }
+
+  async triggerAssign(body: any) {
+    if (body.action !== 'assigned')
+      return;
+
+    const githubId = body.assignee.id;
+    const triggeredApplets = await this.findTriggeredApplets(githubId);
+
+    for (const applet of triggeredApplets) {
+      await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
+    }
   }
 }

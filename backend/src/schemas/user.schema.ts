@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Applet, AppletSchema } from './applet.schema';
 
 export type UserDocument = User & Document;
 
@@ -22,6 +23,12 @@ export class User {
 
   @Prop()
   discordId?: string;
+
+  @Prop()
+  githubId?: number;
+
+  @Prop({ type: [AppletSchema], default: [] })
+  applets: Applet[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

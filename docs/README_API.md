@@ -31,7 +31,8 @@ In this documentation, each API route will be described using the following form
 
 ---
 **Route Name**: *localhost:8080/register/example*<br>
-**Parameters**: *user_id=1*<br>
+**Method**: *POST*<br>
+**Parameters** (optional): *user_id=1*<br>
 **Body** (optional): 
 ```json
 {
@@ -52,5 +53,144 @@ In this documentation, each API route will be described using the following form
 <br>
 
 ## Routes
+### About
+---
+**Route Name**: *localhost:8080/about.json*<br>
+**Method**: GET<br>
+**Status Code**: *200*<br>
+**Response**:
+```json
+{
+  "client": {
+    "host": "10.101.53.35"
+  },
+  "server": {
+    "current_time": 1531680780,
+    "services": [{
+      "name": "facebook",
+      "actions": [
+        {
+          "name": "new_message_in_group",
+          "description": "A new message is posted in the group"
+        },
+        {
+          "name": "new_message_inbox",
+          "description": "A new private message received by the user"
+        },
+        {
+          "name": "new_like",
+          "description": "The user gains a like from one of their messages"
+        }
+      ],
+      "reactions": [{
+          "name": "like_message",
+          "description": "The user likes a message"
+        }
+      ]
+    }]
+  }
+}
+```
+---
+### Authentication
+---
+**Route Name**: *localhost:8080/register*<br>
+**Method**: GET<br>
+**Body**:
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+**Status Code**: *201*<br>
+**Response**: 
+```json
+{
+  "email": "user@example.com",
+  "password": "$hashed_password",
+  "isGoogleUser": false,
+  "_id": "675628e68b37fadf8ff9b9b4",
+  "__v": 0
+}
+```
 
-The detailed routes section will go here, with subsections for each category.
+---
+
+**Route Name**: *localhost:8080/login*<br>
+**Method**: GET<br>
+**Body**:
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Status Code**: *200*<br>
+**Response**: 
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJzdWIiOiI2NzU2MjhlNjhiMzdmYWRmOGZmOWI5YjQiLCJpYXQiOjE3MzM2OTk5MDAsImV4cCI6MTczMzcwMzUwMH0.kCxXVMs0XtaYvwK1VTc0WiDKsQNPzikWQQFqiRspNcM"
+}
+```
+---
+### Actions
+
+---
+**Route Name**: *localhost:8080/actions*<br>
+**Method**: GET<br>
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "service": "github",
+    "actions": [
+      {
+        "name": "issue_assigned",
+        "description": "Triggered when an issue is assigned to the user.",
+        "argumentsNumber": 0,
+        "argumentsExample": []
+      }
+    ]
+  }
+]
+```
+---
+
+### Reactions
+---
+**Route Name**: *localhost:8080/reactions*<br>
+**Method**: GET<br>
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "service": "discord",
+    "reactions": [
+      {
+        "name": "send_webhook_message",
+        "description": "Send message to the targeted discord webhook.",
+        "argumentsNumber": 2,
+        "argumentsExample": [
+          {
+            "name": "webhook_url",
+            "description": "URL of the discord webhook to send message to.",
+            "example": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdlzakjd",
+            "required": true
+          },
+          {
+            "name": "message_content",
+            "description": "Content of the message to send.",
+            "example": "A new Issue as been assigned.",
+            "required": true
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+---

@@ -6,9 +6,9 @@
 
 ## Prerequisites
 
-The only prerequisite needed to run the project is `Docker`. Please ensure Docker is installed on your system.
+The only prerequisites for running this project are `Docker` and `ngrok`. Please ensure both Docker and ngrok are installed on your system.
 
-### Installation on Linux
+### Docker Installation on Linux
 
 You can install Docker using the following command:
 
@@ -17,7 +17,7 @@ sudo apt update
 sudo apt install docker docker-compose
 ```
 
-### Installation on Windows
+### Docker Installation on Windows
 
 1. **Download Docker Desktop**:  
    Go to the [official Docker website](https://www.docker.com/products/docker-desktop) and download Docker Desktop for Windows.
@@ -47,9 +47,38 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 ```
 
+### Ngrok Installation
+
+To install **ngrok** on your system, follow the official documentation corresponding to your operating system:
+
+- **Linux**: Refer to the [official Linux installation guide](https://download.ngrok.com/linux) for step-by-step instructions.
+- **Windows**: Follow the [official Windows installation guide](https://download.ngrok.com/windows?tab=download) to download and set up ngrok.
+
+For additional installation methods or troubleshooting, visit the [ngrok installation documentation](https://download.ngrok.com/).
+
+Then follow the `ngrok` configuration:
+```bash
+ngrok config add-authtoken <token>
+```
+
 ## Run the Project
 
-Once the prerequisites are installed, you can build and run the project using the following commands.
+### Setup Ngrok
+
+After installing the prerequisites, configure ngrok to expose `localhost:8080` to the internet.
+
+```bash
+ngrok http 8080
+```
+
+Copy the generated link and add it to the .env file located in the `backend/` directory using the following format:
+
+```bash
+WEBHOOK_ENDPOINT=$ENDPOINT 
+#(e.g : WEBHOOK_ENDPOINT=https://644a-163-5-2-51.ngrok-free.app/)
+```
+
+Once ngrok is configured, you can proceed to build and run the project using the following commands.
 
 ### Linux / macOS
 

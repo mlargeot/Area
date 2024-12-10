@@ -112,7 +112,7 @@ export class AuthService {
     console.log('githubLogin');
     console.log(user);
 
-    const { email, firstName, lastName, picture, accessToken } = user;
+    const { email, firstName, lastName, picture, githubId, accessToken } = user;
     let existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
@@ -120,7 +120,7 @@ export class AuthService {
         email,
         password: null,
         isGoogleUser: true,
-        googleId: user.id,
+        githubId: githubId,
       });
     }
 
