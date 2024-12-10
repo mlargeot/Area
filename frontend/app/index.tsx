@@ -11,7 +11,7 @@ export default function Home() {
 
   return (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
-      <Link href={"/explore"}>
+      <Link href={"/explore"} asChild>
         <Button color="green">{Platform.OS === 'web' ? "web" : "mobile"}</Button>
       </Link>
       <Button color="red" onPress={signInWithGoogle}>Google</Button>
