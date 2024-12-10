@@ -41,12 +41,12 @@ export class AuthService {
     const user = await this.userModel.findOne({ email });
 
     if (!user) {
-      return { message: 'User not found' };
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return { message: 'Invalid password' };
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
     const payload = { email: user.email, sub: user._id };
@@ -64,7 +64,7 @@ export class AuthService {
     });
 
     if (!user) {
-      return { message: 'User not found' };
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     const resetToken = this.jwtService.sign({
@@ -111,7 +111,7 @@ export class AuthService {
     });
 
     if (!user) {
-      return { message: 'User not found' };
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
