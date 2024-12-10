@@ -53,7 +53,7 @@ export default function ServicesScreen() {
         id: applet.id,
         action: applet.action,
         reactions: applet.reactions.map((reaction) => {
-          if (reaction.id === navigationData.id) {
+          if (reaction.id === navigationData.reactionId) {
             return {
               id: newId,
               name: name,

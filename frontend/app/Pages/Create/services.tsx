@@ -52,7 +52,7 @@ export default function ServicesScreen() {
                 setNavigationData({
                   currentService: a.name,
                   actionType: navigationData.actionType,
-                  id: navigationData.id}
+                  reactionId: navigationData.reactionId}
                 );
                 resetAction(a.name);
               }}
