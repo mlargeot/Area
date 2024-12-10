@@ -3,12 +3,14 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 export type Action = {
   service: string;
   name: string;
+  params: Record<string, string>[];
   id: string;
 };
 
 export type Reaction = {
   service: string;
   name: string;
+  params: Record<string, string>[];
   id: string;
 };
 
@@ -22,7 +24,7 @@ export type Applet = {
 export const emptyApplet = (): Applet => {
   const applet: Applet = {
     id: "",
-    action: { service: "", name: "", id: "" },
+    action: { service: "", name: "", id: "", params: [] },
     reactions: []
   };
 
