@@ -24,6 +24,9 @@ export class User {
   @Prop()
   discordId?: string;
 
+  @Prop()
+  githubId?: number;
+
   @Prop({ type: [AppletSchema], default: [] })
   applets: Applet[];
 }
