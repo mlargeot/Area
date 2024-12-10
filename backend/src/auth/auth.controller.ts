@@ -57,8 +57,8 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res) {
     console.log('googleAuthRedirect');
     const user: any = await this.authService.googleLogin(req.user);
-    const token = user.token;
-    res.redirect(`${process.env.FRONTEND_URL}/auth-handler?token=${token}`);
+    const access_token = user.access_token;
+    res.redirect(`${process.env.FRONTEND_URL}/auth-handler?token=${access_token}`);
   }
 
   @Get('discord')

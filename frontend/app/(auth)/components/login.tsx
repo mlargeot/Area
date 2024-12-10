@@ -13,14 +13,22 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const apiUrl = 'http://localhost:8080';
 
     const handleGoogleLogin = () => {
-        Linking.openURL(`http://localhost:8080/auth/google?device=${Platform.OS}`);
+        if (Platform.OS === 'web') {
+            window.location.href = `${apiUrl}/auth/google?device=web`;
+            return;
+        }
+        Linking.openURL(`${apiUrl}/auth/google?device=${Platform.OS}`);
     }
 
     const handleDiscordLogin = () => {
-        console.log("Discord login");
-        Linking.openURL(`http://localhost:8080/auth/discord?device=${Platform.OS}`);
+        if (Platform.OS === 'web') {
+            window.location.href = `${apiUrl}/auth/discord?device=web`;
+            return;
+        }
+        Linking.openURL(`${apiUrl}/auth/discord?device=${Platform.OS}`);
     }
 
     const handlerResetPassword = () => {
@@ -30,7 +38,7 @@ export default function Login() {
             return;
         }
         try {
-            axios.post(`http://localhost:8080/auth/forgot-password`, {
+            axios.post(`${apiUrl}/auth/forgot-password`, {
                 email
             });
             alert('Password reset email sent');
@@ -46,7 +54,7 @@ export default function Login() {
 
         try {
             setIsLoading(true);
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
+            const response = await axios.post(`${apiUrl}/auth/login`, {
                 email,
                 password
             });
@@ -161,7 +169,6 @@ export default function Login() {
                             Don't have an AR3M account yet? Sign Up
                             </Text>
                     </Link>
-                    
                 </XStack>
             </YStack>
     );
