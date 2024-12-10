@@ -69,10 +69,10 @@ export class GithubActionsService {
   }
 
   async triggerAssign(body: any) {
-    if (body.action !== 'assigned' || !body.pull_request) {
+    if (body.action !== 'assigned')
       return;
-    }
-    const githubId = body.assignee.id;  
+
+    const githubId = body.assignee.id;
     const triggeredApplets = await this.findTriggeredApplets(githubId);
 
     for (const applet of triggeredApplets) {
