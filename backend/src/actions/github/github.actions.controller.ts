@@ -11,6 +11,6 @@ export class GithubActionsController {
   @Post('assign')
   @ApiResponse({ status: 200 })
   async assignWebhook(@Request() req) {
-    return this.GithubActionsService.triggerAssign()
+    return this.GithubActionsService.triggerAssign(req.body)
   }
 }
