@@ -1,11 +1,34 @@
 import { ExternalLink } from '@tamagui/lucide-icons'
-import { Anchor, H2, Paragraph, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square } from 'tamagui'
+import { ActionButton } from '../Pages/Create/components/actionButton'
+import { ReactionButton } from '../Pages/Create/components/reactionButton'
+import { useApplet, Reaction } from '../context/appletContext'
+
+const emptyReaction = () => {
+  const empty : Reaction = {name: "", id: "", service: ""}
+  return (empty)
+}
 
 export default function CreateScreen() {
-  return (
-    <YStack f={1} ai="center" gap="$8" px="$10" pt="$5" bg="$background">
-      <H2>Create</H2>
+  const { applet } = useApplet();
 
-    </YStack>
+  return (
+    <ScrollView
+    contentContainerStyle={{
+      flexGrow: 1, 
+      backgroundColor: '$background'
+    }}
+    style={{ flex: 1 }}>
+      <YStack paddingVertical="$4" alignItems="center" gap="$1" width="100%">
+        <ActionButton index={1}/>
+        <Square height={20} width={4} backgroundColor="$color" opacity={0.5} />
+        {applet.reactions.flatMap((reaction, i) => [
+          <ReactionButton key={`card-${reaction.id}`} index={2 + i} reaction={reaction} />,
+          <Square key={`square-${reaction.id}`} height={20} width={4} backgroundColor="$color" opacity={0.5} />,
+        ])}
+        <ReactionButton index={2 + applet.reactions.length} reaction={emptyReaction()}/>
+      </YStack>
+    </ScrollView>
   )
 }
+
