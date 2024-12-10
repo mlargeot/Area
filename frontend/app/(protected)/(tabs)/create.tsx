@@ -1,3 +1,4 @@
+import React from 'react';
 import { ExternalLink } from '@tamagui/lucide-icons'
 import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square } from 'tamagui'
 import { ActionButton } from '../Pages/Create/components/actionButton'
