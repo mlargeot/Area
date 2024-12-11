@@ -1,5 +1,5 @@
 import { YStack, Theme } from 'tamagui';
-import Login from './components/login';
+import Login from '../../components/login';
 
 export default function loginScreen() {
 

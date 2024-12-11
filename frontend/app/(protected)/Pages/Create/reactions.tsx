@@ -2,16 +2,15 @@ import { Button, ScrollView, YStack, H2 } from 'tamagui'
 import { useApplet } from '../../../context/appletContext'
 import { useNavigationData } from '../../../context/navigationContext'
 import { Link } from 'expo-router'
+import React from 'react'
 
 
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
+  const { navigationData, setNavigationData } = useNavigationData();
   const reactions = [
-    {id:"0", name:"On message received"},
-    {id:"1", name:"On message sent"},
-    {id:"2", name:"On ping"}
+    {id:"0", name:"send_webhook_message"}
   ]
-  const { navigationData } = useNavigationData();
 
   const newReaction = ({id, name} : {id : string, name : string}) => {
     const newId = `reaction-${navigationData.currentService}-${name}`;
@@ -31,11 +30,18 @@ export default function ServicesScreen() {
           {
             id : newId,
             name: name,
-            service: navigationData.currentService
+            service: navigationData.currentService,
+            params: []
           }
         ]
       }
     )
+
+    setNavigationData({
+      currentService: navigationData.currentService,
+      actionType: navigationData.actionType,
+      reactionId: newId
+    });
   }
 
   const modifyReaction = ({id, name} : {id : string, name : string}) => {
@@ -57,7 +63,8 @@ export default function ServicesScreen() {
             return {
               id: newId,
               name: name,
-              service: navigationData.currentService
+              service: navigationData.currentService,
+              params: []
             }
           }
           return reaction
@@ -76,7 +83,7 @@ export default function ServicesScreen() {
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
         <H2>{navigationData.currentService}</H2>
         {reactions.flatMap((reaction, i) => [
-            <Link key={`button-${reaction.id}`} href="/create" asChild >
+            <Link key={`button-${reaction.id}`} href="/Pages/Create/form" asChild >
                 <Button
                     onPress={() => {
                       if (navigationData.actionType === "reaction") {

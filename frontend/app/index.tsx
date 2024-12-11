@@ -1,31 +1,31 @@
 import React, { useEffect } from "react";
-import { Link } from "expo-router";
-import { Linking, Platform, View } from "react-native";
+import { Platform, View } from "react-native";
 import { Button, Text } from "tamagui";
 import { useRouter } from "expo-router";
-import { useAuth } from "./hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
-  if (Platform.OS !== "web") {
-    router.push("/login");
-  }
+  useEffect(() => {
+    if (router.isReady && Platform.OS !== "web") {
+      router.replace("/login"); // Redirect to login on mobile.
+    }
+  }, [router.isReady]);
 
   useEffect(() => {
-    if (!loading && isAuthenticated) {
-      Linking.openURL("/explore");
+    if (router.isReady && !loading && isAuthenticated) {
+      router.replace("/explore"); // Redirect to explore if authenticated.
     }
-  }, [loading, isAuthenticated]);
-
+  }, [loading, isAuthenticated, router.isReady]);
 
   return (
-    <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
-      <Text>AR3M Home Page</Text>
-      <Link href={"/login"} asChild>
-        <Button color="green">Login</Button>
-      </Link>
-    </View>
+      <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
+        <Text>AR3M Home Page</Text>
+        <Button color="green" onPress={() => router.push("/login")}>
+          Login
+        </Button>
+      </View>
   );
 }

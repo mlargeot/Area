@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, UseGuards, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -57,8 +65,10 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res) {
     console.log('googleAuthRedirect');
     const user: any = await this.authService.googleLogin(req.user);
-    const token = user.token;
-    res.redirect(`${process.env.FRONTEND_URL}/auth-handler?token=${token}`);
+    const access_token = user.access_token;
+    res.redirect(
+      `${process.env.FRONTEND_URL}/auth-handler?token=${access_token}`,
+    );
   }
 
   @Get('discord')
@@ -116,5 +126,4 @@ export class AuthController {
     console.log('githubAuthRedirect');
     return this.authService.githubLogin(req.user);
   }
-
 }
