@@ -15,21 +15,6 @@ export default function ServicesScreen() {
     {id:"5", name:"Microsoft"},
   ]
   const { navigationData, setNavigationData } = useNavigationData();
-  const { applet, setApplet } = useApplet();
-
-  const resetAction = (serviceName : string) => {
-    if (applet.action.service !== serviceName) {
-      setApplet({
-        action: {
-          service: "",
-          name: "",
-          id: "",
-          params: []
-        },
-        reactions: applet.reactions,
-        id: applet.id
-    })
-  }}
 
   const selectPage = () => {
     if (navigationData.actionType === "reaction" ||
@@ -56,7 +41,6 @@ export default function ServicesScreen() {
                   actionType: navigationData.actionType,
                   reactionId: navigationData.reactionId}
                 );
-                resetAction(a.name);
               }}
               width="80%"
               size={navigationData.currentService === a.name ? "$8" : "$6"}

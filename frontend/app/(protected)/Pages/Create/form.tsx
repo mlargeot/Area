@@ -133,8 +133,6 @@ const getParams = ({navigationData, applet} : {navigationData : NavigationData, 
     ]
   }
 
-  console.log(getReactionName(applet.reactions, navigationData.reactionId))
-
   if (navigationData.actionType === "action") {
     return paramDict[applet.action.name]
   } else {
@@ -156,8 +154,6 @@ export default function ServicesScreen() {
   }
 
   const saveParams = () => {
-
-    console.log(paramsValue.current)
     navigationData.actionType !== "action" ?
       setApplet({
         id: applet.id,
@@ -198,6 +194,9 @@ export default function ServicesScreen() {
   return (
     <ScrollView>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
+        <H2>
+          {navigationData.actionType === "action" ? applet.action.name : getReactionName(applet.reactions, navigationData.reactionId)}
+        </H2>
         {params.map((param, i) => [
           <View key={`field-${i}-${param.type}`} >
             {
