@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "ar3m",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
