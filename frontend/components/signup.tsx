@@ -116,7 +116,7 @@ export default function Login() {
                             placeholder="email"
                             value={email}
                             onChangeText={setEmail}
-                            borderWidth={0}
+                            borderWidth={1}
                             borderRadius="$3"
                             paddingHorizontal="$4"
                             fontSize="$4"
@@ -127,7 +127,7 @@ export default function Login() {
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
-                            borderWidth={0}
+                            borderWidth={1}
                             borderRadius="$3"
                             paddingHorizontal="$4"
                             fontSize="$4"

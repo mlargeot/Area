@@ -13,7 +13,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const apiUrl = 'http://localhost:8080';
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
 
     const handleGoogleLogin = () => {
         if (Platform.OS === 'web') {
@@ -60,6 +60,8 @@ export default function Login() {
             });
             console.log(response);
             await AsyncStorage.setItem('access_token', response.data.access_token);
+            const token = await AsyncStorage.getItem('access_token');
+            console.log("async storage set:" + token);
             setIsLoading(false);
             console.log("Logged in" + email + " with token " + response.data.access_token);
             router.push('/explore');

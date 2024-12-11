@@ -17,6 +17,12 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  /**
+   * Registers a new user.
+   * @param createUserDto - Data transfer object containing user registration details.
+   * @returns The created user.
+   * @throws HttpException if the user already exists.
+   */
   async register(createUserDto: CreateUserDto): Promise<any> {
     const { email, password } = createUserDto;
 
@@ -36,6 +42,12 @@ export class AuthService {
     return user;
   }
 
+  /**
+   * Logs in a user.
+   * @param loginUserDto - Data transfer object containing user login details.
+   * @returns An object containing the access token.
+   * @throws HttpException if the user is not found or the password is invalid.
+   */
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
     const user = await this.userModel.findOne({ email });
@@ -56,6 +68,12 @@ export class AuthService {
     };
   }
 
+  /**
+   * Sends a password reset email.
+   * @param forgotPasswordDto - Data transfer object containing the user's email address.
+   * @returns An object containing a success message.
+   * @throws HttpException if the user is not found or the email fails to send.
+   */
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const { email } = forgotPasswordDto;
     const user = await this.userModel.findOne({
@@ -101,6 +119,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * Resets a user's password.
+   * @param resetPassword - Data transfer object containing the reset token and new password.
+   * @returns An object containing a success message.
+   * @throws HttpException if the user is not found.
+   */
   async resetPassword(resetPassword: ResetPasswordDto) {
     const { token, password } = resetPassword;
     const decoded = this.jwtService.verify(token);
@@ -121,6 +145,12 @@ export class AuthService {
     return { message: 'Password reset successful!' };
   }
 
+  /**
+   * Logs in a user using Google OAuth.
+   * @param user
+   * @returns An object containing the access token.
+   * @throws HttpException if the user is not found.
+   */
   async googleLogin(user: any) {
     console.log('googleLogin');
     console.log(user);
@@ -187,6 +217,12 @@ export class AuthService {
     };
   }
 
+  /**
+   * Logs in a user using GitHub OAuth.
+   * @param user
+   * @returns An object containing the access token.
+   * @throws HttpException if the user is not found.
+   */
   async githubLogin(user: any) {
     console.log('githubLogin');
     console.log(user);
