@@ -23,7 +23,7 @@ export class AuthService {
     console.log(email + ' ' + password);
     const existingUser = await this.userModel.findOne({ email });
     if (existingUser) {
-      return { message: 'User already exists' };
+      throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

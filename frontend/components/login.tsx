@@ -161,7 +161,7 @@ export default function Login() {
 
                 <XStack alignItems="center" justifyContent="center" marginTop="$4">
                     <Link
-                        href={"/explore"}
+                        href={"/register"}
                     >
                         <Text
                             fontSize="$2"
