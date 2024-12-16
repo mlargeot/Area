@@ -1,6 +1,6 @@
 import { Button, ScrollView, YStack, H2 } from 'tamagui'
-import { useApplet, Applet } from '../../../context/appletContext'
-import { useNavigationData } from '../../../context/navigationContext'
+import { useApplet, Applet } from '../../../../context/appletContext'
+import { useNavigationData } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
 import React from 'react'
 
@@ -92,7 +92,7 @@ export default function ServicesScreen() {
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
         <H2>{navigationData.currentService}</H2>
         {reactions.flatMap((reaction, i) => [
-            <Link key={`button-${reaction.id}`} href="/Create/form" asChild >
+            <Link key={`button-${reaction.id}`} href="/Create/reaction/form" asChild >
                 <Button
                     onPress={() => {
                       if (navigationData.actionType === "reaction") {

@@ -18,9 +18,9 @@ export default function ServicesScreen() {
   const selectPage = () => {
     if (navigationData.actionType === "reaction" ||
         navigationData.actionType === "modify") {
-      return "/Create/reactions";
+      return "/Create/reaction/effect";
     }
-    return "/Create/actions";
+    return "/Create/action/effect";
   }
 
   return (

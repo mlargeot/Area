@@ -1,38 +1,15 @@
 import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
-import { useNavigationData, NavigationData } from '../../../context/navigationContext';
-import { useApplet, Applet, Reaction } from '../../../context/appletContext';
+import { useNavigationData } from '../../../../context/navigationContext';
+import { useApplet, Reaction, emptyReaction, getParamValueString } from '../../../../context/appletContext';
 import { Link } from 'expo-router'
-import React, { useRef, MutableRefObject, useEffect } from 'react';
-
-
-const getdefaultValueString = (name : string) => {
-  const { applet } = useApplet()
-  const { navigationData } = useNavigationData()
-
-  if (navigationData.actionType === "action") {
-    for (let i = 0; i < applet.action.params.length; i++) {
-      if (applet.action.params[i][name]) {
-        return applet.action.params[i][name]
-      }
-    }
-  } else {
-    for (let i = 0; i < applet.reactions.length; i++) {
-      if (applet.reactions[i].id === navigationData.reactionId) {
-        for (let j = 0; j < applet.reactions[i].params.length; j++) {
-          if (applet.reactions[i].params[j][name]) {
-            return applet.reactions[i].params[j][name]
-          }
-        }
-      }
-    }
-  }
-  return ""
-}
+import React, { useRef } from 'react';
 
 
 const returnField = (
   {type, name} : { type : string, name : string },
-  paramsValue: React.MutableRefObject<{name: string; value: string;}[]>) =>{
+  paramsValue: React.MutableRefObject<{name: string; value: string;}[]>,
+  reaction: Reaction
+  ) =>{
 
   const handleInput = (e : any) => {
     paramsValue.current = paramsValue.current.map((param) => {
@@ -46,7 +23,7 @@ const returnField = (
     });
   }
 
-  const defaultValue : string = getdefaultValueString(name)
+  const defaultValue : string = getParamValueString(name, reaction)
 
   switch (type) {
     case "bool":
@@ -123,7 +100,7 @@ function InputField(props: { name: string, defaultValue: string, event: (e : any
 }
 
 function SwitchWithLabel(props: { size: SizeTokens; label: string; defaultChecked?: boolean }) {
-  const id = `switch-${props.size.toString().slice(1)}-${props.defaultChecked ?? ''}`
+  const id = `switch-${props.label}`
   return (
     <XStack alignItems="center" gap="$2">
       <Label htmlFor={id} size="$4">
@@ -141,26 +118,17 @@ function SwitchWithLabel(props: { size: SizeTokens; label: string; defaultChecke
   )
 }
 
-const getReactionName = (reactions : {name : string, id : string}[], reactionId : string) => {
+const getReaction = (reactionId: string, reactions: Reaction[]): Reaction => {
   for (let i = 0; i < reactions.length; i++) {
-    console.log(reactions[i].id, reactionId)
+    console.log(reactions[i].id, reactionId);
     if (reactions[i].id === reactionId) {
-      return reactions[i].name
+      return reactions[i];
     }
   }
-  return ""
+  return emptyReaction();
 }
 
-const getReactionService = (reactions : {service : string, id : string}[], reactionId : string) => {
-  for (let i = 0; i < reactions.length; i++) {
-    if (reactions[i].id === reactionId) {
-      return reactions[i].service
-    }
-  }
-  return ""
-}
-
-const getParams = ({navigationData, applet} : {navigationData : NavigationData, applet : Applet}) => {
+const getParams = (reactionName : string) => {
   const paramDict: { [key: string]: { type: string; name: string; }[] } = {
     "pr_assigned": [
       {type: "input", name: "email"},
@@ -172,17 +140,14 @@ const getParams = ({navigationData, applet} : {navigationData : NavigationData, 
     ]
   }
 
-  if (navigationData.actionType === "action") {
-    return paramDict[applet.action.name]
-  } else {
-    return paramDict[getReactionName(applet.reactions, navigationData.reactionId)] || []
-  }
+  return paramDict[reactionName]
 }
 
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
   const { navigationData } = useNavigationData();
-  const params = getParams({navigationData, applet});
+  const reaction : Reaction = getReaction(navigationData.reactionId, applet.reactions)
+  const params = getParams(reaction.name);
   const paramsValue = useRef<{ name: string; value: string }[]>([])
 
   for (let i = 0; i < params.length; i++) {
@@ -193,59 +158,43 @@ export default function ServicesScreen() {
   }
 
   const saveParams = () => {
-    navigationData.actionType !== "action" ?
-      setApplet({
-        id: applet.id,
-        action: applet.action,
-        reactions: applet.reactions.map((reaction) => {
-          if (reaction.id === navigationData.reactionId) {
-            return {
-              id: reaction.id,
-              name: reaction.name,
-              service: reaction.service,
-              params: paramsValue.current.map((param) => {
-                return {
-                  [param.name]: param.value
-                }
-              })
-            }
+    setApplet({
+      id: applet.id,
+      action: applet.action,
+      reactions: applet.reactions.map((reaction) => {
+        if (reaction.id === navigationData.reactionId) {
+          return {
+            id: reaction.id,
+            name: reaction.name,
+            service: reaction.service,
+            params: paramsValue.current.map((param) => {
+              return {
+                [param.name]: param.value
+              }
+            })
           }
-          return reaction
-        })
+        }
+        return reaction
       })
-      :
-      setApplet({
-        id: applet.id,
-        action: {
-          service: applet.action.service,
-          name: applet.action.name,
-          id: applet.action.id,
-          params: paramsValue.current.map((param) => {
-            return {
-              [param.name]: param.value
-            }
-          })
-        },
-        reactions: applet.reactions
-      })
+    })
   }
 
   return (
     <ScrollView>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <Link href={"/Create/services"}>
+        <Link href="/Create/services">
           <H2>
-            {navigationData.actionType === "action" ? applet.action.service : getReactionService(applet.reactions, navigationData.reactionId)}
+            {reaction.service}
           </H2>
         </Link>
-        <Link href={`/Create/${navigationData.actionType === "action" ? "actions" : "reactions"}`}>
+        <Link href="/Create/reaction/effect">
           <H2>
-            {navigationData.actionType === "action" ? applet.action.name : getReactionName(applet.reactions, navigationData.reactionId)}
+            {reaction.name}
           </H2>
         </Link>
         {params.map((param, i) => [
           <View key={`field-${i}-${param.type}`} >
-            {returnField(param, paramsValue)}
+            {returnField(param, paramsValue, reaction)}
           </View>
         ])}
         <Link href="/create" asChild>
