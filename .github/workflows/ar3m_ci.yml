@@ -20,12 +20,14 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Run Backend Linter
+      - name: Install Backend Dependencies
         continue-on-error: true
         run: |
           cd backend/
           npm i
-          npm run lint > linter.log
+      
+      - name: Check Linter Errors
+        run: npm run lint > linter.log
 
       - name: Check For Errors
         continue-on-error: true
