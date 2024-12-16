@@ -4,6 +4,7 @@ import { AppletsController } from './applets.controller';
 import { ActionsModule } from 'src/actions/actions.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/schemas/user.schema';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
@@ -11,6 +12,7 @@ import { User, UserSchema } from 'src/schemas/user.schema';
     controllers: [AppletsController],
     imports: [ActionsModule,
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        ConfigModule.forRoot({isGlobal: true}),
     ],
     exports: []
 })

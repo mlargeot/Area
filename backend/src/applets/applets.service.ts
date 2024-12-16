@@ -13,12 +13,29 @@ export class AppletsService {
     private readonly actionsService : ActionsService
   ) {}
 
-  async getApplets(): Promise<AppletDto[]> {
-    return [];
+  async getApplets(userId: string): Promise<AppletDto[]> {
+    const user = await this.userModel.findById(userId).select('applets').lean();
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found.`);
+    }
+
+    if (user.applets.length > 0)
+      return user.applets;
+    else
+      return [];
   }
 
-  async getAppletById(appletId: string): Promise<AppletDto> {
-    return null;
+  async getAppletById(userId: string, appletId: string): Promise<AppletDto> {
+    const user = await this.userModel.findOne(
+      { _id: userId, 'applets.appletId': appletId },
+      { 'applets.$': 1 }
+    ).lean();
+  
+    if (!user || !user.applets || user.applets.length === 0) {
+      throw new NotFoundException(`Applet with ID ${appletId} not found for user ${userId}.`);
+    }
+
+    return user.applets[0];
   }
 
   async createApplet(userId: string, appletDto: AppletBodyDto): Promise<AppletDto> {
@@ -61,7 +78,15 @@ export class AppletsService {
     return null;
   }
 
-  async deleteApplet(appletId: string): Promise<boolean> {
-    return false;
+  async deleteApplet(userId: string, appletId: string): Promise<boolean> {
+    const result = await this.userModel.updateOne(
+      { _id: userId, 'applets.appletId': appletId },
+      { $pull: { applets: { appletId: appletId } } }
+    );
+  
+    if (result.modifiedCount === 0) {
+      throw new NotFoundException(`Applet with UUID ${appletId} not found or does not belong to user ${userId}.`); 
+    }  
+    return true;
   }
 }
