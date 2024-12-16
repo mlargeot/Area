@@ -1,7 +1,7 @@
 import { Slot, SplashScreen } from "expo-router";
 import { TamaguiProvider } from "@tamagui/core";
-import { AppletProvider } from "./context/appletContext";
-import { NavigationProvider } from "./context/navigationContext";
+import { AppletProvider } from "../context/appletContext";
+import { NavigationProvider } from "../context/navigationContext";
 import { useColorScheme } from "react-native";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";

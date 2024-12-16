@@ -1,6 +1,6 @@
 import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
-import { useNavigationData, NavigationData } from '../../context/navigationContext';
-import { useApplet, Applet, Reaction } from '../../context/appletContext';
+import { useNavigationData, NavigationData } from '../../../context/navigationContext';
+import { useApplet, Applet, Reaction } from '../../../context/appletContext';
 import { Link } from 'expo-router'
 import React, { useRef, MutableRefObject, useEffect } from 'react';
 

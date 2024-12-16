@@ -1,6 +1,6 @@
 import { Button, ScrollView, YStack, } from 'tamagui'
 import { Link } from 'expo-router'
-import { useNavigationData } from '../../context/navigationContext'
+import { useNavigationData } from '../../../context/navigationContext'
 import React from 'react';
 
 

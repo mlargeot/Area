@@ -2,7 +2,7 @@ import React, { act } from 'react';
 import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square } from 'tamagui'
 import { ActionButton } from '../../../components/actionButton'
 import { ReactionButton } from '../../../components/reactionButton'
-import { useApplet, Reaction, Applet } from '../../context/appletContext'
+import { useApplet, Reaction, Applet } from '../../../context/appletContext'
 import axios from 'axios';
 
 const emptyReaction = () => {

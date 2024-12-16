@@ -1,7 +1,7 @@
 import { Button, Stack, YStack, Text, XStack } from 'tamagui';
 import { Link } from 'expo-router';
-import { useNavigationData } from '../app/context/navigationContext';
-import { useApplet } from '../app/context/appletContext';
+import { useNavigationData } from '../context/navigationContext';
+import { useApplet } from '../context/appletContext';
 import { useState } from 'react';
 import React from 'react';
 
