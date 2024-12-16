@@ -121,6 +121,15 @@ const getReactionName = (reactions : {name : string, id : string}[], reactionId 
   return ""
 }
 
+const getReactionService = (reactions : {service : string, id : string}[], reactionId : string) => {
+  for (let i = 0; i < reactions.length; i++) {
+    if (reactions[i].id === reactionId) {
+      return reactions[i].service
+    }
+  }
+  return ""
+}
+
 const getParams = ({navigationData, applet} : {navigationData : NavigationData, applet : Applet}) => {
   const paramDict: { [key: string]: { type: string; name: string; }[] } = {
     "pr_assigned": [
@@ -194,9 +203,16 @@ export default function ServicesScreen() {
   return (
     <ScrollView>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <H2>
-          {navigationData.actionType === "action" ? applet.action.name : getReactionName(applet.reactions, navigationData.reactionId)}
-        </H2>
+        <Link href={"/Pages/Create/services"}>
+          <H2>
+            {navigationData.actionType === "action" ? applet.action.service : getReactionService(applet.reactions, navigationData.reactionId)}
+          </H2>
+        </Link>
+        <Link href={`/Pages/Create/${navigationData.actionType === "action" ? "actions" : "reactions"}`}>
+          <H2>
+            {navigationData.actionType === "action" ? applet.action.name : getReactionName(applet.reactions, navigationData.reactionId)}
+          </H2>
+        </Link>
         {params.map((param, i) => [
           <View key={`field-${i}-${param.type}`} >
             {

@@ -1,9 +1,18 @@
 import { Button, ScrollView, YStack, H2 } from 'tamagui'
-import { useApplet } from '../../../context/appletContext'
+import { useApplet, Applet } from '../../../context/appletContext'
 import { useNavigationData } from '../../../context/navigationContext'
 import { Link } from 'expo-router'
 import React from 'react'
 
+
+const getCurrentReactionName = (applet: Applet, reactionId: string): string => {
+  for (let i = 0; i < applet.reactions.length; i++) {
+    if (applet.reactions[i].id === reactionId) {
+      return applet.reactions[i].name;
+    }
+  }
+  return "";
+}
 
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
@@ -93,7 +102,7 @@ export default function ServicesScreen() {
                       }
                     }}
                     width="80%"
-                    size={navigationData.currentService === reaction.name ? "$8" : "$6"}
+                    size={getCurrentReactionName(applet, navigationData.reactionId) === reaction.name ? "$8" : "$6"}
                     >
                     <Button.Text>
                       {reaction.name}
