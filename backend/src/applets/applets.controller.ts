@@ -54,10 +54,11 @@ export class AppletsController {
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   @ApiNotFoundResponse({ description: 'Applet not found.' })
   async updateApplet(
+    @Req() req,
     @Param('appletId') appletId: string,
     @Body() appletDto: AppletBodyDto,
   ): Promise<AppletDto> {
-    const updatedApplet = await this.appletsService.updateApplet(appletId, appletDto);
+    const updatedApplet = await this.appletsService.updateApplet(req.userId, appletId, appletDto);
     if (!updatedApplet) {
       throw new Error(`Applet with ID ${appletId} not found.`);
     }

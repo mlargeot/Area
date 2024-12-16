@@ -13,7 +13,9 @@ export class AppletsService {
     private readonly actionsService : ActionsService
   ) {}
 
-  async getApplets(userId: string): Promise<AppletDto[]> {
+  async getApplets(
+    userId: string
+  ): Promise<AppletDto[]> {
     const user = await this.userModel.findById(userId).select('applets').lean();
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found.`);
@@ -25,7 +27,10 @@ export class AppletsService {
       return [];
   }
 
-  async getAppletById(userId: string, appletId: string): Promise<AppletDto> {
+  async getAppletById(
+    userId: string,
+    appletId: string
+  ): Promise<AppletDto> {
     const user = await this.userModel.findOne(
       { _id: userId, 'applets.appletId': appletId },
       { 'applets.$': 1 }
@@ -38,8 +43,10 @@ export class AppletsService {
     return user.applets[0];
   }
 
-  async createApplet(userId: string, appletDto: AppletBodyDto): Promise<AppletDto> {
-
+  async createApplet(
+    userId: string,
+    appletDto: AppletBodyDto
+  ): Promise<AppletDto> {
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found.`);
@@ -74,11 +81,39 @@ export class AppletsService {
     return newApplet;
   }
 
-  async updateApplet(appletId: string, appletDto: AppletBodyDto): Promise<AppletDto> {
-    return null;
+  async updateApplet(
+    userId: string,
+    appletId: string,
+    appletDto: AppletBodyDto
+  ): Promise<AppletDto> {
+    const result = await this.userModel.findOneAndUpdate(
+      {
+        _id: userId,
+        'applets.appletId': appletId,
+      },
+      {
+        $set: {
+          'applets.$.action': appletDto.action,
+          'applets.$.reaction': appletDto.reaction,
+          'applets.$.active': appletDto.active,
+        },
+      },
+      { new: true, projection: { 'applets.$': 1 } }
+    ).lean();
+
+    if (!result || !result.applets || result.applets.length === 0) {
+      throw new NotFoundException(
+        `Applet with ID ${appletId} not found for user ${userId}.`
+      );
+    }
+  
+    return result.applets[0];
   }
 
-  async deleteApplet(userId: string, appletId: string): Promise<boolean> {
+  async deleteApplet(
+    userId: string,
+    appletId: string
+  ): Promise<boolean> {
     const result = await this.userModel.updateOne(
       { _id: userId, 'applets.appletId': appletId },
       { $pull: { applets: { appletId: appletId } } }
