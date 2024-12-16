@@ -1,7 +1,6 @@
 import { Button, ScrollView, YStack, } from 'tamagui'
 import { Link } from 'expo-router'
-import { useNavigationData } from '../../../context/navigationContext'
-import { useApplet } from '../../../context/appletContext';
+import { useNavigationData } from '../../context/navigationContext'
 import React from 'react';
 
 
@@ -19,9 +18,9 @@ export default function ServicesScreen() {
   const selectPage = () => {
     if (navigationData.actionType === "reaction" ||
         navigationData.actionType === "modify") {
-      return "/Pages/Create/reactions";
+      return "/Create/reactions";
     }
-    return "/Pages/Create/actions";
+    return "/Create/actions";
   }
 
   return (

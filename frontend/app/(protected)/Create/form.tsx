@@ -1,6 +1,6 @@
 import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
-import { useNavigationData, NavigationData } from '../../../context/navigationContext';
-import { useApplet, Applet, Reaction } from '../../../context/appletContext';
+import { useNavigationData, NavigationData } from '../../context/navigationContext';
+import { useApplet, Applet, Reaction } from '../../context/appletContext';
 import { Link } from 'expo-router'
 import React, { useRef, MutableRefObject, useEffect } from 'react';
 
@@ -233,12 +233,12 @@ export default function ServicesScreen() {
   return (
     <ScrollView>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <Link href={"/Pages/Create/services"}>
+        <Link href={"/Create/services"}>
           <H2>
             {navigationData.actionType === "action" ? applet.action.service : getReactionService(applet.reactions, navigationData.reactionId)}
           </H2>
         </Link>
-        <Link href={`/Pages/Create/${navigationData.actionType === "action" ? "actions" : "reactions"}`}>
+        <Link href={`/Create/${navigationData.actionType === "action" ? "actions" : "reactions"}`}>
           <H2>
             {navigationData.actionType === "action" ? applet.action.name : getReactionName(applet.reactions, navigationData.reactionId)}
           </H2>
