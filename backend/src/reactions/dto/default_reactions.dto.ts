@@ -10,6 +10,9 @@ export class ReactionArgumentDto {
   @ApiProperty({ example: 'https://discord/webhook/dnazldnzladknzkldn', description: 'An example value for this argument.' })
   example: string;
 
+  @ApiProperty({ example: 'string', description: 'Type of the value.' })
+  type: string;
+
   @ApiProperty({ example: true, description: 'Indicates if this argument is required.' })
   required: boolean;
 }
