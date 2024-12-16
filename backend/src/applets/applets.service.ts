@@ -86,6 +86,33 @@ export class AppletsService {
     appletId: string,
     appletDto: AppletBodyDto
   ): Promise<AppletDto> {
+    const user = await this.userModel.findOne(
+      {
+        _id: userId,
+        'applets.appletId': appletId,
+      },
+      { 'applets.$': 1 }
+    ).lean();
+
+    if (!user || !user.applets || user.applets.length === 0) {
+      throw new NotFoundException(
+        `Applet with ID ${appletId} not found for user ${userId}.`
+      );
+    }
+  
+    const existingApplet = user.applets[0];
+  
+    if (appletDto.action && appletDto.action !== null) {
+      if (
+        existingApplet.action.name !== appletDto.action.name ||
+        JSON.stringify(existingApplet.action.params) !==
+          JSON.stringify(appletDto.action.params)
+      ) {
+        // RE-INIT de l'action
+        console.log(`Action successfully updated for applet: ${appletId}.`);
+      }
+    }
+  
     const result = await this.userModel.findOneAndUpdate(
       {
         _id: userId,
@@ -99,28 +126,48 @@ export class AppletsService {
         },
       },
       { new: true, projection: { 'applets.$': 1 } }
-    ).lean();
-
+    ).lean();  
+    
     if (!result || !result.applets || result.applets.length === 0) {
       throw new NotFoundException(
-        `Applet with ID ${appletId} not found for user ${userId}.`
+        `Failed to update applet with ID ${appletId} for user ${userId}.`
       );
     }
-  
+    console.log(`New applet data set for user: ${userId}`);
     return result.applets[0];
   }
+  
 
   async deleteApplet(
     userId: string,
     appletId: string
   ): Promise<boolean> {
+
+    const user = await this.userModel.findOne(
+      {
+        _id: userId,
+        'applets.appletId': appletId,
+      },
+      { 'applets.$': 1 }
+    ).lean();
+
+    if (!user || !user.applets || user.applets.length === 0) {
+      throw new NotFoundException(
+        `Applet with ID ${appletId} not found for user ${userId}.`
+      );
+    }
+
+    // Destroy de l'action
+
     const result = await this.userModel.updateOne(
       { _id: userId, 'applets.appletId': appletId },
       { $pull: { applets: { appletId: appletId } } }
     );
-  
+
     if (result.modifiedCount === 0) {
-      throw new NotFoundException(`Applet with UUID ${appletId} not found or does not belong to user ${userId}.`); 
+      throw new NotFoundException(
+        `Failed to delete applet with ID ${appletId} for user ${userId}.`
+      );
     }  
     return true;
   }
