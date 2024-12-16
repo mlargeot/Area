@@ -32,7 +32,7 @@ jobs:
         run: |
           if grep -E "warning|error" backend/linter.log; then
             echo "Found warnings or errors!"
-            cat linter.log
+            cat backend/linter.log
             exit 1
           else
             echo "No warnings or errors found."
