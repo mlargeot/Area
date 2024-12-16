@@ -27,7 +27,7 @@ jobs:
           npm run lint > linter.log
 
       - name: Check For Errors
-        continue-on-errors: true
+        continue-on-error: true
         run: |
           if grep -E "warning|error" log.txt; then
             echo "Found warnings or errors!"
