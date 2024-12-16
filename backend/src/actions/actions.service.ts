@@ -23,6 +23,7 @@ export class ActionsService {
               name: "Repository Link",
               description: "URL of the github repository with enough rights to create webhooks",
               example: "https://github.com/owner/repository",
+              type: "string",
               required: true
             },
           ],
