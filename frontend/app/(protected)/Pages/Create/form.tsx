@@ -5,6 +5,31 @@ import { Link } from 'expo-router'
 import React, { useRef, MutableRefObject, useEffect } from 'react';
 
 
+const getdefaultValueString = (name : string) => {
+  const { applet } = useApplet()
+  const { navigationData } = useNavigationData()
+
+  if (navigationData.actionType === "action") {
+    for (let i = 0; i < applet.action.params.length; i++) {
+      if (applet.action.params[i][name]) {
+        return applet.action.params[i][name]
+      }
+    }
+  } else {
+    for (let i = 0; i < applet.reactions.length; i++) {
+      if (applet.reactions[i].id === navigationData.reactionId) {
+        for (let j = 0; j < applet.reactions[i].params.length; j++) {
+          if (applet.reactions[i].params[j][name]) {
+            return applet.reactions[i].params[j][name]
+          }
+        }
+      }
+    }
+  }
+  return ""
+}
+
+
 const returnField = (
   {type, name} : { type : string, name : string },
   paramsValue: React.MutableRefObject<{name: string; value: string;}[]>) =>{
@@ -21,6 +46,7 @@ const returnField = (
     });
   }
 
+  const defaultValue : string = getdefaultValueString(name)
 
   switch (type) {
     case "bool":
@@ -28,12 +54,14 @@ const returnField = (
         <SwitchWithLabel size="$4" label={name} defaultChecked />
       )
     case "input":
+      handleInput({target: {value: defaultValue}})
       return (
-        <InputField name={name} event={handleInput} />
+        <InputField name={name} defaultValue={defaultValue} event={handleInput} />
       )
-    case "textArea":
+      case "textArea":
+      handleInput({target: {value: defaultValue}})
       return (
-        <TextAreaField name={name} />
+        <TextAreaField defaultValue={defaultValue} name={name} event={handleInput} />
       )
     case "date":
       return (
@@ -72,20 +100,22 @@ function NumberField(props: { name: string }) {
   )
 }
 
-function TextAreaField(props: { name: string }) {
+function TextAreaField(props: { name: string, defaultValue: string, event: (e : any) => void }) {
   return (
     <XStack gap="$2">
       <Label size="$4">{props.name}</Label>
-      <TextArea placeholder="Enter text" />
+      <TextArea placeholder="Enter text" defaultValue={props.defaultValue} onChange={(e) => {
+        props.event(e)
+      }} />
     </XStack>
   )
 }
 
-function InputField(props: { name: string, event: (e : any) => void }) {
+function InputField(props: { name: string, defaultValue: string, event: (e : any) => void }) {
   return (
     <XStack gap="$2">
       <Label size="$4">{props.name}</Label>
-      <Input placeholder="Enter text" onChange={(e) => {
+      <Input placeholder="Enter text" defaultValue={props.defaultValue} onChange={(e) => {
         props.event(e)
       }} />
     </XStack>
@@ -215,9 +245,7 @@ export default function ServicesScreen() {
         </Link>
         {params.map((param, i) => [
           <View key={`field-${i}-${param.type}`} >
-            {
-              returnField(param, paramsValue)
-            }
+            {returnField(param, paramsValue)}
           </View>
         ])}
         <Link href="/create" asChild>
