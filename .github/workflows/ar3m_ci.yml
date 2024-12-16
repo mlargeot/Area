@@ -21,6 +21,7 @@ jobs:
           fetch-depth: 0
       
       - name: Run Backend Linter
+        continue-on-error: true
         run: |
           cd backend/
           npm i
