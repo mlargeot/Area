@@ -30,7 +30,7 @@ jobs:
       - name: Check For Errors
         continue-on-error: true
         run: |
-          if grep -E "warning|error" linter.log; then
+          if grep -E "warning|error" backend/linter.log; then
             echo "Found warnings or errors!"
             cat linter.log
             exit 1
