@@ -227,15 +227,26 @@ export class AuthService {
     console.log('githubLogin');
     console.log(user);
 
-    const { email, firstName, lastName, picture, githubId, accessToken } = user;
-    let existingUser = await this.userModel.findOne({ email });
+    const { email, username, githubId, avatar, accessToken} = user;
+    let existingUser = await this.userModel.findOne({
+      email,
+      connectionMethod: 'github',
+    });
 
     if (!existingUser) {
       existingUser = await this.userModel.create({
         email,
         password: null,
-        isGoogleUser: true,
-        githubId: githubId,
+        connectionMethod: 'github',
+        githubId,
+        oauthProviders: [
+          {
+            provider: 'discord',
+            email,
+            accessToken,
+            refreshToken: null,
+          },
+        ],
       });
     }
 
