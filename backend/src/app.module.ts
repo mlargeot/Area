@@ -10,7 +10,6 @@ import { AutomationModule } from './automation/automation.module';
 import { AppletsModule } from './applets/applets.module';
 import { WebhookModule } from './webhooks/webhook.module';
 
-
 mongoose.set('debug', true);
 
 @Module({
