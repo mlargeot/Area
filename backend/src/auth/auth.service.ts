@@ -241,7 +241,7 @@ export class AuthService {
         githubId,
         oauthProviders: [
           {
-            provider: 'discord',
+            provider: 'github',
             email,
             accessToken,
             refreshToken: null,
