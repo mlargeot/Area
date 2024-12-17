@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 
 export function ReactionButton({ index, reaction } : { index : number, reaction: Reaction }) {
   const { setNavigationData } = useNavigationData();
-  const [page, setPage] = useState<string>(reaction.service === "" ? "services" : "form");
+  const [page, setPage] = useState<string>(reaction.service === "" ? "services" : "reaction/form");
 
   return (
     <Link href={`/Create/${page}`} asChild>

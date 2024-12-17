@@ -2,7 +2,7 @@ import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View,
 import { useNavigationData } from '../../../../context/navigationContext';
 import { useApplet, Reaction, emptyReaction, getParamValueString } from '../../../../context/appletContext';
 import { Link } from 'expo-router'
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 
 const returnField = (
@@ -11,12 +11,12 @@ const returnField = (
   reaction: Reaction
   ) =>{
 
-  const handleInput = (e : any) => {
+  const handleInput = (val : string) => {
     paramsValue.current = paramsValue.current.map((param) => {
       if (param.name === name) {
         return {
           name: param.name,
-          value: e.target.value
+          value: val
         }
       }
       return param
@@ -31,12 +31,12 @@ const returnField = (
         <SwitchWithLabel size="$4" label={name} defaultChecked />
       )
     case "input":
-      handleInput({target: {value: defaultValue}})
+      handleInput(defaultValue)
       return (
         <InputField name={name} defaultValue={defaultValue} event={handleInput} />
       )
       case "textArea":
-      handleInput({target: {value: defaultValue}})
+      handleInput(defaultValue)
       return (
         <TextAreaField defaultValue={defaultValue} name={name} event={handleInput} />
       )
@@ -77,23 +77,23 @@ function NumberField(props: { name: string }) {
   )
 }
 
-function TextAreaField(props: { name: string, defaultValue: string, event: (e : any) => void }) {
+function TextAreaField(props: { name: string, defaultValue: string, event: (val : string) => void }) {
   return (
     <XStack gap="$2">
       <Label size="$4">{props.name}</Label>
-      <TextArea placeholder="Enter text" defaultValue={props.defaultValue} onChange={(e) => {
-        props.event(e)
+      <TextArea placeholder="Enter text" defaultValue={props.defaultValue} onChangeText={(val) => {
+        props.event(val)
       }} />
     </XStack>
   )
 }
 
-function InputField(props: { name: string, defaultValue: string, event: (e : any) => void }) {
+function InputField(props: { name: string, defaultValue: string, event: (val : string) => void }) {
   return (
     <XStack gap="$2">
       <Label size="$4">{props.name}</Label>
-      <Input placeholder="Enter text" defaultValue={props.defaultValue} onChange={(e) => {
-        props.event(e)
+      <Input placeholder="Enter text" defaultValue={props.defaultValue} onChangeText={(val) => {
+        props.event(val)
       }} />
     </XStack>
   )
@@ -120,7 +120,6 @@ function SwitchWithLabel(props: { size: SizeTokens; label: string; defaultChecke
 
 const getReaction = (reactionId: string, reactions: Reaction[]): Reaction => {
   for (let i = 0; i < reactions.length; i++) {
-    console.log(reactions[i].id, reactionId);
     if (reactions[i].id === reactionId) {
       return reactions[i];
     }
@@ -145,17 +144,19 @@ const getParams = (reactionName : string) => {
 
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
-  const { navigationData } = useNavigationData();
+  const { navigationData, setNavigationData } = useNavigationData();
   const reaction : Reaction = getReaction(navigationData.reactionId, applet.reactions)
   const params = getParams(reaction.name);
   const paramsValue = useRef<{ name: string; value: string }[]>([])
 
-  for (let i = 0; i < params.length; i++) {
-    paramsValue.current.push({
-      name: params[i].name,
-      value: ""
-    })
-  }
+  useEffect(() => {
+    for (let i = 0; i < params.length; i++) {
+      paramsValue.current.push({
+        name: params[i].name,
+        value: ""
+      })
+    }
+  }, [])
 
   const saveParams = () => {
     setApplet({
@@ -182,12 +183,20 @@ export default function ServicesScreen() {
   return (
     <ScrollView>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <Link href="/Create/services">
+        <Link href={"/Create/services"} onPress={() => {setNavigationData({
+          currentService: navigationData.currentService,
+          actionType: "reaction",
+          reactionId: navigationData.reactionId
+        })}}>
           <H2>
             {reaction.service}
           </H2>
         </Link>
-        <Link href="/Create/reaction/effect">
+        <Link href={"/Create/reaction/effect"} onPress={() => {setNavigationData({
+          currentService: navigationData.currentService,
+          actionType: "modify",
+          reactionId: navigationData.reactionId
+        })}}>
           <H2>
             {reaction.name}
           </H2>

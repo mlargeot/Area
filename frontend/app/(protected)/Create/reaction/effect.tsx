@@ -2,8 +2,7 @@ import { Button, ScrollView, YStack, H2 } from 'tamagui'
 import { useApplet, Applet } from '../../../../context/appletContext'
 import { useNavigationData } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
-import React from 'react'
-
+import React, { useRef } from 'react'
 
 const getCurrentReactionName = (applet: Applet, reactionId: string): string => {
   for (let i = 0; i < applet.reactions.length; i++) {
@@ -21,13 +20,17 @@ export default function ServicesScreen() {
     {id:"0", name:"send_webhook_message"}
   ]
 
-  const newReaction = ({id, name} : {id : string, name : string}) => {
-    const newId = `reaction-${navigationData.currentService}-${name}`;
+  const idIndex = useRef<number>(0);
+  const newId  = useRef<string>("");
+
+  const newReaction = ({ name } : { name : string }) => {
+    newId.current = `reaction-${navigationData.currentService}-${name}-${idIndex.current}`;
 
     for (let i = 0; i < applet.reactions.length; i++) {
-      if (applet.reactions[i].id === newId) {
-        alert("Reaction already exists");
-        return;
+      if (applet.reactions[i].id === newId.current) {
+        newId.current = `reaction-${navigationData.currentService}-${name}-${idIndex.current + 1}`;
+        idIndex.current++;
+        i = -1;
       }
     }
 
@@ -37,7 +40,7 @@ export default function ServicesScreen() {
         action: applet.action,
         reactions: [...applet.reactions, 
           {
-            id : newId,
+            id : newId.current,
             name: name,
             service: navigationData.currentService,
             params: []
@@ -49,16 +52,15 @@ export default function ServicesScreen() {
     setNavigationData({
       currentService: navigationData.currentService,
       actionType: navigationData.actionType,
-      reactionId: newId
+      reactionId: newId.current
     });
   }
 
   const modifyReaction = ({id, name} : {id : string, name : string}) => {
-    const newId = `reaction-${navigationData.currentService}-${name}`;
+    newId.current = `reaction-${navigationData.currentService}-${name}-${idIndex.current}`;
 
     for (let i = 0; i < applet.reactions.length; i++) {
-      if (applet.reactions[i].id === newId) {
-        alert("Reaction already exists");
+      if (applet.reactions[i].id === newId.current) {
         return;
       }
     }
@@ -70,7 +72,7 @@ export default function ServicesScreen() {
         reactions: applet.reactions.map((reaction) => {
           if (reaction.id === navigationData.reactionId) {
             return {
-              id: newId,
+              id: newId.current,
               name: name,
               service: navigationData.currentService,
               params: []
@@ -92,7 +94,7 @@ export default function ServicesScreen() {
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
         <H2>{navigationData.currentService}</H2>
         {reactions.flatMap((reaction, i) => [
-            <Link key={`button-${reaction.id}`} href="/Create/reaction/form" asChild >
+            <Link key={`button-${reaction.id}`} href="/Create/reaction/form" asChild>
                 <Button
                     onPress={() => {
                       if (navigationData.actionType === "reaction") {

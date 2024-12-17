@@ -1,14 +1,18 @@
-import { Button, Stack, YStack, Text, XStack } from 'tamagui';
+import { Button, Stack, YStack, XStack } from 'tamagui';
 import { Link } from 'expo-router';
 import { useNavigationData } from '../context/navigationContext';
 import { useApplet } from '../context/appletContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 
 export function ActionButton({ index } : { index : number }) {
   const { setNavigationData } = useNavigationData();
   const { applet } = useApplet();
-  const [page, setPage] = useState<string>(applet.action.service === "" ? "services" : "form");
+  const [page, setPage] = useState<string>(applet.action.service === "" ? "services" : "action/form");
+
+  useEffect(() => {
+    setPage(applet.action.service === "" ? "services" : "action/form");
+  }, [applet])
 
   return (
     <Link href={`/Create/${page}`} asChild>

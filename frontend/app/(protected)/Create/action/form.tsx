@@ -1,8 +1,7 @@
 import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
-import { useNavigationData, NavigationData } from '../../../../context/navigationContext';
 import { useApplet, Applet, getParamValueString } from '../../../../context/appletContext';
 import { Link } from 'expo-router'
-import React, { useRef, MutableRefObject, useEffect } from 'react';
+import React, { useRef } from 'react';
 
 const returnField = (
   {type, name} : { type : string, name : string },
@@ -11,12 +10,12 @@ const returnField = (
   const { applet } = useApplet();
   const defaultValue : string = getParamValueString(name, applet.action)
 
-  const handleInput = (e : any) => {
+  const handleInput = (val : string) => {
     paramsValue.current = paramsValue.current.map((param) => {
       if (param.name === name) {
         return {
           name: param.name,
-          value: e.target.value
+          value: val
         }
       }
       return param
@@ -30,12 +29,12 @@ const returnField = (
         <SwitchWithLabel size="$4" label={name} defaultChecked />
       )
     case "input":
-      handleInput({target: {value: defaultValue}})
+      handleInput(defaultValue)
       return (
         <InputField name={name} defaultValue={defaultValue} event={handleInput} />
       )
       case "textArea":
-      handleInput({target: {value: defaultValue}})
+      handleInput(defaultValue)
       return (
         <TextAreaField defaultValue={defaultValue} name={name} event={handleInput} />
       )
@@ -76,23 +75,23 @@ function NumberField(props: { name: string }) {
   )
 }
 
-function TextAreaField(props: { name: string, defaultValue: string, event: (e : any) => void }) {
+function TextAreaField(props: { name: string, defaultValue: string, event: (val : string) => void }) {
   return (
     <XStack gap="$2">
       <Label size="$4">{props.name}</Label>
-      <TextArea placeholder="Enter text" defaultValue={props.defaultValue} onChange={(e) => {
-        props.event(e)
+      <TextArea placeholder="Enter text" defaultValue={props.defaultValue} onChangeText={(val) => {
+        props.event(val)
       }} />
     </XStack>
   )
 }
 
-function InputField(props: { name: string, defaultValue: string, event: (e : any) => void }) {
+function InputField(props: { name: string, defaultValue: string, event: (val : string) => void }) {
   return (
     <XStack gap="$2">
       <Label size="$4">{props.name}</Label>
-      <Input placeholder="Enter text" defaultValue={props.defaultValue} onChange={(e) => {
-        props.event(e)
+      <Input placeholder="Enter text" defaultValue={props.defaultValue} onChangeText={(val) => {
+        props.event(val)
       }} />
     </XStack>
   )
