@@ -19,6 +19,7 @@ export const useAuth = () => {
           });
           if (response.status === 200) {
             setIsAuthenticated(true);
+            console.log(response.data);
           } else {
             setIsAuthenticated(false);
           }

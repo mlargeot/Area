@@ -20,10 +20,10 @@ const services = [
 function Header() {
     const router = useRouter();
     return (
-        <XStack ai="center" jc="space-between" px="$4" py="$2" bg="$background" borderBottomWidth={1} borderBottomColor="$borderColor">
-            <Button onPress={() => router.back()} icon={ArrowLeft} />
-            <H2>Profile</H2>
-            <Stack width={40} /> {/* Placeholder for alignment */}
+        <XStack ai="center" jc="space-between" px="$4" pt="$5" py="$2" bg="$background" borderBottomWidth={1} borderBottomColor="$borderColor">
+            <Button onPress={() => router.push('/profile')} icon={ArrowLeft} />
+            <Text fontWeight="700" fontSize="$10">Profile</Text>
+            <Stack width={40} />
         </XStack>
     );
 }
@@ -45,8 +45,6 @@ export default function ProfileScreen() {
     return (
         <YStack f={1} bg="$background">
             <Header />
-            <XStack gap="$4">
-            </XStack>
             <ScrollView>
                 <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$4">
                     {services.map((service, index) => (
@@ -118,6 +116,7 @@ export default function ProfileScreen() {
                         )}
                     </Dialog.Content>
                 </Dialog.Portal>
-            </Dialog>        </YStack>
+            </Dialog>        
+        </YStack>
     )
 }
