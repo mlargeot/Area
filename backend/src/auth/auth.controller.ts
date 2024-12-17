@@ -100,7 +100,9 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Protected resource' })
   @ApiBody({ type: CreateUserDto })
   async protectedResource(@Req() req) {
-    const user: any = req.user;
+    console.log('protectedResource');
+    const user: any = await this.authService.protectedResource(req.user);
+    console.log(user);
     return user;
   }
 

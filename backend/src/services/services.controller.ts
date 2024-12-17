@@ -75,4 +75,11 @@ export class ServicesController {
 
     return 'authorized redirection soon';
   }
+
+  @Get('test')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 200, description: 'Test' })
+  async test(@Req() req) {
+    return 'test';
+  }
 }
