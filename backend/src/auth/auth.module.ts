@@ -30,6 +30,6 @@ import { GithubStrategy } from './strategies/github.startegy';
 
   controllers: [AuthController],
   providers: [AuthService, GoogleStrategy, DiscordStrategy, GithubStrategy, JwtStrategy],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

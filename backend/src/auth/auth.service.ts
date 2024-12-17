@@ -255,4 +255,24 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+  async validateUser(token: string): Promise<any> {
+    const decoded = this.jwtService.verify(token);
+    const user = await this.userModel.findOne({ email: decoded.email });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    const { password, ...result } = user;
+    return result;
+  }
+
+  async protectedResource(tmpUser: any) {
+    const user = await this.userModel.findOne({ _id: tmpUser.userId });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    const { email, _id} = user;
+    return { email, _id };
+  }
+
 }
