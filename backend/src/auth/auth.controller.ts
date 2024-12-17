@@ -99,9 +99,11 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Protected resource' })
   @ApiBody({ type: CreateUserDto })
-  async protectedResource() {
+  async protectedResource(@Req() req) {
     console.log('protectedResource');
-    return 'Protected resource';
+    const user: any = await this.authService.protectedResource(req.user);
+    console.log(user);
+    return user;
   }
 
   @Get('github')
