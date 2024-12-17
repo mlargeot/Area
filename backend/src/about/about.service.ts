@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ActionsService } from '../actions/actions.service';
-import { ReactionsService } from '../reactions/reactions.service';
+import { ActionsService } from 'src/automation/services/default.action.service';
+import { ReactionsService } from 'src/automation/services/default.reaction.service';
 
 @Injectable()
 export class AboutService {

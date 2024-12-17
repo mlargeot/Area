@@ -1,10 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { AppletDto, AppletBodyDto, AppletModuleDto } from './dto/applets.dto';
+import {
+  AppletDto,
+  AppletBodyDto,
+  AppletModuleDto
+} from 'src/applets/dto/applets.dto';
 import { User } from 'src/schemas/user.schema';
 import { v4 as uuidv4 } from 'uuid'
-import { ActionsService } from 'src/actions/actions.service';
+import { ActionsService } from 'src/automation/services/default.action.service';
 
 @Injectable()
 export class AppletsService {
@@ -62,6 +69,7 @@ export class AppletsService {
   
     try {
       const actionResponse = await this.actionsService.executeAction(
+        userId,
         appletDto.action.name,
         appletDto.action.params,
       );

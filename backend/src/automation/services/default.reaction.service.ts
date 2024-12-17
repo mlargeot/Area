@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ReactionsDto } from './dto/default_reactions.dto';
-import { ReactionsDiscordService } from './discord/r_discord.service';
+import { ReactionsDto } from 'src/automation/dto/automation.dto';
+import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
 
 @Injectable()
 export class ReactionsService {
@@ -43,6 +43,7 @@ export class ReactionsService {
   private reactionServiceRegistry: Record<string, Function> = {
     send_webhook_message : this.discordServices.sendMessageToWebhook.bind(this.discordServices)
   }
+
 
   getDefaultReactions() {
     return this.defaultReactions;

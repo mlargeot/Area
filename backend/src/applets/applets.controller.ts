@@ -1,4 +1,14 @@
-import { Controller, Post, Param, Body, Patch, Delete, Get, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Param,
+  Body,
+  Patch,
+  Delete,
+  Get,
+  UseGuards,
+  Req
+} from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -18,7 +28,7 @@ export class AppletsController {
   @ApiOkResponse({ description: 'Applets found.', type: [AppletDto] })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   async getApplets(@Req() req): Promise<AppletDto[]> {
-    return this.appletsService.getApplets(req.userId);
+    return this.appletsService.getApplets(req.user.userId);
   }
 
   @Get(':appletId')
@@ -29,7 +39,7 @@ export class AppletsController {
   async getApplet(
     @Req() req,
     @Param('appletId') appletId: string): Promise<AppletDto> {
-    const applet = await this.appletsService.getAppletById(req.userId, appletId);
+    const applet = await this.appletsService.getAppletById(req.user.userId, appletId);
     if (!applet) {
       throw new Error(`Applet with ID ${appletId} not found.`);
     }
@@ -45,7 +55,7 @@ export class AppletsController {
     @Req() req,
     @Body() appletDto: AppletBodyDto,
   ): Promise<AppletDto> {
-    return this.appletsService.createApplet(req.userId, appletDto);
+    return this.appletsService.createApplet(req.user.userId, appletDto);
   }
 
   @Patch(':appletId')
@@ -58,7 +68,7 @@ export class AppletsController {
     @Param('appletId') appletId: string,
     @Body() appletDto: AppletBodyDto,
   ): Promise<AppletDto> {
-    const updatedApplet = await this.appletsService.updateApplet(req.userId, appletId, appletDto);
+    const updatedApplet = await this.appletsService.updateApplet(req.user.userId, appletId, appletDto);
     if (!updatedApplet) {
       throw new Error(`Applet with ID ${appletId} not found.`);
     }
@@ -73,7 +83,7 @@ export class AppletsController {
   async deleteApplet(
     @Req() req,
     @Param('appletId') appletId: string): Promise<void> {
-    const deleted = await this.appletsService.deleteApplet(req.userId, appletId);
+    const deleted = await this.appletsService.deleteApplet(req.user.userId, appletId);
     if (!deleted) {
       throw new Error(`Applet with ID ${appletId} not found.`);
     }
