@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mongo:8.0.3
+    container_name: ar3m-db
+    env_file:
+      - ./env/mongo.env
+    ports: []
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - ar3m-db-network
+
+  server:
+    container_name: ar3m-backend
+    build: ./backend/
+    ports:
+      - "8080:8080"
+    networks:
+      - ar3m-db-network
+    volumes:
+      - ./env/back.env:/usr/src/app/.env
+    depends_on:
+      - db
+
+  client_web:
+    container_name: ar3m-frontend
+    build: ./frontend/
+    ports:
+      - "8081:8081"
+    depends_on:
+      - server
+
+volumes:
+  mongo-data:
+
+networks:
+  ar3m-db-network:
+    internal: true
+  ar3m-frontend-network:
+    driver: bridge
