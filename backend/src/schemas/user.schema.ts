@@ -22,6 +22,7 @@ export class User {
     accessToken: string;
     refreshToken: string;
     scope: string;
+    accountId?: string;
   }[];
 
   @Prop()
@@ -29,9 +30,6 @@ export class User {
 
   @Prop()
   updatedAt: Date;
-
-  @Prop()
-  githubId?: number;
 
   @Prop({ type: [AppletSchema], default: [] })
   applets: Applet[];

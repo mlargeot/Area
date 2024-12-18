@@ -174,6 +174,7 @@ export class AuthService {
             email,
             accessToken,
             refreshToken,
+            accountId: null
           },
         ],
       });
@@ -207,6 +208,7 @@ export class AuthService {
             email,
             accessToken,
             refreshToken,
+            accountId: null
           },
         ],
       });
@@ -239,13 +241,13 @@ export class AuthService {
         email,
         password: null,
         connectionMethod: 'github',
-        githubId,
         oauthProviders: [
           {
             provider: 'github',
             email,
             accessToken,
             refreshToken: null,
+            acountId: githubId,
           },
         ],
       });
