@@ -55,54 +55,6 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
-  @Get('google')
-  @UseGuards(AuthGuard('google'))
-  @ApiResponse({ status: 200, description: 'Google authentication successful' })
-  @ApiBody({ type: CreateUserDto })
-  async googleAuth(@Req() req) {
-    console.log('googleAuth');
-  }
-
-  @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
-  @ApiResponse({ status: 200, description: 'Google authentication successful' })
-  @ApiBody({ type: CreateUserDto })
-  async googleAuthRedirect(@Req() req, @Res() res) {
-    console.log('googleAuthRedirect');
-    const user: any = await this.authService.googleLogin(req.user);
-    const access_token = user.access_token;
-    const redirectUrl = process.env.FRONTEND_URL;
-    const device = req.query.device;
-    console.log('device: ' + device);
-    res.redirect(
-      `${process.env.FRONTEND_URL}/auth-handler?token=${access_token}`,
-    );
-  }
-
-  @Get('discord')
-  @UseGuards(AuthGuard('discord'))
-  @ApiResponse({
-    status: 200,
-    description: 'Discord authentication successful',
-  })
-  @ApiBody({ type: CreateUserDto })
-  async discordAuth(@Req() req) {
-    console.log('discordAuth');
-  }
-
-  @Get('discord/callback')
-  @UseGuards(AuthGuard('discord'))
-  @ApiResponse({
-    status: 200,
-    description: 'Discord authentication successful',
-  })
-  @ApiBody({ type: CreateUserDto })
-  async discordAuthRedirect(@Req() req) {
-    console.log('discordAuthRedirect');
-    const user: any = await this.authService.discordLogin(req.user);
-    return user;
-  }
-
   @Get('protected')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Protected resource' })
@@ -137,17 +89,46 @@ export class AuthController {
     return this.authService.githubLogin(req.user);
   }
 
+  @Post('login/:service')
+  @ApiResponse({ status: 200, description: 'Service connected' })
+  async loginService(@Body() { code }, @Param('service') service, @Req() req) {
+    switch (service) {
+      case 'google':
+        return this.authService.logWithGoogle(code);
+      case 'discord':
+        return this.authService.logWithDiscord(code);
+      default:
+        throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('unkink/:service')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 200, description: 'Service disconnected' })
+  async unlinkService(@Param('service') service, @Req() req) {
+    // switch (service) {
+    //   case 'google':
+    //     return this.authService.unlinkGoogle(req.user);
+    //   case 'discord':
+    //     return this.authService.unlinkDiscord(req.user);
+    //   case 'github':
+    //     return this.authService.unlinkGithub(req.user);
+    //   default:
+    //     throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
+    // }
+  }
+
   @Post('connect/:service')
   // @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
   async connectService(@Body() { code }, @Param('service') service, @Req() req) {
     switch (service) {
       case 'google':
-        return this.authService.connectGoogle(code, req.user);
+        return this.authService.linkGoogle(code, req.user);
       case 'discord':
-        return this.authService.connectDiscord(code, req.user);
+        return this.authService.linkDiscord(code, req.user);
       case 'github':
-        return this.authService.connectGithub(code, req.user);
+        return this.authService.linkGithub(code, req.user);
       default:
         throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
     }

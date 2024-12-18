@@ -6,7 +6,7 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: false })
   email: string;
 
   @Prop({ required: false })
@@ -21,6 +21,7 @@ export class User {
     email: string;
     accessToken: string;
     refreshToken: string;
+    scope: string;
   }[];
 
   @Prop()

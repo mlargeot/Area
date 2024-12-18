@@ -10,7 +10,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as nodemailer from 'nodemailer';
 import axios from 'axios';
-
+import * as qs from 'qs';
 @Injectable()
 export class AuthService {
   constructor(
@@ -257,16 +257,6 @@ export class AuthService {
     };
   }
 
-  async validateUser(token: string): Promise<any> {
-    const decoded = this.jwtService.verify(token);
-    const user = await this.userModel.findOne({ email: decoded.email });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-    const { password, ...result } = user;
-    return result;
-  }
-
   async protectedResource(tmpUser: any) {
     const user = await this.userModel.findOne({ _id: tmpUser.userId });
     if (!user) {
@@ -276,7 +266,109 @@ export class AuthService {
     return { email, _id };
   }
 
-  async connectGoogle(code: string, user: any) {
+  async logWithGoogle(code: string) {
+    try {
+      const { data } = await axios.post('https://oauth2.googleapis.com/token', {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: "http://localhost:8081/auth-handler",
+        grant_type: 'authorization_code',
+      });
+      console.log(data);
+      const idToken = data.id_token;
+      const decoded = this.jwtService.decode(idToken);
+      const email = decoded.email;
+      let user = await this.userModel.findOne({
+        email,
+        connectionMethod: 'google',
+      });
+      if (!user) {
+        user = await this.userModel.create({
+          email,
+          password: null,
+          connectionMethod: 'google',
+          oauthProviders: [
+            {
+              provider: 'google',
+              email,
+              accessToken: data.access_token,
+              refreshToken: data.refresh_token,
+            },
+          ],
+        });
+      }
+      const payload = { email: user.email, sub: user._id };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    } catch (error) {
+      console.error('Token exchange failed:');
+      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async logWithDiscord(code: string) {
+    console.log("logWithDiscord");
+    try {
+      const { data } = await axios.post(
+        'https://discord.com/api/oauth2/token',
+        qs.stringify({
+          code,
+          client_id: process.env.DISCORD_CLIENT_ID,
+          client_secret: process.env.DISCORD_CLIENT_SECRET,
+          redirect_uri: "http://localhost:8081/auth-handler",
+          grant_type: 'authorization_code',
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+      console.log(data);
+      const accessToken = data.access_token;
+      const refreshToken = data.refresh_token;
+      const discordUser = await axios.get('https://discord.com/api/v9/users/@me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      console.log(discordUser.data);
+      let user = await this.userModel.findOne({
+        email: discordUser.data.email,
+        connectionMethod: 'discord',
+      });
+      if (!user) {
+        user = await this.userModel.create({
+          email: discordUser.data.email,
+          password: null,
+          connectionMethod: 'discord',
+          oauthProviders: [
+            {
+              provider: 'discord',
+              email: discordUser.data.email,
+              accessToken,
+              refreshToken,
+            },
+          ],
+        });
+      }
+
+      const payload = { email: user.email, sub: user._id };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+
+    } catch (error) {
+      console.error('Token exchange failed:', error.response?.data || error.message);
+      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
+
+  async linkGoogle(code: string, user: any) {
     console.log('connectGoogle');
 
     // const { userId } =
@@ -305,7 +397,7 @@ export class AuthService {
     }
   }
 
-  async connectDiscord(code: string, user: any) {
+  async linkDiscord(code: string, user: any) {
     console.log('connectDiscord');
 
     const { userId } = user;
@@ -331,7 +423,7 @@ export class AuthService {
     }
   }
 
-  async connectGithub(code: string, user: any) {
+  async linkGithub(code: string, user: any) {
     console.log('connectGithub');
 
     const { userId } = user;
