@@ -1,18 +1,19 @@
 import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
 import { useApplet, Applet, getParamValueString } from '../../../../context/appletContext';
+import { useServiceList, Params } from '../../../../context/serviceListContext';
 import { Link } from 'expo-router'
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const returnField = (
-  {type, name} : { type : string, name : string },
+  applet: Applet,
+  paramTemplate : Params,
   paramsValue: React.MutableRefObject<{name: string; value: string;}[]>
 ) =>{
-  const { applet } = useApplet();
-  const defaultValue : string = getParamValueString(name, applet.action)
+  const defaultValue : string = getParamValueString(paramTemplate.name, applet.action)
 
   const handleInput = (val : string) => {
     paramsValue.current = paramsValue.current.map((param) => {
-      if (param.name === name) {
+      if (param.name === paramTemplate.name) {
         return {
           name: param.name,
           value: val
@@ -22,33 +23,37 @@ const returnField = (
     });
   }
 
+  handleInput(defaultValue)
+  return (
+    <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
+  )  
 
-  switch (type) {
+  switch (paramTemplate.type) {
     case "bool":
       return (
-        <SwitchWithLabel size="$4" label={name} defaultChecked />
+        <SwitchWithLabel size="$4" label={paramTemplate.name} defaultChecked />
       )
     case "input":
       handleInput(defaultValue)
       return (
-        <InputField name={name} defaultValue={defaultValue} event={handleInput} />
+        <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
       )
       case "textArea":
       handleInput(defaultValue)
       return (
-        <TextAreaField defaultValue={defaultValue} name={name} event={handleInput} />
+        <TextAreaField defaultValue={defaultValue} name={paramTemplate.name} event={handleInput} />
       )
     case "date":
       return (
-        <DateField name={name} />
+        <DateField name={paramTemplate.name} />
       )
     case "number":
       return (
-        <NumberField name={name} />
+        <NumberField name={paramTemplate.name} />
       )
     default:
       return (
-        <Text>{name}</Text>
+        <Text>{paramTemplate.name}</Text>
       )
   }
 }
@@ -116,32 +121,24 @@ function SwitchWithLabel(props: { size: SizeTokens; label: string; defaultChecke
   )
 }
 
-const getParams = (applet : Applet) => {
-  const paramDict: { [key: string]: { type: string; name: string; }[] } = {
-    "pr_assigned": [
-      {type: "input", name: "email"},
-      {type: "input", name: "githubRepoUrl"},
-    ],
-    "send_webhook_message": [
-      {type: "input", name: "url"},
-      {type: "input", name: "content"},
-    ]
-  }
-
-  return paramDict[applet.action.name]
-}
-
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
-  const params = getParams(applet);
   const paramsValue = useRef<{ name: string; value: string }[]>([])
+  const { serviceActionList } = useServiceList();
+  const [params, setParams] = React.useState<Params[]>([]);
 
-  for (let i = 0; i < params.length; i++) {
-    paramsValue.current.push({
-      name: params[i].name,
-      value: ""
-    })
-  }
+  useEffect(() => {
+    const filteredServices = serviceActionList.filter((service) => service.service === applet.action.service);
+    const params = filteredServices[0].effect.filter((effect) => effect.name === applet.action.name)[0].argumentsExample;
+    setParams(params)
+
+    for (let i = 0; i < params.length; i++) {
+      paramsValue.current.push({
+        name: params[i].name,
+        value: ""
+      })
+    }
+  }, [serviceActionList, applet.action.service, applet.action.name])
 
   const saveParams = () => {
     setApplet({
@@ -175,7 +172,7 @@ export default function ServicesScreen() {
         </Link>
         {params.map((param, i) => [
           <View key={`field-${i}-${param.type}`} >
-            {returnField(param, paramsValue)}
+            {returnField(applet, param, paramsValue)}
           </View>
         ])}
         <Link href="/create" asChild>

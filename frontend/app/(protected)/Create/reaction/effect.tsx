@@ -1,6 +1,7 @@
 import { Button, ScrollView, YStack, H2 } from 'tamagui'
 import { useApplet, Applet } from '../../../../context/appletContext'
-import { useNavigationData } from '../../../../context/navigationContext'
+import { storage } from '../../../../context/navigationContext'
+import { useServiceList } from '../../../../context/serviceListContext'
 import { Link } from 'expo-router'
 import React, { useRef } from 'react'
 
@@ -15,20 +16,21 @@ const getCurrentReactionName = (applet: Applet, reactionId: string): string => {
 
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
-  const { navigationData, setNavigationData } = useNavigationData();
-  const reactions = [
-    {id:"0", name:"send_webhook_message"}
-  ]
+  const { serviceReactionList } = useServiceList();
+  const currentService = storage.getString("currentService") || "";
+  const actionType = storage.getString("actionType") || "";
+  const reactionId = storage.getString("reactionId") || "";
+  const reactions = serviceReactionList.filter((service) => service.service === currentService)[0].effect;
 
   const idIndex = useRef<number>(0);
   const newId  = useRef<string>("");
 
   const newReaction = ({ name } : { name : string }) => {
-    newId.current = `reaction-${navigationData.currentService}-${name}-${idIndex.current}`;
+    newId.current = `reaction-${currentService}-${name}-${idIndex.current}`;
 
     for (let i = 0; i < applet.reactions.length; i++) {
       if (applet.reactions[i].id === newId.current) {
-        newId.current = `reaction-${navigationData.currentService}-${name}-${idIndex.current + 1}`;
+        newId.current = `reaction-${currentService}-${name}-${idIndex.current + 1}`;
         idIndex.current++;
         i = -1;
       }
@@ -42,22 +44,18 @@ export default function ServicesScreen() {
           {
             id : newId.current,
             name: name,
-            service: navigationData.currentService,
+            service: currentService,
             params: []
           }
         ]
       }
     )
 
-    setNavigationData({
-      currentService: navigationData.currentService,
-      actionType: navigationData.actionType,
-      reactionId: newId.current
-    });
+    storage.set("reactionId", newId.current);
   }
 
-  const modifyReaction = ({id, name} : {id : string, name : string}) => {
-    newId.current = `reaction-${navigationData.currentService}-${name}-${idIndex.current}`;
+  const modifyReaction = (name : string) => {
+    newId.current = `reaction-${currentService}-${name}-${idIndex.current}`;
 
     for (let i = 0; i < applet.reactions.length; i++) {
       if (applet.reactions[i].id === newId.current) {
@@ -70,11 +68,11 @@ export default function ServicesScreen() {
         id: applet.id,
         action: applet.action,
         reactions: applet.reactions.map((reaction) => {
-          if (reaction.id === navigationData.reactionId) {
+          if (reaction.id === reactionId) {
             return {
               id: newId.current,
               name: name,
-              service: navigationData.currentService,
+              service: currentService,
               params: []
             }
           }
@@ -92,19 +90,19 @@ export default function ServicesScreen() {
     }}
     style={{ flex: 1 }}>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <H2>{navigationData.currentService}</H2>
+        <H2>{currentService}</H2>
         {reactions.flatMap((reaction, i) => [
-            <Link key={`button-${reaction.id}`} href="/Create/reaction/form" asChild>
+            <Link key={`button-${i}`} href="/Create/reaction/form" asChild>
                 <Button
                     onPress={() => {
-                      if (navigationData.actionType === "reaction") {
+                      if (actionType === "reaction") {
                         newReaction(reaction)
                       } else {
-                        modifyReaction(reaction)
+                        modifyReaction(reaction.name)
                       }
                     }}
                     width="80%"
-                    size={getCurrentReactionName(applet, navigationData.reactionId) === reaction.name ? "$8" : "$6"}
+                    size={getCurrentReactionName(applet, reactionId) === reaction.name ? "$8" : "$6"}
                     >
                     <Button.Text>
                       {reaction.name}
