@@ -1,0 +1,21 @@
+meta {
+  name: add-github
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8080/auth/connect/github
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhpcy5ib2l0ZWxAZXBpdGVjaC5ldSIsInN1YiI6IjY3NTZhM2VmZjFhNWNlZDgwYTMwMGJlNSIsImlhdCI6MTczNDQ1MzIzNCwiZXhwIjoxNzM0NDU2ODM0fQ.Y0TWeSidZZceQnicBIon2lVMidSGm81nn-y28gCPqbE
+}
+
+body:json {
+  {
+    "code": "08d5e2ef0728d2d8d096"
+  }
+}

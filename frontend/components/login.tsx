@@ -17,7 +17,10 @@ export default function Login() {
 
     const handleGoogleLogin = () => {
         if (Platform.OS === 'web') {
-            window.location.href = `${apiUrl}/auth/google?device=web`;
+            const client_id = "388588349871-q74b1h4i7ojhn5ki7hn7l2293lhuf1cd.apps.googleusercontent.com";
+            const redirect_uri = "http://localhost:8081/auth-handler";
+            const googleAuthURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${client_id}&redirect_uri=${redirect_uri}&prompt=consent&access_type=offline&response_type=code&scope=openid profile email`
+            window.location.href = googleAuthURL;
             return;
         }
         Linking.openURL(`${apiUrl}/auth/google?device=${Platform.OS}`);

@@ -9,6 +9,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as nodemailer from 'nodemailer';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -273,6 +274,86 @@ export class AuthService {
     }
     const { email, _id} = user;
     return { email, _id };
+  }
+
+  async connectGoogle(code: string, user: any) {
+    console.log('connectGoogle');
+
+    // const { userId } =
+    //   user;
+    // let existingUser = await this.userModel.findOne({
+    //   _id: userId,
+    // });
+    // if (!existingUser)
+    //   throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
+
+    try {
+      const { data } = await axios.post('https://oauth2.googleapis.com/token', {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: "http://localhost:8081/auth-handler",
+        grant_type: 'authorization_code',
+      });
+      console.log(data);
+      const idToken = data.id_token;
+      const decoded = this.jwtService.decode(idToken);
+      console.log(decoded);
+    } catch (error) {
+      console.error('Token exchange failed:');
+      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async connectDiscord(code: string, user: any) {
+    console.log('connectDiscord');
+
+    const { userId } = user;
+    let existingUser = await this.userModel.findOne({
+      _id: userId,
+    });
+    if (!existingUser)
+      throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
+
+    try {
+      const { data } = await axios.post('https://discord.com/api/v9/oauth2/token', {
+        code,
+        client_id: process.env.DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
+        redirect_uri: "http://localhost:8081/auth-handler",
+        grant_type: 'authorization_code'
+      });
+      console.log(data);
+    }
+    catch (error) {
+      console.error('Token exchange failed:');
+      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async connectGithub(code: string, user: any) {
+    console.log('connectGithub');
+
+    const { userId } = user;
+    let existingUser = await this.userModel.findOne({
+      _id: userId,
+    });
+    if (!existingUser)
+      throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
+
+    try {
+      const { data } = await axios.post('https://www.github.com/login/oauth/access_token', {
+        code,
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        redirect_uri: "postmessage",
+        grant_type: 'authorization_code'
+      });
+      console.log(data);
+    } catch (error) {
+      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      console.error('Token exchange failed:');
+    }
   }
 
 }

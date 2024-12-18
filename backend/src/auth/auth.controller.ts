@@ -6,6 +6,11 @@ import {
   UseGuards,
   Req,
   Res,
+  Redirect,
+  Query,
+  Param,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
@@ -66,6 +71,9 @@ export class AuthController {
     console.log('googleAuthRedirect');
     const user: any = await this.authService.googleLogin(req.user);
     const access_token = user.access_token;
+    const redirectUrl = process.env.FRONTEND_URL;
+    const device = req.query.device;
+    console.log('device: ' + device);
     res.redirect(
       `${process.env.FRONTEND_URL}/auth-handler?token=${access_token}`,
     );
@@ -127,5 +135,22 @@ export class AuthController {
   async githubAuthRedirect(@Req() req) {
     console.log('githubAuthRedirect');
     return this.authService.githubLogin(req.user);
+  }
+
+  @Post('connect/:service')
+  // @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 200, description: 'Service connected' })
+  async connectService(@Body() { code }, @Param('service') service, @Req() req) {
+    switch (service) {
+      case 'google':
+        return this.authService.connectGoogle(code, req.user);
+      case 'discord':
+        return this.authService.connectDiscord(code, req.user);
+      case 'github':
+        return this.authService.connectGithub(code, req.user);
+      default:
+        throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
+    }
+
   }
 }
