@@ -15,28 +15,40 @@ export class WebhookService {
     private readonly reactionsService : ReactionsService
   ) {}
 
-  async findTriggeredApplets(githubId: string): Promise<Applet[]> {
-    return await this.userModel.aggregate([
-      { $match: { 'githubId': githubId } },
+// --------------------------------------------- [GITHUB PR WEBHOOK] --------------------------------------------- // 
+
+  async handlePRAssignee(githubId: string): Promise<boolean> {
+    const triggeredApplets = await this.userModel.aggregate([
+      { 
+        $match: { 
+          oauthProviders: { 
+            $elemMatch: { provider: 'github', accountId: githubId } 
+          } 
+        } 
+      },
       { $unwind: '$applets' },
-      { $match: { 
+      { 
+        $match: { 
           'applets.active': true, 
           'applets.action.name': 'pr_assigned' 
-      } },
-  
+        } 
+      },
       { $replaceRoot: { newRoot: '$applets' } }
     ]);
-  }
-
-  async triggerAssign(body: any) {
-    if (body.action !== 'assigned')
-      return;
-
-    const githubId = body.assignee.id;
-    const triggeredApplets = await this.findTriggeredApplets(githubId);
 
     for (const applet of triggeredApplets) {
       await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
     }
+
+    return true;
   }
+
+  async handlePREvent(body: any) {
+    if (body.action !== 'assigned') {
+      return await this.handlePRAssignee(body.assignee.id);
+    }
+    return;
+  }
+
+// --------------------------------------------- [XXXX WEBHOOK] --------------------------------------------- // 
 }

@@ -13,7 +13,7 @@ export class WebhookController {
     ) {}
   @Post('github/pr')
   @ApiOkResponse({ description: "Action triggered." })
-  async handleGitPREvent(@Req() req) {
-    return this.webhookService.triggerAssign(req);
+  async triggerGitPREvent(@Req() req) {
+    return this.webhookService.handlePREvent(req);
   }
 }
