@@ -1,21 +1,21 @@
 import { Button, Stack, YStack, Text, XStack } from 'tamagui';
 import { Link } from 'expo-router';
-import { useNavigationData } from '../../../../context/navigationContext';
-import { Reaction } from "../../../../context/appletContext";
+import { storage } from '../context/navigationContext';
+import { Reaction } from "../context/appletContext";
+import React, { useEffect, useState } from 'react';
 
 
 export function ReactionButton({ index, reaction } : { index : number, reaction: Reaction }) {
-  const { setNavigationData } = useNavigationData();
+  const [page, setPage] = useState<string>(reaction.service === "" ? "services" : "reaction/form");
 
   return (
-    <Link href="/Pages/Create/services" asChild>
+    <Link href={`/Create/${page}`} asChild>
       <Button
       onPress={() => {
-        setNavigationData({
-          currentService: reaction.service ? reaction.service : "",
-          actionType: !reaction.service ? "reaction" : "modify",
-          reactionId: reaction.id ? reaction.id : ""
-        })}}
+        storage.set('currentService', reaction.service ? reaction.service : "");
+        storage.set('actionType', !reaction.service ? "reaction" : "modify");
+        storage.set('reactionId', reaction.id ? reaction.id : "");
+      }}
       borderWidth="$1"
       borderColor="$color"
       padding="$3"

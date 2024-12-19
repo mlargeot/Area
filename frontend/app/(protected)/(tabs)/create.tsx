@@ -1,12 +1,12 @@
-import React, { act } from 'react';
+import React from 'react';
 import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square } from 'tamagui'
-import { ActionButton } from '../Pages/Create/components/actionButton'
-import { ReactionButton } from '../Pages/Create/components/reactionButton'
-import { useApplet, Reaction, Applet } from '../../context/appletContext'
+import { ActionButton } from '../../../components/actionButton'
+import { ReactionButton } from '../../../components/reactionButton'
+import { useApplet, Reaction, Applet } from '../../../context/appletContext'
 import axios from 'axios';
 
 const emptyReaction = () => {
-  const empty : Reaction = {name: "", id: "", service: ""}
+  const empty : Reaction = {name: "", id: "", service: "", params: []}
   return (empty)
 }
 

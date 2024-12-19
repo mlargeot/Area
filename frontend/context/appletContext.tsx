@@ -31,6 +31,27 @@ export const emptyApplet = (): Applet => {
   return applet;
 }
 
+export const emptyReaction = (): Reaction => {
+  const reaction: Reaction = {
+    service: "",
+    name: "",
+    id: "",
+    params: []
+  };
+
+  return reaction;
+}
+
+
+export const getParamValueString = (name : string, effect : Reaction | Action) => {
+  for (let i = 0; i < effect.params.length; i++) {
+    if (effect.params[i][name]) {
+      return effect.params[i][name]
+    }
+  }
+  return ""
+}
+
 const AppletContext = createContext<{
   applet: Applet;
   setApplet: React.Dispatch<React.SetStateAction<Applet>>;

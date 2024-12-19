@@ -1,20 +1,26 @@
-import { Button, Stack, YStack, Text, XStack } from 'tamagui';
+import { Button, Stack, YStack, XStack } from 'tamagui';
 import { Link } from 'expo-router';
-import { useNavigationData } from '../../../../context/navigationContext';
-import { useApplet } from '../../../../context/appletContext';
+import { storage } from '../context/navigationContext';
+import { useApplet } from '../context/appletContext';
+import { useEffect, useState } from 'react';
+import React from 'react';
 
 export function ActionButton({ index } : { index : number }) {
-  const { setNavigationData } = useNavigationData();
   const { applet } = useApplet();
+  const [page, setPage] = useState<string>(applet.action.service === "" ? "services" : "action/form");
+
+  useEffect(() => {
+    setPage(applet.action.service === "" ? "services" : "action/form");
+  }, [applet])
 
   return (
-    <Link href="/Pages/Create/services" asChild>
+    <Link href={`/Create/${page}`} asChild>
       <Button
-      onPress={() => {setNavigationData({
-        currentService: applet.action.service,
-        actionType: "action",
-        reactionId: applet.action.id ? applet.action.id : ""
-      })}}
+      onPress={() => {
+        storage.set('currentService', applet.action.service ? applet.action.service : "");
+        storage.set('actionType', "action");
+        storage.set('reactionId', applet.action.id ? applet.action.id : "");
+      }}
       borderWidth="$1"
       borderColor="$color"
       padding="$3"
