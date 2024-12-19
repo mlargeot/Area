@@ -1,16 +1,16 @@
 import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square, H2 } from 'tamagui'
-import { useNavigationData } from '../../../context/navigationContext'
+import { storage } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
-import { useApplet } from '../../../context/appletContext';
+import { useApplet } from '../../../../context/appletContext';
+import { useServiceList, EffectTemplate } from '../../../../context/serviceListContext'
 import React from 'react';
 
 
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
-  const actions = [
-    {id:"0", name:"pr_assigned"}
-  ]
-  const { navigationData } = useNavigationData();
+  const { serviceActionList } = useServiceList();
+  const currentService = storage.getString("currentService") || "";
+  const actions = serviceActionList.filter((service) => service.service === currentService)[0].effect
 
   return (
     <ScrollView
@@ -20,22 +20,20 @@ export default function ServicesScreen() {
     }}
     style={{ flex: 1 }}>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <H2>{navigationData.currentService}</H2>
+        <H2>{currentService}</H2>
         {actions.flatMap((action, i) => [
-            <Link key={`button-${action.id}`} href="/Pages/Create/form" asChild >
+            <Link key={`button-${i}`} href="/Create/action/form" asChild >
                 <Button
-                    onPress={() => {setApplet(
-                      {
+                    onPress={() => {setApplet({
                         action: {
-                          service: navigationData.currentService,
+                          service: currentService,
                           name: action.name,
                           id: `action-${actions.length.toString()}`,
                           params: []
                         },
                         reactions: applet.reactions,
                         id: applet.id
-                      }
-                      )
+                      })
                     }}
                     width="80%"
                     size={applet.action.name === action.name ? "$8" : "$6"}
