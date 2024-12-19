@@ -119,7 +119,7 @@ export class AuthController {
   }
 
   @Post('connect/:service')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
   async connectService(@Body() { code }, @Param('service') service, @Req() req) {
     switch (service) {
@@ -129,6 +129,10 @@ export class AuthController {
         return this.authService.linkDiscord(code, req.user);
       case 'github':
         return this.authService.linkGithub(code, req.user);
+      case 'spotify':
+        return this.authService.linkSpotify(code, req.user);
+      case 'twitch':
+        return this.authService.linkTwitch(code, req.user);
       default:
         throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
     }

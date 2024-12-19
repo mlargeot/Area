@@ -373,13 +373,13 @@ export class AuthService {
   async linkGoogle(code: string, user: any) {
     console.log('connectGoogle');
 
-    // const { userId } =
-    //   user;
-    // let existingUser = await this.userModel.findOne({
-    //   _id: userId,
-    // });
-    // if (!existingUser)
-    //   throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
+    const { userId } =
+      user;
+    let existingUser = await this.userModel.findOne({
+      _id: userId,
+    });
+    if (!existingUser)
+      throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
 
     try {
       const { data } = await axios.post('https://oauth2.googleapis.com/token', {
@@ -410,44 +410,36 @@ export class AuthService {
       throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
 
     try {
-      const { data } = await axios.post('https://discord.com/api/v9/oauth2/token', {
+      const { data } = await axios.post('https://discord.com/api/oauth2/token', {
         code,
         client_id: process.env.DISCORD_CLIENT_ID,
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         redirect_uri: "http://localhost:8081/auth-handler",
-        grant_type: 'authorization_code'
+        grant_type: 'authorization_code',
       });
       console.log(data);
+      const accessToken = data.access_token;
+      const refreshToken = data.refresh_token;
+      const discordUser = await axios.get('https://discord.com/api/v9/users/@me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      console.log(discordUser.data);
     }
     catch (error) {
-      console.error('Token exchange failed:');
+      console.error('Token exchange failed:', error.response?.data || error.message);
       throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   async linkGithub(code: string, user: any) {
-    console.log('connectGithub');
+  }
 
-    const { userId } = user;
-    let existingUser = await this.userModel.findOne({
-      _id: userId,
-    });
-    if (!existingUser)
-      throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
+  async linkSpotify(code: string, user: any) {
+  }
 
-    try {
-      const { data } = await axios.post('https://www.github.com/login/oauth/access_token', {
-        code,
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
-        redirect_uri: "postmessage",
-        grant_type: 'authorization_code'
-      });
-      console.log(data);
-    } catch (error) {
-      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
-      console.error('Token exchange failed:');
-    }
+  async linkTwitch(code: string, user: any) {
   }
 
 }
