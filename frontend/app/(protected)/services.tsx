@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { useMedia } from 'tamagui'
 import axios from 'axios';
+import { Platform } from 'react-native';
 
 // let services = [
 //     { name: 'Discord', color: '#5865F2', isActive: true, email: ''},
@@ -50,6 +51,42 @@ export default function ProfileScreen() {
             console.error(error);
         }
 
+    }
+
+    const connectToService = async (service: any) => {
+        const state = btoa(JSON.stringify({
+            provider: service.name.toLowerCase(),
+            action: 'connect'
+        }));
+        console.log('service', service.name);
+        let serviceAuthUrl = '';
+        const redirect_uri = "http://localhost:8081/auth-handler";
+        let client_id = '';
+        switch (service.name) {
+            case 'Google':
+                client_id = "388588349871-q74b1h4i7ojhn5ki7hn7l2293lhuf1cd.apps.googleusercontent.com";
+                serviceAuthUrl  = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${client_id}&redirect_uri=${redirect_uri}&prompt=consent&access_type=offline&response_type=code&scope=openid profile email&state=${state}`;
+                break;
+            case 'Discord':
+                client_id = "1312074760917745734";
+                serviceAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=identify%20email&state=${state}`;
+                break;
+            case 'Github':
+                client_id = "Ov23litCcN0j3UsIyU3S";
+                serviceAuthUrl = `https://github.com/login/oauth/authorize?client_id=I${client_id}&redirect_uri=${redirect_uri}&scope=user&state=${state}`;
+                break;
+            default:
+                alert('Service not supported');
+                return;
+        }
+        if (serviceAuthUrl === '') {
+            alert('Service not supported');
+            return;
+        }
+        if (Platform.OS === 'web') {
+            window.location.href = serviceAuthUrl;
+            return;
+        }
     }
 
     const disconnect = () => {
@@ -140,7 +177,7 @@ export default function ProfileScreen() {
                                     {selectedService.isActive ? 'This service is currently activated.' : 'This service is currently deactivated.'}
                                 </Dialog.Description>
                                 {!selectedService.isActive && (
-                                    <Button onPress={() => alert('Connect to ' + selectedService.name)}>
+                                    <Button onPress={() => connectToService(selectedService)}>
                                         <Text color="#fff">Connect</Text>
                                     </Button>
                                 )}

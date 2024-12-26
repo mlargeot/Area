@@ -122,6 +122,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
   async connectService(@Body() { code }, @Param('service') service, @Req() req) {
+    console.log('connectService');
     switch (service) {
       case 'google':
         return this.authService.linkGoogle(code, req.user);
