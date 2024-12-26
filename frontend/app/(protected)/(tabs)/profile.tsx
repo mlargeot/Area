@@ -26,13 +26,13 @@ export default function ProfileScreen() {
         {email}
       </Text>
       <YStack ai="flex-start" gap="$5" pr="$10" paddingTop="$5" bg="$background">
-        <Link href="/Pages/account" asChild>
+        <Link href="/account" asChild>
           <Text fontWeight="700" fontSize="$8">Account</Text>
         </Link>
-        <Link href="/Pages/services" asChild>
+        <Link href="/services" asChild>
           <Text fontWeight="700" fontSize="$8">My services</Text>
         </Link>
-        <Link href="/Pages/helpcenter" asChild>
+        <Link href="/helpcenter" asChild>
           <Text fontWeight="700" fontSize="$8">Help Center</Text>
         </Link>
         <Link href="#" onPress={disconnect} asChild>
