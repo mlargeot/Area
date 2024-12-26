@@ -3,7 +3,7 @@ import { ScrollView } from 'react-native';
 import { H2, Input, Label, Text, Button, Image, YStack, XStack, Stack } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, Link } from 'expo-router';
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "./../../hooks/useAuth";
 import { ArrowLeft } from '@tamagui/lucide-icons';
 
 function Header() {

@@ -25,7 +25,7 @@ function Header() {
                 onPress={() => router.push('/explore')}
             >
                 <Image
-                    source={require('./../../../assets/logo.png')}
+                    source={require('./../../assets/logo.png')}
                     style={{ width: 100, height: 50, borderRadius: 10 }}
                 />
             </Anchor>
