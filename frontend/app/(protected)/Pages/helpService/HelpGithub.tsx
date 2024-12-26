@@ -9,7 +9,7 @@ function Header() {
     const router = useRouter();
     return (
         <XStack ai="center" jc="space-between" px="$4" pt="$5" py="$2" bg="$background" borderBottomWidth={1} borderBottomColor="$borderColor">
-            <Button onPress={() => router.push('/Pages/helpCenter')} icon={ArrowLeft} />
+            <Button onPress={() => router.push('/Pages/helpcenter')} icon={ArrowLeft} />
             <Text fontWeight="700" fontSize="$10">GitHub Service Guide</Text>
             <Anchor
                 onPress={() => router.push('/explore')}
