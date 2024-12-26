@@ -6,6 +6,7 @@ import axios from 'axios';
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [email, setemail] = useState('');
   const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
 
   useEffect(() => {
@@ -19,6 +20,8 @@ export const useAuth = () => {
           });
           if (response.status === 200) {
             setIsAuthenticated(true);
+            setemail(response.data.email);
+            console.log(response.data.email);
           } else {
             setIsAuthenticated(false);
           }
@@ -36,5 +39,5 @@ export const useAuth = () => {
     checkAuth();
   }, []);
 
-  return { isAuthenticated, loading };
+  return { isAuthenticated, loading, email };
 };
