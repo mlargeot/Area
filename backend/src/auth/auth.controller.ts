@@ -138,4 +138,11 @@ export class AuthController {
     }
 
   }
+
+  @Get('list-services')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 200, description: 'List of connected services' })
+  async listServices(@Req() req) {
+    return this.authService.listServices(req.user);
+  }
 }

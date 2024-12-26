@@ -11,6 +11,16 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as nodemailer from 'nodemailer';
 import axios from 'axios';
 import * as qs from 'qs';
+
+// services format:
+const services = [
+  { name: 'Discord', color: '#5865F2', isActive: false, email: ''},
+  { name: 'Spotify', color: '#1DB954', isActive: false, email: ''},
+  { name: 'Twitch', color: '#9146FF', isActive: false, email: ''},
+  { name: 'Google', color: '#FF0000', isActive: false, email: ''},
+  { name: 'Github', color: '#333333', isActive: false, email: ''},
+];
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -442,4 +452,32 @@ export class AuthService {
   async linkTwitch(code: string, user: any) {
   }
 
+  async listServices(user: any) {
+    console.log('listServices');
+    const { userId } = user;
+    let existingUser = await this.userModel.findOne({
+      _id: userId,
+    });
+    if (!existingUser)
+      throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
+
+    console.log("test", existingUser.oauthProviders);
+
+    let servicesCopy = services.map((service) => {
+      service.isActive = false;
+      service.email = '';
+      return service;
+    }
+    );
+
+    existingUser.oauthProviders.forEach((provider) => {
+      const service = servicesCopy.find((service) => service.name.toLowerCase() === provider.provider.toLowerCase());
+      if (service) {
+        service.isActive = true;
+        service.email = provider.email;
+      }
+    });
+
+    return servicesCopy;
+  }
 }

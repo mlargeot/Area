@@ -1,22 +1,19 @@
-import { ExternalLink } from '@tamagui/lucide-icons'
-import { X } from '@tamagui/lucide-icons'
-import { Anchor, H2, Paragraph, XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Adapt, Sheet, Fieldset, Input, Label, Select, TooltipSimple, Unspaced } from 'tamagui'
+import { XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Adapt, Sheet, Fieldset, Input, Label, Select, TooltipSimple, Unspaced } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from '@tamagui/lucide-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 import { useMedia } from 'tamagui'
+import axios from 'axios';
 
-const services = [
-    { name: 'Discord', color: '#5865F2', isActive: true},
-    { name: 'Spotify', color: '#1DB954', isActive: false},
-    { name: 'Twitch', color: '#9146FF', isActive: true},
-    { name: 'X', color: '#1DA1F2', isActive: false},
-    { name: 'Google', color: '#FF0000', isActive: true},
-    { name: 'Github', color: '#333333', isActive: false},
-];
+// let services = [
+//     { name: 'Discord', color: '#5865F2', isActive: true, email: ''},
+//     { name: 'Spotify', color: '#1DB954', isActive: false, email: ''},
+//     { name: 'Twitch', color: '#9146FF', isActive: true, email: ''},
+//     { name: 'Google', color: '#FF0000', isActive: true, email: ''},
+//     { name: 'Github', color: '#333333', isActive: false, email: ''},
+// ];
 
 function Header() {
     const router = useRouter();
@@ -30,10 +27,31 @@ function Header() {
 }
 
 export default function ProfileScreen() {
+    const [services, setServices] = useState<any[]>([]);
+
     const router = useRouter();
     const media = useMedia()
     const [isDialogVisible, setDialogVisible] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
+
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
+
+    const fetchServices = async () => {
+        const token = await AsyncStorage.getItem('access_token');
+        try {
+            const response = await axios.get(apiUrl + `/auth/list-services`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("response", response);
+            if (response.status === 200) {
+                setServices(response.data);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
+    }
+
     const disconnect = () => {
         AsyncStorage.removeItem('access_token');
         router.push('/explore');
@@ -44,12 +62,17 @@ export default function ProfileScreen() {
         setDialogVisible(!isDialogVisible);
     }
 
+    useEffect(() => {
+        fetchServices();
+    } , []);
+
     return (
         <YStack f={1} bg="$background">
             <Header />
             <ScrollView>
                 <YStack paddingVertical="$4" width="100%" alignItems="center" gap="$4">
                     <XStack
+                        key={services.length}
                         flexWrap="wrap"
                         justifyContent="center"
                         gap="$4"
@@ -65,11 +88,11 @@ export default function ProfileScreen() {
                             borderRadius="$2"
                             onPress={() => toggleDialog(service)}
                             width={media.sm ? '80%' : '30%'}
+                            style={{ opacity: service.isActive ? 1 : 0.5 }}
                         >
                             <Text
                             color="#fff"
                             fontSize={18}
-                            textDecorationLine={service.isActive ? 'none' : 'line-through'}
                             >
                             {service.name}
                             </Text>
@@ -110,6 +133,9 @@ export default function ProfileScreen() {
                         {selectedService && (
                             <>
                                 <Dialog.Title>{selectedService.name}</Dialog.Title>
+                                <Dialog.Description>
+                                    {selectedService.email}
+                                </Dialog.Description>
                                 <Dialog.Description>
                                     {selectedService.isActive ? 'This service is currently activated.' : 'This service is currently deactivated.'}
                                 </Dialog.Description>
