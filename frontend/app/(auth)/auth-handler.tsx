@@ -10,8 +10,9 @@ export default function authHandler() {
     const urlCode = new URLSearchParams(window.location.search).get('code');
     const state = new URLSearchParams(window.location.search).get('state');
     const urlProvider = state ? JSON.parse(atob(state)).provider : null;
+    const action = state ? JSON.parse(atob(state)).action : null;
 
-    const connectService = async (service: string) => {
+    const loginService = async (service: string) => {
         try {
             const response = await axios.post(`http://localhost:8080/auth/login/${service}`, {
                 code: urlCode,
@@ -29,13 +30,39 @@ export default function authHandler() {
         }
     }
 
+    const connectService = async (service: string) => {
+        const token = await AsyncStorage.getItem('access_token');
+        try {
+            const response = await axios.post(`http://localhost:8080/auth/connect/${service}`, {
+                code: urlCode,
+                service
+            }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("response", response);
+        } catch (error) {
+            console.error(error);
+        }
+        if (Platform.OS === 'web') {
+            window.location.href = '/services';
+        } else {
+            router.push('/services');
+        }
+    }
+
     if (urlCode) {
+        if (action === 'connect') {
+            console.log('connectService');
+            connectService(urlProvider);
+            return;
+        }
+
         console.log('urlCode', urlCode);
         if (urlProvider !== 'google' && urlProvider !== 'discord') {
             console.error('Invalid provider');
             return;
         }
-        connectService(urlProvider);
+        loginService(urlProvider);
     }
 
     if (urlToken) {

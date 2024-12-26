@@ -11,6 +11,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as nodemailer from 'nodemailer';
 import axios from 'axios';
 import * as qs from 'qs';
+import e from 'express';
 
 // services format:
 const services = [
@@ -402,6 +403,29 @@ export class AuthService {
       console.log(data);
       const idToken = data.id_token;
       const decoded = this.jwtService.decode(idToken);
+
+      const oauthProviderGoogle: any = {
+        provider: 'google',
+        email: decoded.email,
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        accountId: decoded.sub,
+      };
+
+      const providerIndex = existingUser.oauthProviders.findIndex((provider) => provider.provider === 'google');
+
+      if (providerIndex === -1) {
+        existingUser.oauthProviders.push(oauthProviderGoogle);
+      }
+      else {
+        existingUser.oauthProviders[providerIndex].accessToken = data.access_token;
+        existingUser.oauthProviders[providerIndex].refreshToken = data.refresh_token;
+        existingUser.oauthProviders[providerIndex].email = decoded.email;
+        existingUser.oauthProviders[providerIndex].accountId = decoded.sub;
+      }
+
+      existingUser.save();
+
       console.log(decoded);
     } catch (error) {
       console.error('Token exchange failed:');
@@ -420,13 +444,21 @@ export class AuthService {
       throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
 
     try {
-      const { data } = await axios.post('https://discord.com/api/oauth2/token', {
-        code,
-        client_id: process.env.DISCORD_CLIENT_ID,
-        client_secret: process.env.DISCORD_CLIENT_SECRET,
-        redirect_uri: "http://localhost:8081/auth-handler",
-        grant_type: 'authorization_code',
-      });
+      const { data } = await axios.post(
+        'https://discord.com/api/oauth2/token',
+        qs.stringify({
+          code,
+          client_id: process.env.DISCORD_CLIENT_ID,
+          client_secret: process.env.DISCORD_CLIENT_SECRET,
+          redirect_uri: "http://localhost:8081/auth-handler",
+          grant_type: 'authorization_code',
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
       console.log(data);
       const accessToken = data.access_token;
       const refreshToken = data.refresh_token;
@@ -435,6 +467,29 @@ export class AuthService {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+
+      const oauthProviderDiscord: any = {
+        provider: 'discord',
+        email: discordUser.data.email,
+        accessToken,
+        refreshToken,
+        accountId: discordUser.data.id,
+        scopes: discordUser.data.scopes,
+      };
+
+      const providerIndex = existingUser.oauthProviders.findIndex((provider) => provider.provider === 'discord');
+      if (providerIndex === -1) {
+        existingUser.oauthProviders.push(oauthProviderDiscord);
+      }
+      else {
+        existingUser.oauthProviders[providerIndex].accessToken = accessToken;
+        existingUser.oauthProviders[providerIndex].refreshToken = refreshToken;
+        existingUser.oauthProviders[providerIndex].email = discordUser.data.email;
+        existingUser.oauthProviders[providerIndex].accountId = discordUser.data.id;
+      }
+
+      existingUser.save();
+
       console.log(discordUser.data);
     }
     catch (error) {
@@ -444,6 +499,68 @@ export class AuthService {
   }
 
   async linkGithub(code: string, user: any) {
+    console.log('connectGithub');
+
+    const { userId } = user;
+    let existingUser = await this.userModel.findOne({
+      _id: userId,
+    });
+    if (!existingUser)
+      throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
+
+    try {
+      const { data } = await axios.post(
+        'https://github.com/login/oauth/authorize',
+        qs.stringify({
+          code,
+          client_id: process.env.GITHUB_CLIENT_ID,
+          client_secret: process.env.GITHUB_CLIENT_SECRET,
+          redirect_uri: "http://localhost:8081/auth-handler",
+          grant_type: 'authorization_code',
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+      console.log(data);
+      const accessToken = data.access_token;
+      const refreshToken = data.refresh_token;
+      const githubUser = await axios.get('https://api.github.com/user', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const oauthProviderGithub: any = {
+        provider: 'github',
+        email: githubUser.data.email,
+        accessToken,
+        refreshToken,
+        accountId: githubUser.data.id,
+      };
+
+      const providerIndex = existingUser.oauthProviders.findIndex((provider) => provider.provider === 'github');
+
+      if (providerIndex === -1) {
+        existingUser.oauthProviders.push(oauthProviderGithub);
+      }
+      else {
+        existingUser.oauthProviders[providerIndex].accessToken = accessToken;
+        existingUser.oauthProviders[providerIndex].refreshToken = refreshToken;
+        existingUser.oauthProviders[providerIndex].email = githubUser.data.email;
+        existingUser.oauthProviders[providerIndex].accountId = githubUser.data.id;
+      }
+
+      existingUser.save();
+
+      console.log(githubUser.data);
+
+    } catch (error) {
+      console.error('Token exchange failed:', error.response?.data || error.message);
+      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async linkSpotify(code: string, user: any) {
