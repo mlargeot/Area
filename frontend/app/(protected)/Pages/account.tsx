@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native';
 import { H2, Input, Label, Text, Button, Image, YStack, XStack, Stack } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, Link } from 'expo-router';
+import { useAuth } from "../../../hooks/useAuth";
 import { ArrowLeft } from '@tamagui/lucide-icons';
 
 function Header() {
@@ -16,18 +17,8 @@ function Header() {
     );
 }
 
-const getData = async (key: string) => {
-    try {
-      const value = await AsyncStorage.getItem(key);
-      if (value !== null) {
-        return value;
-      }
-    } catch (e) {
-      console.error('Error reading data', e);
-    }
-  };
-
 export default function account() {
+  const { email} = useAuth();
   const router = useRouter();
 
   const [serverAddress, setServerAddress] = useState('');
@@ -77,15 +68,14 @@ export default function account() {
             borderRadius={60}
         />
         <Text fontSize="$5" fontWeight="700">
-            arthur
+            {email}
         </Text>
-
-        {/* <Label>Server address</Label>
+        <Label>Server address</Label>
         <Input defaultValue={serverAddress} onBlur={handleServerAddress} />
         <Label>Server port</Label>
         <Input defaultValue={serverPort} onBlur={handleServerPort} />
         <Label>User ID</Label>
-        <Input defaultValue={userId} onBlur={handleUserId} /> */}
+        <Input defaultValue={userId} onBlur={handleUserId} />
         <XStack 
             justifyContent="space-between" 
             width="100%" 

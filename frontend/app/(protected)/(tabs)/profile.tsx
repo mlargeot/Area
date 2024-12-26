@@ -3,8 +3,10 @@ import { ScrollView } from 'react-native';
 import { H2, Input, Label, Text, Button, Image, YStack, XStack } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, Link } from 'expo-router';
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function ProfileScreen() {
+  const { email} = useAuth();
   const router = useRouter();
   const disconnect = () => {
     AsyncStorage.removeItem('access_token');
@@ -21,7 +23,7 @@ export default function ProfileScreen() {
         borderRadius={60}
       />
       <Text fontSize="$5" fontWeight="700">
-        alexis.boitel@epitech.eu
+        {email}
       </Text>
       <YStack ai="flex-start" gap="$5" pr="$10" paddingTop="$5" bg="$background">
         <Link href="/Pages/account" asChild>
@@ -30,11 +32,10 @@ export default function ProfileScreen() {
         <Link href="/Pages/services" asChild>
           <Text fontWeight="700" fontSize="$8">My services</Text>
         </Link>
-        <Link href="#" asChild>
+        <Link href="/Pages/helpcenter" asChild>
           <Text fontWeight="700" fontSize="$8">Help Center</Text>
         </Link>
         <Link href="#" onPress={disconnect} asChild>
-
           <Text fontWeight="700" fontSize="$8">Sign Out</Text>
         </Link>
       </YStack>

@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Home() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading} = useAuth();
   const router = useRouter();
 
   useEffect(() => {
