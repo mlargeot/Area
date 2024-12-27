@@ -8,6 +8,7 @@ import { ArrowLeft } from '@tamagui/lucide-icons';
 import { useState } from 'react';
 import React from 'react';
 import { useMedia } from 'tamagui'
+import Header from './../../components/header';
 
 const services = [
     { name: 'Discord', color: '#5865F2', isActive: true},
@@ -17,17 +18,6 @@ const services = [
     { name: 'Google', color: '#FF0000', isActive: true},
     { name: 'Github', color: '#333333', isActive: false},
 ];
-
-function Header() {
-    const router = useRouter();
-    return (
-        <XStack ai="center" jc="space-between" px="$4" pt="$5" py="$2" bg="$background" borderBottomWidth={1} borderBottomColor="$borderColor">
-            <Button onPress={() => router.push('/profile')} icon={ArrowLeft} />
-            <Text fontWeight="700" fontSize="$10">Profile</Text>
-            <Stack width={40} />
-        </XStack>
-    );
-}
 
 export default function ProfileScreen() {
     const router = useRouter();
@@ -46,7 +36,7 @@ export default function ProfileScreen() {
 
     return (
         <YStack f={1} bg="$background">
-            <Header />
+            <Header title={`My Services`} onPress={'/profile'}/>
             <ScrollView>
                 <YStack paddingVertical="$4" width="100%" alignItems="center" gap="$4">
                     <XStack
@@ -56,27 +46,34 @@ export default function ProfileScreen() {
                         width="100%"
                     >
                         {services.map((service, index) => (
-                        <Button
+                        <XStack
                             key={index}
                             backgroundColor={service.color}
-                            height={80}
-                            justifyContent="center"
-                            alignItems="center"
-                            borderRadius="$2"
-                            onPress={() => toggleDialog(service)}
-                            width={media.sm ? '80%' : '30%'}
+                            borderRadius="$4"
+                            padding="$4"
+                            width={media.sm ? '80%' : '20%'}
+                            alignItems="flex-start"
+                            flexDirection="column"
+                            gap="$2"
                         >
-                            <Text
-                            color="#fff"
-                            fontSize={18}
-                            textDecorationLine={service.isActive ? 'none' : 'line-through'}
-                            >
-                            {service.name}
-                            </Text>
-                            <Text color="#fff" fontSize={14}>
-                            {service.isActive ? 'Activated' : 'Deactivated'}
-                            </Text>
-                        </Button>
+                            <XStack alignItems="center" gap="$3">
+                                <Text color="#fff" fontSize={25}>
+                                    {service.name}
+                                </Text>
+                                <Text color="#fff" fontSize={14}>
+                                    {service.isActive ? 'Activated' : 'Deactivated'}
+                                </Text>
+                            </XStack>
+                            <XStack justifyContent="space-between" width="100%" marginTop="$4">
+                                <Button
+                                    onPress={() => toggleDialog(service)}
+                                >
+                                    <Text>
+                                        {!service.isActive ? 'Connect' : 'Disconnect'}
+                                    </Text>
+                                </Button>
+                            </XStack>
+                        </XStack>
                         ))}
                     </XStack>
                 </YStack>
@@ -116,6 +113,11 @@ export default function ProfileScreen() {
                                 {!selectedService.isActive && (
                                     <Button onPress={() => alert('Connect to ' + selectedService.name)}>
                                         <Text color="#fff">Connect</Text>
+                                    </Button>
+                                )}
+                                {selectedService.isActive && (
+                                    <Button onPress={() => alert('Connect to ' + selectedService.name)}>
+                                        <Text color="#fff">Sign out</Text>
                                     </Button>
                                 )}
                                 <Button onPress={() => setDialogVisible(false)} marginTop="$2">

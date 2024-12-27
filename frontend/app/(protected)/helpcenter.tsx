@@ -1,10 +1,9 @@
 import React from 'react';
-import { ScrollView, Image } from 'react-native';
+import { ScrollView} from 'react-native';
 import {Text, Button, YStack, XStack, Anchor  } from 'tamagui';
 import { useRouter } from 'expo-router';
-import { ArrowLeft } from '@tamagui/lucide-icons';
 import { useMedia } from 'tamagui';
-import Header from '../../components/header';
+import Header from './../../components/header';
 
 const services = [
     { name: 'Discord', color: '#5865F2', isActive: true, description:"This is the documentation of reaction and actions discord."},
