@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 export type EffectTemplate = {
@@ -41,7 +42,22 @@ const ServiceListContext = createContext<{
 export const ServiceListProvider = ({ children } : { children : ReactNode }) => {
   const [serviceActionList, setServiceActionList] = useState<Service[]>([]);
   const [serviceReactionList, setServiceReactionList] = useState<Service[]>([]);
-  const serverAddress = localStorage.getItem("serverAdress");
+  const [serverAddress, setServerAddress] = useState<string>("http://localhost:8080");
+
+  const getServerAddress = async () => {
+    try {
+      const address = await AsyncStorage.getItem('serverAddress');
+      if (address !== null && address !== "") {
+        setServerAddress(address);
+      }
+    } catch (error) {
+      console.error('Failed to fetch server address from storage', error);
+    }
+  };
+
+  useEffect(() => {
+    getServerAddress();
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -76,8 +92,9 @@ export const ServiceListProvider = ({ children } : { children : ReactNode }) => 
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (serverAddress !== "")
+      fetchData();
+  }, [serverAddress]);
 
   return (
     <ServiceListContext.Provider value={{ serviceActionList, serviceReactionList }}>

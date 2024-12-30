@@ -52,8 +52,8 @@ export default function CreateScreen() {
                 },
                 active: true
               }
-              const serverAddress = localStorage.getItem("serverAdress");
-              const userId = localStorage.getItem("userId");
+              const serverAddress = "TOFIX" // localStorage.getItem("serverAdress");
+              const userId = "TOFIX" // localStorage.getItem("userId");
               const url = `${serverAddress}/applets/${userId}`;
               console.log("URL:", url, "DATA:", appletData);
               axios.post(url, appletData)
