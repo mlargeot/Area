@@ -65,6 +65,7 @@ export class AppletsService {
       action: null,
       reaction: appletDto.reaction,
       active: appletDto.active,
+      metadata: null,
     };
   
     try {
@@ -73,7 +74,13 @@ export class AppletsService {
         appletDto.action.name,
         appletDto.action.params,
       );
-  
+
+      if (actionResponse) {
+        newApplet.metadata = {
+          "response": actionResponse
+        }
+      }
+
       const appletAction: AppletModuleDto = {
         name: appletDto.action.name,
         service: appletDto.action.service,
