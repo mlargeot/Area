@@ -57,4 +57,8 @@ export class GithubActionsService {
       throw new Error(`Erreur lors de la création du webhook : ${error.message}`);
     }
   }
+
+  async destroyPullRequestWebhook(userId: string, metadata: {}) {
+    return;
+  }
 }

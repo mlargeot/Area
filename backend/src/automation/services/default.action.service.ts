@@ -43,6 +43,11 @@ export class ActionsService {
     pr_assigned : this.githubActionService.initPullRequestWebhook.bind(this.githubActionService)
   }
 
+  private destroyServiceRegistry: Record<string, Function> = {
+    pr_assigned : this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService)
+  }
+
+
   getDefaultActions() {
     return this.defaultActions;
   }
@@ -54,5 +59,14 @@ export class ActionsService {
         throw new Error(`Reaction "${name}" not found.`);
 
     return actionFunction(userId, params);
+  }
+
+  async destroyAction(userId: string, name: string, params: {}) {
+    const destroyFunction = this.destroyServiceRegistry[name];
+
+    if (!destroyFunction)
+        throw new Error(`Reaction "${name}" not found.`);
+
+    return destroyFunction(userId, params);
   }
 }
