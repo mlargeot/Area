@@ -35,6 +35,14 @@ export class AppletDto {
 
     @ApiProperty({ example: true, description: "Activity of the applet."})
     active: boolean;
+
+    @ApiProperty({ example: {
+        response: {
+            id: "123456",
+            name: "exmaple-webhook-metadata"
+        }
+    },description: "List of the sub-data of the applet."})
+    metadata: Record<string, any>;
 }
 
 export class AppletBodyDto {
