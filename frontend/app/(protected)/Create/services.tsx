@@ -1,11 +1,12 @@
 import { Button, ScrollView, YStack, } from 'tamagui'
 import { Link } from 'expo-router'
-import { storage } from '../../../context/navigationContext'
+import { useNavigationData } from '../../../context/navigationContext'
 import { useServiceList } from '../../../context/serviceListContext';
 import React, { useEffect } from 'react';
 
 const selectPage = () => {
-  const type = storage.getString("actionType") || "";
+  const { navigationData } = useNavigationData();
+  const type = navigationData.actionType || "";
   if (type !== "action") {
     return "/Create/reaction/effect";
   }
@@ -14,14 +15,19 @@ const selectPage = () => {
 
 const Action = () => {
   const { serviceActionList } = useServiceList();
-  const currentService = storage.getString("currentService") || "";
+  const { navigationData, setNavigationData } = useNavigationData();
+  const currentService = navigationData.currentService || "";
 
   return (
     serviceActionList.flatMap((service, i) => [
       <Link key={`button-${i}`} href={selectPage()} asChild>
         <Button
           onPress={() => {
-            storage.set('currentService', service.service);
+            setNavigationData({
+              currentService: service.service,
+              actionType: navigationData.actionType,
+              reactionId: navigationData.reactionId
+            });
           }}
           width="80%"
           size={currentService === service.service ? "$8" : "$6"}
@@ -37,14 +43,19 @@ const Action = () => {
 
 const Reaction = () => {
   const { serviceReactionList } = useServiceList();
-  const currentService = storage.getString("currentService") || "";
+  const { navigationData, setNavigationData } = useNavigationData();
+  const currentService = navigationData.currentService || "";
 
   return (
     serviceReactionList.flatMap((service, i) => [
       <Link key={`button-${i}`} href={selectPage()} asChild>
         <Button
           onPress={() => {
-            storage.set('currentService', service.service);
+            setNavigationData({
+              currentService: service.service,
+              actionType: navigationData.actionType,
+              reactionId: navigationData.reactionId
+            });
           }}
           width="80%"
           size={currentService === service.service ? "$8" : "$6"}
@@ -60,7 +71,8 @@ const Reaction = () => {
 
 
 export default function ServicesScreen() {
-  const type = storage.getString("actionType") || "";
+  const { navigationData } = useNavigationData();
+  const type = navigationData.actionType || "";
 
   return (
     <ScrollView

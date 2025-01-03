@@ -1,7 +1,7 @@
 import { Button, ScrollView, YStack, H2 } from 'tamagui'
 import { useApplet, Applet } from '../../../../context/appletContext'
-import { storage } from '../../../../context/navigationContext'
 import { useServiceList } from '../../../../context/serviceListContext'
+import { useNavigationData } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
 import React, { useRef } from 'react'
 
@@ -17,9 +17,10 @@ const getCurrentReactionName = (applet: Applet, reactionId: string): string => {
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
   const { serviceReactionList } = useServiceList();
-  const currentService = storage.getString("currentService") || "";
-  const actionType = storage.getString("actionType") || "";
-  const reactionId = storage.getString("reactionId") || "";
+  const { navigationData, setNavigationData } = useNavigationData();
+  const currentService = navigationData.currentService;
+  const actionType = navigationData.actionType;
+  const reactionId = navigationData.reactionId;
   const reactions = serviceReactionList.filter((service) => service.service === currentService)[0].effect;
 
   const idIndex = useRef<number>(0);
@@ -51,7 +52,11 @@ export default function ServicesScreen() {
       }
     )
 
-    storage.set("reactionId", newId.current);
+    setNavigationData({
+      currentService: currentService,
+      actionType: actionType,
+      reactionId: newId.current
+    })
   }
 
   const modifyReaction = (name : string) => {

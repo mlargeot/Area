@@ -1,5 +1,5 @@
 import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
-import { storage } from '../../../../context/navigationContext';
+import { useNavigationData } from '../../../../context/navigationContext';
 import { useApplet, Reaction, emptyReaction, getParamValueString } from '../../../../context/appletContext';
 import { Link } from 'expo-router'
 import React, { useEffect, useRef } from 'react';
@@ -144,8 +144,8 @@ const getParams = (reactionName : string) => {
 
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
-  const reactionId = storage.getString("reactionId") || "";
-  const reaction : Reaction = getReaction(reactionId, applet.reactions)
+  const { navigationData, setNavigationData } = useNavigationData();
+  const reaction : Reaction = getReaction(navigationData.reactionId, applet.reactions)
   const params = getParams(reaction.name);
   const paramsValue = useRef<{ name: string; value: string }[]>([])
 
@@ -163,7 +163,7 @@ export default function ServicesScreen() {
       id: applet.id,
       action: applet.action,
       reactions: applet.reactions.map((reaction) => {
-        if (reaction.id === reactionId) {
+        if (reaction.id === navigationData.reactionId) {
           return {
             id: reaction.id,
             name: reaction.name,
@@ -183,16 +183,20 @@ export default function ServicesScreen() {
   return (
     <ScrollView>
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <Link href={"/Create/services"} onPress={() => {
-            storage.set("actionType", "reaction");
-          }}>
+        <Link href={"/Create/services"} onPress={() => {setNavigationData({
+          currentService: navigationData.currentService,
+          actionType: "reaction",
+          reactionId: navigationData.reactionId
+        })}}>
           <H2>
             {reaction.service}
           </H2>
         </Link>
-        <Link href={"/Create/reaction/effect"} onPress={() => {
-            storage.set("actionType", "modify");
-          }}>
+        <Link href={"/Create/reaction/effect"} onPress={() => {setNavigationData({
+          currentService: navigationData.currentService,
+          actionType: "modify",
+          reactionId: navigationData.reactionId
+        })}}>
           <H2>
             {reaction.name}
           </H2>

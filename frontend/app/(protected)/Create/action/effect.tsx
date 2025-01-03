@@ -1,5 +1,5 @@
 import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square, H2 } from 'tamagui'
-import { storage } from '../../../../context/navigationContext'
+import { useNavigationData } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
 import { useApplet } from '../../../../context/appletContext';
 import { useServiceList, EffectTemplate } from '../../../../context/serviceListContext'
@@ -9,7 +9,8 @@ import React from 'react';
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
   const { serviceActionList } = useServiceList();
-  const currentService = storage.getString("currentService") || "";
+  const { navigationData } = useNavigationData();
+  const currentService = navigationData.currentService;
   const actions = serviceActionList.filter((service) => service.service === currentService)[0].effect
 
   return (
