@@ -20,14 +20,7 @@ export class ActionsService {
           argumentsNumber: 2,
           argumentsExample: [
             {
-                name: "name",
-                description: "Name of the webhook.",
-                example: "PR Assigned",
-                type: "string",
-                required: true
-            },
-            {
-                name: "repository_url",
+                name: "githubRepoUrl",
                 description: "URL of the github repository with enough rights to create webhooks",
                 example: "https://github.com/owner/repository",
                 type: "string",
