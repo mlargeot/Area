@@ -1,79 +1,35 @@
 import { Platform } from 'react-native';
-import { YStack, Theme } from 'tamagui';
+import { YStack, Theme, Text } from 'tamagui';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import {useEffect} from "react";
 
-export default function callback() {
-    const urlToken = new URLSearchParams(window.location.search).get('token');
+export default function AuthHandler() {
     const router = useRouter();
-    const urlCode = new URLSearchParams(window.location.search).get('code');
-    const state = new URLSearchParams(window.location.search).get('state');
-    const urlProvider = state ? JSON.parse(atob(state)).provider : null;
-    const action = state ? JSON.parse(atob(state)).action : null;
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
 
-    const loginService = async (service: string) => {
-        try {
+    const handleAuth = async () => {
+        const url = Platform.select({
+            web: window.location.href,
+            default: window.location.href,
+        });
 
-            const response = await axios.post(`http://localhost:8080/auth/login/${service}`, {
-                code: urlCode,
-                service
-            });
-            console.log("response", response);
-            AsyncStorage.setItem('access_token', response.data.access_token);
-            if (Platform.OS === 'web') {
-                window.location.href = '/explore';
-            } else {
-                router.push('/explore');
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    const connectService = async (service: string) => {
-        const token = await AsyncStorage.getItem('access_token');
-        try {
-            const response = await axios.post(`http://localhost:8080/auth/connect/${service}`, {
-                code: urlCode,
-                service
-            }, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            console.log("response", response);
-        } catch (error) {
-            console.error(error);
-        }
-        if (Platform.OS === 'web') {
-            window.location.href = '/services';
-        } else {
-            router.push('/services');
-        }
-    }
-
-    if (urlCode) {
-        if (action === 'connect') {
-            console.log('connectService');
-            connectService(urlProvider);
+        const params = new URLSearchParams(url.split('?')[1]);
+        const token = params.get('token');
+        console.log('token', token);
+        if (!token) {
+            router.push('/login');
             return;
         }
+        await AsyncStorage.setItem('access_token', token);
+        router.push('/explore');
 
-        console.log('urlCode', urlCode);
-        if (urlProvider !== 'google' && urlProvider !== 'discord') {
-            console.error('Invalid provider');
-            return;
-        }
-        loginService(urlProvider);
-    }
+    };
 
-    if (urlToken) {
-        AsyncStorage.setItem('access_token', urlToken);
-        if (Platform.OS === 'web') {
-            window.location.href = '/explore';
-        } else {
-            router.push('/explore');
-        }
-    }
+    useEffect(() => {
+        handleAuth();
+    }, []);
 
     return (
         <YStack
@@ -82,7 +38,7 @@ export default function callback() {
             alignItems="center"
             padding="$4"
         >
-            
+            <Text>Authenticating...</Text>
         </YStack>
     );
 }

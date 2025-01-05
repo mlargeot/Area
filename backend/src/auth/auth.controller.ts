@@ -81,13 +81,13 @@ export class AuthController {
   @Get('connect/:provider')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
-  async connectProvider(@Param('provider') provider, @Req() req, @Res() res) {
+  async connectProvider(@Param('provider') provider, @Req() req) {
     console.log('connectProvider');
     const redirect = req.query.redirect_uri;
     const state = crypto.randomUUID();
     saveState(state, { provider: provider, action: 'connect', redirect });
     const providerUrl = this.authService.loginProvider(provider, state);
-    return res.redirect(providerUrl);
+    return { redirect_uri: providerUrl };
   }
 
   @Get('callback')

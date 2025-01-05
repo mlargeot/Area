@@ -191,7 +191,7 @@ export class AuthService {
       throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
     }
 
-    const redirectUri = 'http://localhost:8080/auth/callback';
+    const redirectUri = process.env.API_URL + '/auth/callback';
     const authorizationUrl = `${provider.authorizationEndpoint}?client_id=${provider.clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${provider.scopes.join(
       ' ',
     )}&state=${state}`;
@@ -279,7 +279,7 @@ export class AuthService {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: 'http://localhost:8080/auth/callback',
+        redirect_uri: process.env.API_URL + '/auth/callback',
         grant_type: 'authorization_code',
       });
       console.log(data);
@@ -311,7 +311,7 @@ export class AuthService {
           code,
           client_id: process.env.DISCORD_CLIENT_ID,
           client_secret: process.env.DISCORD_CLIENT_SECRET,
-          redirect_uri: 'http://localhost:8080/auth/callback',
+          redirect_uri: process.env.API_URL + '/auth/callback',
           grant_type: 'authorization_code',
         }),
         {
