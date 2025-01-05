@@ -111,13 +111,72 @@ export class GithubActionsService {
 
     try {
       const response = await lastValueFrom(this.httpService.post(`https://api.github.com/repos/${match[1]}/${match[2]}/hooks`, data, { headers }));
+      response.data["owner"] = match[1];
+      response.data["repository"] = match[2];
       return response.data;
     } catch (error) {
       throw new Error(`Erreur lors de la création du webhook : ${error.message}`);
     }
   }
 
-  async destroyPullRequestWebhook(userId: string, metadata: {}) {
-    return;
+  /**
+   * Destroy the targeted repository applet
+   * @param userId 
+   * @param metadata 
+   * @returns 
+   */
+  async destroyPullRequestWebhook(userId: string, metadata: any): Promise<boolean> {
+
+    const hookId = metadata?.response?.id;
+    const owner = metadata?.response?.owner;
+    const repository = metadata?.response?.repository;
+
+    if (!hookId || !owner || !repository) {
+        throw new Error('Invalid metadata: Missing required webhook information');
+    }
+
+    const appletsUsingWebhook = await this.userModel.aggregate([
+      { $match: { _id: new Types.ObjectId(userId) } },
+      { $unwind: "$applets" },
+      {
+          $match: {
+              "applets.metadata.response.id": Number(hookId),
+              "applets.metadata.response.owner": owner,
+              "applets.metadata.response.repository": repository,
+          },
+      },
+    ]);
+
+    if (appletsUsingWebhook.length > 1) {
+        console.log(`Webhook ${hookId} is still used by ${appletsUsingWebhook.length} applets.`);
+        return false;
+    }
+
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+    const githubProvider = user.oauthProviders.find(provider => provider.provider === 'github');
+    if (!githubProvider || !githubProvider.accessToken) {
+        throw new Error('GitHub access token not found for the user');
+    }
+
+    const githubApiUrl = `https://api.github.com/repos/${owner}/${repository}/hooks/${hookId}`;
+    const response = await fetch(githubApiUrl, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `token ${githubProvider.accessToken}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (response.ok) {
+        console.log(`Webhook ${hookId} deleted successfully`);
+        return true;
+    } else {
+        const error = await response.json();
+        console.error(`Failed to delete webhook: ${error.message}`);
+        throw new Error(`Failed to delete webhook: ${error.message}`);
+    }
   }
 }

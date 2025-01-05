@@ -54,12 +54,12 @@ export class ActionsService {
     return actionFunction(userId, params);
   }
 
-  async destroyAction(userId: string, name: string, params: {}) {
+  async destroyAction(userId: string, name: string, metadata: {}) {
     const destroyFunction = this.destroyServiceRegistry[name];
 
     if (!destroyFunction)
         throw new Error(`Reaction "${name}" not found.`);
 
-    return destroyFunction(userId, params);
+    return destroyFunction(userId, metadata);
   }
 }
