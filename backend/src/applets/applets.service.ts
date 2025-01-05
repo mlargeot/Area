@@ -172,7 +172,7 @@ export class AppletsService {
       );
     }
 
-    // Destroy de l'action
+    this.actionsService.destroyAction(userId, user.applets[0].action.name, user.applets[0].metadata)
 
     const result = await this.userModel.updateOne(
       { _id: userId, 'applets.appletId': appletId },
