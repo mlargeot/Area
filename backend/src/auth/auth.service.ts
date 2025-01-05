@@ -11,15 +11,15 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as nodemailer from 'nodemailer';
 import axios from 'axios';
 import * as qs from 'qs';
-import e from 'express';
+import { ProviderDto } from './dto/provider-dto';
 
 // services format:
 const services = [
-  { name: 'Discord', color: '#5865F2', isActive: false, email: ''},
-  { name: 'Spotify', color: '#1DB954', isActive: false, email: ''},
-  { name: 'Twitch', color: '#9146FF', isActive: false, email: ''},
-  { name: 'Google', color: '#FF0000', isActive: false, email: ''},
-  { name: 'Github', color: '#333333', isActive: false, email: ''},
+  { name: 'Discord', color: '#5865F2', isActive: false, email: '' },
+  { name: 'Spotify', color: '#1DB954', isActive: false, email: '' },
+  { name: 'Twitch', color: '#9146FF', isActive: false, email: '' },
+  { name: 'Google', color: '#FF0000', isActive: false, email: '' },
+  { name: 'Github', color: '#333333', isActive: false, email: '' },
 ];
 
 @Injectable()
@@ -157,292 +157,153 @@ export class AuthService {
     return { message: 'Password reset successful!' };
   }
 
-  /**
-   * Logs in a user using Google OAuth.
-   * @param user
-   * @returns An object containing the access token.
-   * @throws HttpException if the user is not found.
-   */
-  async googleLogin(user: any) {
-    console.log('googleLogin');
-    console.log(user);
-
-    const { email, firstName, lastName, picture, accessToken, refreshToken } =
-      user;
-    let existingUser = await this.userModel.findOne({
-      email,
-      connectionMethod: 'google',
-    });
-
-    if (!existingUser) {
-      existingUser = await this.userModel.create({
-        email,
-        password: null,
-        connectionMethod: 'google',
-        oauthProviders: [
-          {
-            provider: 'google',
-            email,
-            accessToken,
-            refreshToken,
-            accountId: null
-          },
-        ],
-      });
-    }
-
-    const payload = { email: existingUser.email, sub: existingUser._id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
-  }
-
-  async discordLogin(user: any) {
-    console.log('discordLogin');
-    console.log(user);
-
-    const { email, firstName, lastName, picture, accessToken, refreshToken } =
-      user;
-    let existingUser = await this.userModel.findOne({
-      email,
-      connectionMethod: 'discord',
-    });
-
-    if (!existingUser) {
-      existingUser = await this.userModel.create({
-        email,
-        password: null,
-        connectionMethod: 'discord',
-        oauthProviders: [
-          {
-            provider: 'discord',
-            email,
-            accessToken,
-            refreshToken,
-            accountId: null
-          },
-        ],
-      });
-    }
-
-    const payload = { email: existingUser.email, sub: existingUser._id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
-  }
-
-  /**
-   * Logs in a user using GitHub OAuth.
-   * @param user
-   * @returns An object containing the access token.
-   * @throws HttpException if the user is not found.
-   */
-  async githubLogin(user: any) {
-    console.log('githubLogin');
-    console.log(user);
-
-    const { email, username, githubId, avatar, accessToken} = user;
-    let existingUser = await this.userModel.findOne({
-      email,
-      connectionMethod: 'github',
-    });
-
-    if (!existingUser) {
-      existingUser = await this.userModel.create({
-        email,
-        password: null,
-        connectionMethod: 'github',
-        oauthProviders: [
-          {
-            provider: 'github',
-            email,
-            accessToken,
-            refreshToken: null,
-            acountId: githubId,
-          },
-        ],
-      });
-    }
-
-    const payload = { email: existingUser.email, sub: existingUser._id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
-  }
-
   async protectedResource(tmpUser: any) {
     const user = await this.userModel.findOne({ _id: tmpUser.userId });
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    const { email, _id} = user;
+    const { email, _id } = user;
     return { email, _id };
   }
 
-  async logWithGoogle(code: string) {
-    try {
-      const { data } = await axios.post('https://oauth2.googleapis.com/token', {
-        code,
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: "http://localhost:8081/auth-handler",
-        grant_type: 'authorization_code',
+  providers = {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+      scopes: ['openid', 'profile', 'email'],
+    },
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      authorizationEndpoint: 'https://discord.com/api/oauth2/authorize',
+      scopes: ['identify', 'email'],
+    },
+  };
+
+  loginProvider(service: string, state: any): string {
+    console.log('loginProvider');
+    console.log(service);
+    console.log(state);
+
+    const provider = this.providers[service];
+    if (!provider) {
+      throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
+    }
+
+    const redirectUri = 'http://localhost:8080/auth/callback';
+    const authorizationUrl = `${provider.authorizationEndpoint}?client_id=${provider.clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${provider.scopes.join(
+      ' ',
+    )}&state=${state}`;
+
+    return authorizationUrl;
+  }
+
+  async loginProviderCallback(provider: string, code: string): Promise<string> {
+    console.log('loginProviderCallback');
+
+    let providerDto;
+    switch (provider) {
+      case 'google':
+        providerDto = await this.exchangeTokenGoogle(code);
+        break;
+      case 'discord':
+        providerDto = await this.exchangeTokenDiscord(code);
+        break;
+      default:
+        throw new HttpException('Invalid provider', HttpStatus.BAD_REQUEST);
+    }
+
+    const user = await this.userModel.findOne({
+      email: providerDto.email,
+      connectionMethod: providerDto.provider,
+    });
+
+    if (!user) {
+      const newUser = await this.userModel.create({
+        email: providerDto.email,
+        password: null,
+        connectionMethod: providerDto.provider,
+        oauthProviders: [providerDto],
       });
-      console.log(data);
-      const idToken = data.id_token;
-      const decoded = this.jwtService.decode(idToken);
-      const email = decoded.email;
-      let user = await this.userModel.findOne({
-        email,
-        connectionMethod: 'google',
-      });
-      if (!user) {
-        user = await this.userModel.create({
-          email,
-          password: null,
-          connectionMethod: 'google',
-          oauthProviders: [
-            {
-              provider: 'google',
-              email,
-              accessToken: data.access_token,
-              refreshToken: data.refresh_token,
-            },
-          ],
-        });
-      }
+      const payload = { email: newUser.email, sub: newUser._id };
+      return this.jwtService.sign(payload);
+    } else {
       const payload = { email: user.email, sub: user._id };
-      return {
-        access_token: this.jwtService.sign(payload),
-      };
-    } catch (error) {
-      console.error('Token exchange failed:');
-      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      return this.jwtService.sign(payload);
     }
   }
 
-  async logWithDiscord(code: string) {
-    console.log("logWithDiscord");
-    try {
-      const { data } = await axios.post(
-        'https://discord.com/api/oauth2/token',
-        qs.stringify({
-          code,
-          client_id: process.env.DISCORD_CLIENT_ID,
-          client_secret: process.env.DISCORD_CLIENT_SECRET,
-          redirect_uri: "http://localhost:8081/auth-handler",
-          grant_type: 'authorization_code',
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      );
-      console.log(data);
-      const accessToken = data.access_token;
-      const refreshToken = data.refresh_token;
-      const discordUser = await axios.get('https://discord.com/api/v9/users/@me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      console.log(discordUser.data);
-      let user = await this.userModel.findOne({
-        email: discordUser.data.email,
-        connectionMethod: 'discord',
-      });
-      if (!user) {
-        user = await this.userModel.create({
-          email: discordUser.data.email,
-          password: null,
-          connectionMethod: 'discord',
-          oauthProviders: [
-            {
-              provider: 'discord',
-              email: discordUser.data.email,
-              accessToken,
-              refreshToken,
-            },
-          ],
-        });
-      }
+  async connectProviderCallback(
+    provider: string,
+    code: string,
+    userId: string,
+  ) {
+    console.log('connectProviderCallback');
 
-      const payload = { email: user.email, sub: user._id };
-      return {
-        access_token: this.jwtService.sign(payload),
-      };
-
-    } catch (error) {
-      console.error('Token exchange failed:', error.response?.data || error.message);
-      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-
-
-  async linkGoogle(code: string, user: any) {
-    console.log('connectGoogle');
-
-    const { userId } =
-      user;
-    let existingUser = await this.userModel.findOne({
+    const user = await this.userModel.findOne({
       _id: userId,
     });
-    if (!existingUser)
+    if (!user)
       throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
 
+    let providerDto;
+    switch (provider) {
+      case 'google':
+        providerDto = await this.exchangeTokenGoogle(code);
+        break;
+      case 'discord':
+        providerDto = await this.exchangeTokenDiscord(code);
+        break;
+      default:
+        throw new HttpException('Invalid provider', HttpStatus.BAD_REQUEST);
+    }
+
+    const providerIndex = user.oauthProviders.findIndex(
+      (provider) => provider.provider === providerDto.provider,
+    );
+    if (providerIndex === -1) {
+      user.oauthProviders.push(providerDto);
+    } else {
+      user.oauthProviders[providerIndex].accessToken = providerDto.token;
+      user.oauthProviders[providerIndex].refreshToken =
+        providerDto.refreshToken;
+      user.oauthProviders[providerIndex].email = providerDto.email;
+      user.oauthProviders[providerIndex].accountId = providerDto.accountId;
+    }
+  }
+
+  async exchangeTokenGoogle(code: string): Promise<ProviderDto> {
     try {
       const { data } = await axios.post('https://oauth2.googleapis.com/token', {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: "http://localhost:8081/auth-handler",
+        redirect_uri: 'http://localhost:8080/auth/callback',
         grant_type: 'authorization_code',
       });
       console.log(data);
       const idToken = data.id_token;
       const decoded = this.jwtService.decode(idToken);
+      console.log(decoded);
 
-      const oauthProviderGoogle: any = {
+      return {
         provider: 'google',
         email: decoded.email,
-        accessToken: data.access_token,
+        token: data.access_token,
         refreshToken: data.refresh_token,
         accountId: decoded.sub,
       };
-
-      const providerIndex = existingUser.oauthProviders.findIndex((provider) => provider.provider === 'google');
-
-      if (providerIndex === -1) {
-        existingUser.oauthProviders.push(oauthProviderGoogle);
-      }
-      else {
-        existingUser.oauthProviders[providerIndex].accessToken = data.access_token;
-        existingUser.oauthProviders[providerIndex].refreshToken = data.refresh_token;
-        existingUser.oauthProviders[providerIndex].email = decoded.email;
-        existingUser.oauthProviders[providerIndex].accountId = decoded.sub;
-      }
-
-      existingUser.save();
-
-      console.log(decoded);
-    } catch (error) {
+    } catch {
       console.error('Token exchange failed:');
-      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Token exchange failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async linkDiscord(code: string, user: any) {
-    console.log('connectDiscord');
-
-    const { userId } = user;
-    let existingUser = await this.userModel.findOne({
-      _id: userId,
-    });
-    if (!existingUser)
-      throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
-
+  async exchangeTokenDiscord(code: string): Promise<ProviderDto> {
     try {
       const { data } = await axios.post(
         'https://discord.com/api/oauth2/token',
@@ -450,145 +311,69 @@ export class AuthService {
           code,
           client_id: process.env.DISCORD_CLIENT_ID,
           client_secret: process.env.DISCORD_CLIENT_SECRET,
-          redirect_uri: "http://localhost:8081/auth-handler",
+          redirect_uri: 'http://localhost:8080/auth/callback',
           grant_type: 'authorization_code',
         }),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-        }
+        },
       );
       console.log(data);
       const accessToken = data.access_token;
       const refreshToken = data.refresh_token;
-      const discordUser = await axios.get('https://discord.com/api/v9/users/@me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+      const discordUser = await axios.get(
+        'https://discord.com/api/v9/users/@me',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-      });
+      );
+      console.log(discordUser.data);
 
-      const oauthProviderDiscord: any = {
+      return {
         provider: 'discord',
         email: discordUser.data.email,
-        accessToken,
+        token: accessToken,
         refreshToken,
         accountId: discordUser.data.id,
-        scopes: discordUser.data.scopes,
       };
-
-      const providerIndex = existingUser.oauthProviders.findIndex((provider) => provider.provider === 'discord');
-      if (providerIndex === -1) {
-        existingUser.oauthProviders.push(oauthProviderDiscord);
-      }
-      else {
-        existingUser.oauthProviders[providerIndex].accessToken = accessToken;
-        existingUser.oauthProviders[providerIndex].refreshToken = refreshToken;
-        existingUser.oauthProviders[providerIndex].email = discordUser.data.email;
-        existingUser.oauthProviders[providerIndex].accountId = discordUser.data.id;
-      }
-
-      existingUser.save();
-
-      console.log(discordUser.data);
-    }
-    catch (error) {
-      console.error('Token exchange failed:', error.response?.data || error.message);
-      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  async linkGithub(code: string, user: any) {
-    console.log('connectGithub');
-
-    const { userId } = user;
-    let existingUser = await this.userModel.findOne({
-      _id: userId,
-    });
-    if (!existingUser)
-      throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
-
-    try {
-      const { data } = await axios.post(
-        'https://github.com/login/oauth/authorize',
-        qs.stringify({
-          code,
-          client_id: process.env.GITHUB_CLIENT_ID,
-          client_secret: process.env.GITHUB_CLIENT_SECRET,
-          redirect_uri: "http://localhost:8081/auth-handler",
-          grant_type: 'authorization_code',
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      );
-      console.log(data);
-      const accessToken = data.access_token;
-      const refreshToken = data.refresh_token;
-      const githubUser = await axios.get('https://api.github.com/user', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const oauthProviderGithub: any = {
-        provider: 'github',
-        email: githubUser.data.email,
-        accessToken,
-        refreshToken,
-        accountId: githubUser.data.id,
-      };
-
-      const providerIndex = existingUser.oauthProviders.findIndex((provider) => provider.provider === 'github');
-
-      if (providerIndex === -1) {
-        existingUser.oauthProviders.push(oauthProviderGithub);
-      }
-      else {
-        existingUser.oauthProviders[providerIndex].accessToken = accessToken;
-        existingUser.oauthProviders[providerIndex].refreshToken = refreshToken;
-        existingUser.oauthProviders[providerIndex].email = githubUser.data.email;
-        existingUser.oauthProviders[providerIndex].accountId = githubUser.data.id;
-      }
-
-      existingUser.save();
-
-      console.log(githubUser.data);
-
     } catch (error) {
-      console.error('Token exchange failed:', error.response?.data || error.message);
-      throw new HttpException('Token exchange failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      console.error(
+        'Token exchange failed:',
+        error.response?.data || error.message,
+      );
+      throw new HttpException(
+        'Token exchange failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-  }
-
-  async linkSpotify(code: string, user: any) {
-  }
-
-  async linkTwitch(code: string, user: any) {
   }
 
   async listServices(user: any) {
     console.log('listServices');
     const { userId } = user;
-    let existingUser = await this.userModel.findOne({
+    const existingUser = await this.userModel.findOne({
       _id: userId,
     });
     if (!existingUser)
       throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
 
-    console.log("test", existingUser.oauthProviders);
+    console.log('test', existingUser.oauthProviders);
 
-    let servicesCopy = services.map((service) => {
+    const servicesCopy = services.map((service) => {
       service.isActive = false;
       service.email = '';
       return service;
-    }
-    );
+    });
 
     existingUser.oauthProviders.forEach((provider) => {
-      const service = servicesCopy.find((service) => service.name.toLowerCase() === provider.provider.toLowerCase());
+      const service = servicesCopy.find(
+        (service) =>
+          service.name.toLowerCase() === provider.provider.toLowerCase(),
+      );
       if (service) {
         service.isActive = true;
         service.email = provider.email;

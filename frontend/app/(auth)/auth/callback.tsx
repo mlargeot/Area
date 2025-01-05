@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-export default function authHandler() {
+export default function callback() {
     const urlToken = new URLSearchParams(window.location.search).get('token');
     const router = useRouter();
     const urlCode = new URLSearchParams(window.location.search).get('code');
@@ -14,6 +14,7 @@ export default function authHandler() {
 
     const loginService = async (service: string) => {
         try {
+
             const response = await axios.post(`http://localhost:8080/auth/login/${service}`, {
                 code: urlCode,
                 service

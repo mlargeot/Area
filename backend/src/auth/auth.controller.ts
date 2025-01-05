@@ -15,11 +15,12 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import * as crypto from 'node:crypto';
+import { saveState, getState, deleteState } from './state.store';
 
 @Controller('auth')
 export class AuthController {
@@ -66,78 +67,51 @@ export class AuthController {
     return user;
   }
 
-  @Get('github')
-  @UseGuards(AuthGuard('github'))
-  @ApiResponse({
-    status: 200,
-    description: 'Discord authentication successful',
-  })
-  @ApiBody({ type: CreateUserDto })
-  async githubAuth(@Req() req) {
-    console.log('githubdAuth');
-  }
-
-  @Get('github/callback')
-  @UseGuards(AuthGuard('github'))
-  @ApiResponse({
-    status: 200,
-    description: 'Github authentication sucessful',
-  })
-  @ApiBody({ type: CreateUserDto })
-  async githubAuthRedirect(@Req() req) {
-    console.log('githubAuthRedirect');
-    return this.authService.githubLogin(req.user);
-  }
-
-  @Post('login/:service')
+  @Get('login/:provider')
   @ApiResponse({ status: 200, description: 'Service connected' })
-  async loginService(@Body() { code }, @Param('service') service, @Req() req) {
-    switch (service) {
-      case 'google':
-        return this.authService.logWithGoogle(code);
-      case 'discord':
-        return this.authService.logWithDiscord(code);
-      default:
-        throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
-    }
+  async loginProvider(@Param('provider') provider, @Req() req, @Res() res) {
+    console.log('loginProvider');
+    const redirect = req.query.redirect_uri;
+    const state = crypto.randomUUID();
+    saveState(state, { provider: provider, action: 'login', redirect });
+    const providerUrl = this.authService.loginProvider(provider, state);
+    return res.redirect(providerUrl);
   }
 
-  @Post('unkink/:service')
-  @UseGuards(JwtAuthGuard)
-  @ApiResponse({ status: 200, description: 'Service disconnected' })
-  async unlinkService(@Param('service') service, @Req() req) {
-    // switch (service) {
-    //   case 'google':
-    //     return this.authService.unlinkGoogle(req.user);
-    //   case 'discord':
-    //     return this.authService.unlinkDiscord(req.user);
-    //   case 'github':
-    //     return this.authService.unlinkGithub(req.user);
-    //   default:
-    //     throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
-    // }
-  }
-
-  @Post('connect/:service')
+  @Get('connect/:provider')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
-  async connectService(@Body() { code }, @Param('service') service, @Req() req) {
-    console.log('connectService');
-    switch (service) {
-      case 'google':
-        return this.authService.linkGoogle(code, req.user);
-      case 'discord':
-        return this.authService.linkDiscord(code, req.user);
-      case 'github':
-        return this.authService.linkGithub(code, req.user);
-      case 'spotify':
-        return this.authService.linkSpotify(code, req.user);
-      case 'twitch':
-        return this.authService.linkTwitch(code, req.user);
-      default:
-        throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
-    }
+  async connectProvider(@Param('provider') provider, @Req() req, @Res() res) {
+    console.log('connectProvider');
+    const redirect = req.query.redirect_uri;
+    const state = crypto.randomUUID();
+    saveState(state, { provider: provider, action: 'connect', redirect });
+    const providerUrl = this.authService.loginProvider(provider, state);
+    return res.redirect(providerUrl);
+  }
 
+  @Get('callback')
+  @ApiResponse({ status: 200, description: 'Service connected' })
+  @Redirect()
+  async callback(@Query('code') code, @Query('state') state) {
+    console.log('callback');
+
+    const { provider, action, redirect, user_id } = getState(state);
+    deleteState(state);
+
+    switch (action) {
+      case 'login':
+        const token = await this.authService.loginProviderCallback(
+          provider,
+          code,
+        );
+        return { url: `${redirect}?token=${token}` };
+      case 'connect':
+        await this.authService.connectProviderCallback(provider, code, user_id);
+        return { url: redirect };
+      default:
+        throw new HttpException('Invalid action', HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('list-services')

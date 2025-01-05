@@ -32,7 +32,8 @@
     "react-native-screens": "~4.1.0",
     "react-native-web": "~0.19.13",
     "tamagui": "^1.120.0",
-    "undefined": "expo-auth-session/providers/google"
+    "undefined": "expo-auth-session/providers/google",
+    "expo-auth-session": "~6.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
