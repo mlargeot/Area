@@ -45,8 +45,10 @@ export class WebhookService {
   }
 
   async handlePREvent(body: any) {
-    if (body.action !== 'assigned') {
-      return await this.handlePRAssignee(body["assignee"]["id"]);
+    if ("action" in body) {
+      if (body.action !== 'assigned') {
+        return await this.handlePRAssignee(body["assignee"]["id"]);
+      }
     }
     return;
   }
