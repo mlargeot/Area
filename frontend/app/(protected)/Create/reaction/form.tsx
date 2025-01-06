@@ -1,19 +1,20 @@
 import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
 import { useNavigationData } from '../../../../context/navigationContext';
 import { useApplet, Reaction, emptyReaction, getParamValueString } from '../../../../context/appletContext';
+import { useServiceList, Params } from '../../../../context/serviceListContext';
 import { Link } from 'expo-router'
 import React, { useEffect, useRef } from 'react';
 
 
 const returnField = (
-  {type, name} : { type : string, name : string },
+  paramTemplate : Params,
   paramsValue: React.MutableRefObject<{name: string; value: string;}[]>,
   reaction: Reaction
   ) =>{
 
   const handleInput = (val : string) => {
     paramsValue.current = paramsValue.current.map((param) => {
-      if (param.name === name) {
+      if (param.name === paramTemplate.name) {
         return {
           name: param.name,
           value: val
@@ -23,34 +24,39 @@ const returnField = (
     });
   }
 
-  const defaultValue : string = getParamValueString(name, reaction)
+  const defaultValue : string = getParamValueString(paramTemplate.name, reaction)
 
-  switch (type) {
+  handleInput(defaultValue);
+  return (
+    <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
+  )
+
+  switch (paramTemplate.type) {
     case "bool":
       return (
-        <SwitchWithLabel size="$4" label={name} defaultChecked />
+        <SwitchWithLabel size="$4" label={paramTemplate.name} defaultChecked />
       )
     case "input":
       handleInput(defaultValue)
       return (
-        <InputField name={name} defaultValue={defaultValue} event={handleInput} />
+        <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
       )
       case "textArea":
       handleInput(defaultValue)
       return (
-        <TextAreaField defaultValue={defaultValue} name={name} event={handleInput} />
+        <TextAreaField defaultValue={defaultValue} name={paramTemplate.name} event={handleInput} />
       )
     case "date":
       return (
-        <DateField name={name} />
+        <DateField name={paramTemplate.name} />
       )
     case "number":
       return (
-        <NumberField name={name} />
+        <NumberField name={paramTemplate.name} />
       )
     default:
       return (
-        <Text>{name}</Text>
+        <Text>{paramTemplate.name}</Text>
       )
   }
 }
@@ -127,27 +133,27 @@ const getReaction = (reactionId: string, reactions: Reaction[]): Reaction => {
   return emptyReaction();
 }
 
-const getParams = (reactionName : string) => {
-  const paramDict: { [key: string]: { type: string; name: string; }[] } = {
-    "pr_assigned": [
-      {type: "input", name: "email"},
-      {type: "input", name: "githubRepoUrl"},
-    ],
-    "send_webhook_message": [
-      {type: "input", name: "url"},
-      {type: "input", name: "content"},
-    ]
-  }
-
-  return paramDict[reactionName]
-}
-
 export default function ServicesScreen() {
   const { applet, setApplet } = useApplet();
   const { navigationData, setNavigationData } = useNavigationData();
   const reaction : Reaction = getReaction(navigationData.reactionId, applet.reactions)
-  const params = getParams(reaction.name);
   const paramsValue = useRef<{ name: string; value: string }[]>([])
+  
+  const { serviceReactionList } = useServiceList();
+  const [params, setParams] = React.useState<Params[]>([]);
+  
+  useEffect(() => {
+    const filteredServices = serviceReactionList.filter((service) => service.service === reaction.service);
+    const params = filteredServices[0].effect.filter((effect) => effect.name === reaction.name)[0].argumentsExample;
+    setParams(params)
+
+    for (let i = 0; i < params.length; i++) {
+      paramsValue.current.push({
+        name: params[i].name,
+        value: ""
+      })
+    }
+  }, [serviceReactionList, reaction])
 
   useEffect(() => {
     for (let i = 0; i < params.length; i++) {

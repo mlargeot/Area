@@ -1,38 +1,50 @@
-import { ExternalLink } from '@tamagui/lucide-icons'
-import { X } from '@tamagui/lucide-icons'
-import { Anchor, H2, Paragraph, XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Adapt, Sheet, Fieldset, Input, Label, Select, TooltipSimple, Unspaced } from 'tamagui'
+import { XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Adapt, Sheet, Fieldset, Input, Label, Select, TooltipSimple, Unspaced } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from '@tamagui/lucide-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 import { useMedia } from 'tamagui'
+import axios from 'axios';
+import { Platform } from 'react-native';
+import ConnectService from "../../hooks/connectService";
 import Header from './../../components/header';
 
-const services = [
-    { name: 'Discord', color: '#5865F2', isActive: true},
-    { name: 'Spotify', color: '#1DB954', isActive: false},
-    { name: 'Twitch', color: '#9146FF', isActive: true},
-    { name: 'X', color: '#1DA1F2', isActive: false},
-    { name: 'Google', color: '#FF0000', isActive: true},
-    { name: 'Github', color: '#333333', isActive: false},
-];
-
 export default function ProfileScreen() {
+    const [services, setServices] = useState<any[]>([]);
+
     const router = useRouter();
     const media = useMedia()
     const [isDialogVisible, setDialogVisible] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
-    const disconnect = () => {
-        AsyncStorage.removeItem('access_token');
-        router.push('/explore');
+
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
+
+    const fetchServices = async () => {
+        const token = await AsyncStorage.getItem('access_token');
+        try {
+            const response = await axios.get(apiUrl + `/auth/list-services`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("response", response);
+            if (response.status === 200) {
+                setServices(response.data);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
     }
+
 
     const toggleDialog = (service: any) => {
         setSelectedService(service);
         setDialogVisible(!isDialogVisible);
     }
+
+    useEffect(() => {
+        fetchServices();
+    } , []);
 
     return (
         <YStack f={1} bg="$background">
@@ -40,6 +52,7 @@ export default function ProfileScreen() {
             <ScrollView>
                 <YStack paddingVertical="$4" width="100%" alignItems="center" gap="$4">
                     <XStack
+                        key={services.length}
                         flexWrap="wrap"
                         justifyContent="center"
                         gap="$4"
@@ -108,10 +121,13 @@ export default function ProfileScreen() {
                             <>
                                 <Dialog.Title>{selectedService.name}</Dialog.Title>
                                 <Dialog.Description>
+                                    {selectedService.email}
+                                </Dialog.Description>
+                                <Dialog.Description>
                                     {selectedService.isActive ? 'This service is currently activated.' : 'This service is currently deactivated.'}
                                 </Dialog.Description>
                                 {!selectedService.isActive && (
-                                    <Button onPress={() => alert('Connect to ' + selectedService.name)}>
+                                    <Button onPress={() =>ConnectService(selectedService.name.toLowerCase())}>
                                         <Text color="#fff">Connect</Text>
                                     </Button>
                                 )}

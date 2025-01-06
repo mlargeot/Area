@@ -17,7 +17,6 @@ export class AppletDto {
         service: "github",
         name: "pr_assigned",
         params: {
-            email: "example@gmail.com",
             githubRepoUrl: "https://github.com/owner/repository"
         }
     }, description: 'The action of the applet' })
@@ -27,7 +26,7 @@ export class AppletDto {
         service: "discord",
         name: "send_webhook_message",
         params: {
-            webhook_url: "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+            url: "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
             content: "This is a first example message"
         }
     }, description: 'The action of the applet' })
@@ -35,6 +34,14 @@ export class AppletDto {
 
     @ApiProperty({ example: true, description: "Activity of the applet."})
     active: boolean;
+
+    @ApiProperty({ example: {
+        response: {
+            id: "123456",
+            name: "exmaple-webhook-metadata"
+        }
+    },description: "List of the sub-data of the applet."})
+    metadata: Record<string, any>;
 }
 
 export class AppletBodyDto {

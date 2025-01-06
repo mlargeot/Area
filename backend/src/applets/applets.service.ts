@@ -65,6 +65,7 @@ export class AppletsService {
       action: null,
       reaction: appletDto.reaction,
       active: appletDto.active,
+      metadata: null,
     };
   
     try {
@@ -73,7 +74,13 @@ export class AppletsService {
         appletDto.action.name,
         appletDto.action.params,
       );
-  
+
+      if (actionResponse) {
+        newApplet.metadata = {
+          "response": actionResponse
+        }
+      }
+
       const appletAction: AppletModuleDto = {
         name: appletDto.action.name,
         service: appletDto.action.service,
@@ -165,7 +172,7 @@ export class AppletsService {
       );
     }
 
-    // Destroy de l'action
+    this.actionsService.destroyAction(userId, user.applets[0].action.name, user.applets[0].metadata)
 
     const result = await this.userModel.updateOne(
       { _id: userId, 'applets.appletId': appletId },
