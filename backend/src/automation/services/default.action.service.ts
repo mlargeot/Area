@@ -17,7 +17,7 @@ export class ActionsService {
         {
           name: "pr_assigned",
           description: "Triggered when a pull request is assigned to the user.",
-          argumentsNumber: 2,
+          argumentsNumber: 1,
           argumentsExample: [
             {
                 name: "githubRepoUrl",
