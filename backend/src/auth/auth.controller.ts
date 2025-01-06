@@ -85,9 +85,24 @@ export class AuthController {
     console.log('connectProvider');
     const redirect = req.query.redirect_uri;
     const state = crypto.randomUUID();
-    saveState(state, { provider: provider, action: 'connect', redirect });
+    console.log(req.user);
+    saveState(state, {
+      provider: provider,
+      action: 'connect',
+      redirect,
+      user_id: req.user.userId,
+    });
     const providerUrl = this.authService.loginProvider(provider, state);
     return { redirect_uri: providerUrl };
+  }
+
+  @Get('disconnect/:provider')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 200, description: 'Service connected' })
+  async disconnectProvider(@Param('provider') provider, @Req() req) {
+    console.log('disconnectProvider');
+    await this.authService.disconnectProvider(provider, req.user);
+    return { message: 'Service disconnected' };
   }
 
   @Get('callback')

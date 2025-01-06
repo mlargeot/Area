@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Search, PlusCircle, User } from '@tamagui/lucide-icons';
+import { Logs, Search, PlusCircle, User } from '@tamagui/lucide-icons';
 import { useTheme } from 'tamagui';
 
 export default function TabLayout() {
@@ -24,10 +24,10 @@ export default function TabLayout() {
         }} 
       />
       <Tabs.Screen 
-        name="library" 
+        name="logs"
         options={{
-          title: 'Applets',
-          tabBarIcon: ({ color }) => <Home color={color} />
+          title: 'Logs',
+          tabBarIcon: ({ color }) => <Logs color={color} />
         }} 
       />
       <Tabs.Screen 
