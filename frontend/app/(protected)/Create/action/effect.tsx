@@ -11,7 +11,7 @@ export default function ServicesScreen() {
   const { serviceActionList } = useServiceList();
   const { navigationData } = useNavigationData();
   const currentService = navigationData.currentService;
-  const actions = serviceActionList.filter((service) => service.service === currentService)[0].effect
+  const actions = serviceActionList.filter((service) => service.service.toLowerCase() === currentService.toLowerCase())[0].effect
 
   return (
     <ScrollView
@@ -25,7 +25,7 @@ export default function ServicesScreen() {
         {actions.flatMap((action, i) => [
             <Link key={`button-${i}`} href="/Create/action/form" asChild >
                 <Button
-                    onPress={() => {setApplet({
+                    onPress={() => {action.name !== applet.action.name && setApplet({
                         action: {
                           service: currentService,
                           name: action.name,

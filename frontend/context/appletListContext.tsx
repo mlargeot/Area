@@ -40,8 +40,20 @@ export const AppletListProvider = ({ children } : { children : ReactNode }) => {
             ...prev,
             {
               appletId: applets.data[i].appletId,
-              action: applets.data[i].action,
-              reactions: [applets.data[i].reaction]
+              action: {
+                service: applets.data[i].action.service,
+                name: applets.data[i].action.name,
+                _id: applets.data[i].action._id,
+                params: Object.entries(applets.data[i].action.params).map(([key, value]) => ({ [key]: value as string }))
+              },
+              reactions: [
+                {
+                  service: applets.data[i].reaction.service,
+                  name: applets.data[i].reaction.name,
+                  params: Object.entries(applets.data[i].reaction.params).map(([key, value]) => ({ [key]: value as string })),
+                  _id: applets.data[i].reaction._id
+                }
+              ]
             }
           ]);
       }

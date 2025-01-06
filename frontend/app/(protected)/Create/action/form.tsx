@@ -125,7 +125,7 @@ export default function ServicesScreen() {
   const [params, setParams] = React.useState<Params[]>([]);
 
   useEffect(() => {
-    const filteredServices = serviceActionList.filter((service) => service.service === applet.action.service);
+    const filteredServices = serviceActionList.filter((service) => service.service.toLowerCase() === applet.action.service.toLowerCase());
     const params = filteredServices[0].effect.filter((effect) => effect.name === applet.action.name)[0].argumentsExample;
     setParams(params)
 

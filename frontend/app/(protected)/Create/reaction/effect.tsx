@@ -3,7 +3,7 @@ import { useApplet, Applet } from '../../../../context/appletContext'
 import { useServiceList } from '../../../../context/serviceListContext'
 import { useNavigationData } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 const getCurrentReactionName = (applet: Applet, reactionId: string): string => {
   for (let i = 0; i < applet.reactions.length; i++) {
@@ -21,17 +21,17 @@ export default function ServicesScreen() {
   const currentService = navigationData.currentService;
   const actionType = navigationData.actionType;
   const reactionId = navigationData.reactionId;
-  const reactions = serviceReactionList.filter((service) => service.service === currentService)[0].effect;
+  const reactions = serviceReactionList.filter((service) => service.service.toLowerCase() === currentService.toLowerCase())[0].effect;
 
   const idIndex = useRef<number>(0);
   const newId  = useRef<string>("");
 
   const newReaction = ({ name } : { name : string }) => {
-    newId.current = `reaction-${currentService}-${name}-${idIndex.current}`;
+    newId.current = `${idIndex.current}`;
 
     for (let i = 0; i < applet.reactions.length; i++) {
       if (applet.reactions[i]._id === newId.current) {
-        newId.current = `reaction-${currentService}-${name}-${idIndex.current + 1}`;
+        newId.current = `${idIndex.current + 1}`;
         idIndex.current++;
         i = -1;
       }
@@ -60,10 +60,8 @@ export default function ServicesScreen() {
   }
 
   const modifyReaction = (name : string) => {
-    newId.current = `reaction-${currentService}-${name}-${idIndex.current}`;
-
     for (let i = 0; i < applet.reactions.length; i++) {
-      if (applet.reactions[i]._id === newId.current) {
+      if (applet.reactions[i].name === name) {
         return;
       }
     }
@@ -75,7 +73,7 @@ export default function ServicesScreen() {
         reactions: applet.reactions.map((reaction) => {
           if (reaction._id === reactionId) {
             return {
-              _id: newId.current,
+              _id: reaction._id,
               name: name,
               service: currentService,
               params: []

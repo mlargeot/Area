@@ -140,7 +140,7 @@ export default function ServicesScreen() {
   const [params, setParams] = React.useState<Params[]>([]);
   
   useEffect(() => {
-    const filteredServices = serviceReactionList.filter((service) => service.service === reaction.service);
+    const filteredServices = serviceReactionList.filter((service) => service.service.toLowerCase() === reaction.service.toLowerCase());
     const params = filteredServices[0].effect.filter((effect) => effect.name === reaction.name)[0].argumentsExample;
     setParams(params)
 
@@ -188,7 +188,7 @@ export default function ServicesScreen() {
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
         <Link href={"/Create/services"} onPress={() => {setNavigationData({
           currentService: navigationData.currentService,
-          actionType: "reaction",
+          actionType: "modify",
           reactionId: navigationData.reactionId
         })}}>
           <H2>
