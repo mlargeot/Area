@@ -184,7 +184,7 @@ export class AuthService {
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-      scopes: ['user:email:repo'],
+      scopes: ['user:email', 'repo', 'admin:webhook', 'admin:repo_hook'],
     },
     twitch: {
       clientId: process.env.TWITCH_CLIENT_ID,
@@ -362,7 +362,7 @@ export class AuthService {
       return {
         provider: 'google',
         email: decoded.email,
-        token: data.access_token,
+        accessToken: data.access_token,
         refreshToken: data.refresh_token,
         accountId: decoded.sub,
       };
@@ -408,7 +408,7 @@ export class AuthService {
       return {
         provider: 'discord',
         email: discordUser.data.email,
-        token: accessToken,
+        accessToken: accessToken,
         refreshToken,
         accountId: discordUser.data.id,
       };
@@ -457,7 +457,7 @@ export class AuthService {
       return {
         provider: 'twitch',
         email: twitchUser.data.data[0].email,
-        token: accessToken,
+        accessToken: accessToken,
         refreshToken,
         accountId: twitchUser.data.data[0].id,
       };
@@ -505,7 +505,7 @@ export class AuthService {
       return {
         provider: 'spotify',
         email: spotifyUser.data.email,
-        token: accessToken,
+        accessToken: accessToken,
         refreshToken,
         accountId: spotifyUser.data.id,
       };
@@ -551,8 +551,8 @@ export class AuthService {
 
       return {
         provider: 'github',
-        email: githubUser.data.email,
-        token: accessToken,
+        email: githubUser.data.email ? githubUser.data.email : "null",
+        accessToken: accessToken,
         refreshToken: null, // GitHub tokens don't have a refresh token
         accountId: githubUser.data.id,
       };
@@ -603,7 +603,7 @@ export class AuthService {
       return {
         provider: 'microsoft',
         email: microsoftUser.data.userPrincipalName,
-        token: accessToken,
+        accessToken: accessToken,
         refreshToken,
         accountId: microsoftUser.data.id,
       };
