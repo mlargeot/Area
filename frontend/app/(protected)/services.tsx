@@ -1,4 +1,4 @@
-import { XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Adapt, Sheet, Fieldset, Input, Label, Select, TooltipSimple, Unspaced } from 'tamagui'
+import { XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Card, Paragraph, Fieldset, Input, Label, Select, TooltipSimple, Unspaced } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from '@tamagui/lucide-icons';
@@ -13,8 +13,7 @@ import Header from './../../components/header';
 export default function ProfileScreen() {
     const [services, setServices] = useState<any[]>([]);
 
-    const router = useRouter();
-    const media = useMedia()
+    const media = useMedia();
     const [isDialogVisible, setDialogVisible] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
 
@@ -52,41 +51,55 @@ export default function ProfileScreen() {
             <ScrollView>
                 <YStack paddingVertical="$4" width="100%" alignItems="center" gap="$4">
                     <XStack
-                        key={services.length}
                         flexWrap="wrap"
                         justifyContent="center"
                         gap="$4"
                         width="100%"
                     >
                         {services.map((service, index) => (
-                        <XStack
+                        <Card
                             key={index}
-                            backgroundColor={service.color}
+                            bordered
+                            borderWidth={2}
+                            borderColor={service.color}
                             borderRadius="$4"
-                            padding="$4"
-                            width={media.sm ? '20%' : '80%'}
-                            alignItems="flex-start"
-                            flexDirection="column"
-                            gap="$2"
-                        >
-                            <XStack alignItems="center" gap="$3">
-                                <Text color="#fff" fontSize={25}>
-                                    {service.name}
-                                </Text>
-                                <Text color="#fff" fontSize={14}>
-                                    {service.isActive ? 'Activated' : 'Deactivated'}
-                                </Text>
-                            </XStack>
-                            <XStack justifyContent="space-between" width="100%" marginTop="$4">
-                                <Button
+                            width={media.sm ? '90%' : '20%'}
+                            >
+                            <YStack>
+                                <Card.Header padded>
+                                <XStack gap="$3" alignItems="center">
+                                    <XStack flex={1}
+                                        flexDirection={media.sm ? "column" : "row"}
+                                        alignItems="center"
+                                        gap="$2">
+                                        <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">
+                                            {service?.name}
+                                        </Text>
+                                        <Text fontSize={media.sm ? "$2" : "$3"} fontWeight="bold">
+                                            {service.isActive ? 'Activated' : 'Deactivated'}
+                                        </Text>
+                                    </XStack>
+                                </XStack>
+                                </Card.Header>
+                                <Card.Footer padded>
+                                <YStack gap="$3" width="100%" alignItems="flex-start">
+                                    <Paragraph size={media.sm ? "$2" : "$3"}>
+                                        {service?.description}
+                                    </Paragraph>
+                                    <Button
+                                    mt="$2"
+                                    bg={service.color}
+                                    color="white"
                                     onPress={() => toggleDialog(service)}
-                                >
-                                    <Text>
-                                        {!service.isActive ? 'Connect' : 'Disconnect'}
-                                    </Text>
-                                </Button>
-                            </XStack>
-                        </XStack>
+                                    >
+                                        <Text>
+                                            {!service.isActive ? 'Connect' : 'Disconnect'}
+                                        </Text>
+                                    </Button>
+                                </YStack>
+                                </Card.Footer>
+                            </YStack>
+                        </Card>
                         ))}
                     </XStack>
                 </YStack>

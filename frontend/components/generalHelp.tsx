@@ -1,34 +1,74 @@
-import { Stack, Button, YStack, XStack, Text, ScrollView, Card, H1, Paragraph} from 'tamagui';
-import { Link } from 'expo-router';
+import { Button, YStack, XStack, Text, ScrollView, Card, H1, Paragraph} from 'tamagui';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { Info, CheckCircle, Play, Bolt } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMedia } from 'tamagui'
-
-const services = [
-  { name: 'Discord', color: '#5865F2', isActive: true, description:"This is the documentation of reaction and actions discord."},
-  { name: 'Spotify', color: '#1DB954', isActive: false, description:""},
-  { name: 'Twitch', color: '#9146FF', isActive: true, description:""},
-  { name: 'X', color: '#1DA1F2', isActive: false, description:""},
-  { name: 'Google', color: '#FF0000', isActive: true, description:""},
-  { name: 'Github', color: '#333333', isActive: false, description:"GitHub is a web-based hosting service for version control using Git. It  is mostly used for computer code. It offers all of the distributed  version control and source code management (SCM) functionality of Git as well as adding its own features."},
-];
-
-const Actions = [
-    { name: 'New push', description1:"Triggered when a new commit is pushed to a specified repository."},
-    { name: 'Merge', description1:"Make a merge."},
-];
-
-const Reactions = [
-    { name: 'New message', description1:"Send a new message."},
-    { name: 'New channel', description1:"Create a new channel."},
-];
+import axios from 'axios';
 
 export default function GeneralHelp({title}: any) {
+  const [services, setServices] = useState<any[]>([]);
+  const [actions, setactions] = useState<any[]>([]);
+  const [reactions, setreactions] = useState<any[]>([]);
   const router = useRouter()
   const media = useMedia();
-  const service = services.find((s) => s.name === title);
+
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
+
+  const fetchServices = async () => {
+    const token = await AsyncStorage.getItem('access_token');
+    try {
+        const response = await axios.get(apiUrl + `/services`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("response", response);
+        if (response.status === 200) {
+            setServices(response.data);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+  }
+
+  const fetchActions = async () => {
+    const token = await AsyncStorage.getItem('access_token');
+    try {
+        const response = await axios.get(apiUrl + `/actions/` + title, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("response", response);
+        if (response.status === 200) {
+            setactions(response.data);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const fetchReactions = async () => {
+  const token = await AsyncStorage.getItem('access_token');
+  try {
+      const response = await axios.get(apiUrl + `/reactions/` + title, {
+          headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("response", response);
+      if (response.status === 200) {
+          setreactions(response.data);
+      }
+  } catch (error) {
+      console.error(error);
+  }
+}
+
+  useEffect(() => {
+      fetchServices();
+      fetchActions();
+      fetchReactions();
+  } , []);
+
+  const service = services.find((s) => s.service.toLowerCase() === title.toLowerCase());
+  console.log(services);
 
   return (
     <YStack f={1} bg="$background">
@@ -52,7 +92,7 @@ export default function GeneralHelp({title}: any) {
                 <Info size={24} color="$blue10" />
                   <YStack flex={1}>
                     <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">
-                      About {service?.name}
+                      About {service?.service}
                     </Text>
                   </YStack>
                 </XStack>
@@ -91,7 +131,7 @@ export default function GeneralHelp({title}: any) {
               </Card.Header>
               <Card.Footer padded>
                 <YStack gap="$3" width="100%" alignItems="flex-start">
-                  {Actions.map((Action, index) => (
+                  {actions.map((action, index) => (
                       <YStack key={index} width="100%">
                       {index !== 0 && (
                         <YStack
@@ -102,10 +142,10 @@ export default function GeneralHelp({title}: any) {
                         />
                       )}
                       <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">
-                        {Action?.name}
+                        {action?.name}
                       </Text>
                       <Text fontSize={media.sm ? "$2" : "$3"}>
-                        {Action?.description1}
+                        {action?.description}
                       </Text>
                     </YStack>
                     ))}
@@ -138,7 +178,7 @@ export default function GeneralHelp({title}: any) {
               </Card.Header>
               <Card.Footer padded>
                 <YStack gap="$3" width="100%" alignItems="flex-start">
-                  {Reactions.map((Reaction, index) => (
+                  {reactions.map((reaction, index) => (
                       <YStack key={index} width="100%">
                       {index !== 0 && (
                         <YStack
@@ -149,10 +189,10 @@ export default function GeneralHelp({title}: any) {
                         />
                       )}
                       <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">
-                        {Reaction?.name}
+                        {reaction?.name}
                       </Text>
                       <Text fontSize={media.sm ? "$2" : "$3"}>
-                        {Reaction?.description1}
+                        {reaction?.description}
                       </Text>
                     </YStack>
                     ))}
@@ -175,7 +215,7 @@ export default function GeneralHelp({title}: any) {
                 <CheckCircle size={24} color="$green10" />
                   <YStack flex={1}>
                     <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">
-                      Available Actions
+                      You're All Set!
                     </Text>
                   </YStack>
                 </XStack>
