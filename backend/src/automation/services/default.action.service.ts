@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ActionsDto } from 'src/automation/dto/automation.dto';
 import { GithubActionsService } from 'src/automation/services/github.action.service';
 
@@ -12,7 +12,7 @@ export class ActionsService {
     actions: Array<ActionsDto>;
   }> = [
     {
-      service: "github",
+      service: "Github",
       actions: [
         {
           name: "pr_assigned",
@@ -43,6 +43,17 @@ export class ActionsService {
 
   getDefaultActions() {
     return this.defaultActions;
+  }
+
+  getServiceActions(service: string) {
+    const serviceReactions = this.defaultActions.find(
+      (entry) => entry.service === service
+    );
+
+    if (serviceReactions)
+      return serviceReactions.actions;
+    else
+      throw new NotFoundException("Requested service not found.");
   }
 
   async executeAction(userId: string, name: string, params: {}) {

@@ -12,7 +12,7 @@ export class AboutService {
   async getFormatedAbout(clientIp: string)
   {
     const currentTime: number = Math.floor(Date.now() / 1000);
-    const services = ["google", "discord", "github", "twitch", "spotify", "microsoft"];
+    const services = ["Google", "Discord", "Github", "Twitch", "Spotify", "Microsoft"];
     const actions = this.actionServices.getDefaultActions();
     const reactions = this.reactionsServices.getDefaultReactions();
 
