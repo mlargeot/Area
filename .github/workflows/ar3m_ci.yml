@@ -1,0 +1,55 @@
+name: ar3m_ci
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - main
+      - dev
+env:
+  MIRROR_URL:
+    git@github.com:EpitechPromo2027/B-DEV-500-REN-5-2-area-arthur.doriel.git
+
+jobs:
+  check_linter_back:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Run Backend Linter
+        continue-on-error: true
+        run: |
+          cd backend/
+          npm i
+          npm run lint > linter.log
+
+      - name: Check For Errors
+        continue-on-error: true
+        run: |
+          if grep -E "warning|error" backend/linter.log; then
+            echo "Found warnings or errors!"
+            cat backend/linter.log
+            exit 1
+          else
+            echo "No warnings or errors found."
+          fi
+
+  push_to_mirror:
+    if : github.event_name == 'pull_request' && github.ref == 'refs/heads/main'
+    needs: check_linter_back
+    runs-on: ubuntu-latest
+    container: epitechcontent/epitest-docker:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            ${{ env.MIRROR_URL }}
+          ssh_private_key:
+            ${{ secrets.SSH_PRIVATE_KEY }}

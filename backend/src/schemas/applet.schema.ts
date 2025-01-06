@@ -1,4 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Recoverable } from 'repl';
 
 @Schema()
 export class AppletModule {
@@ -28,6 +29,9 @@ export class Applet {
 
   @Prop({ default: true })
   active: boolean;
+
+  @Prop({ type: Object, required: false, default: {} })
+  metadata: Record<string, any>;
 }
 
 export const AppletModuleSchema = SchemaFactory.createForClass(AppletModule);

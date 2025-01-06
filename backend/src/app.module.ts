@@ -6,10 +6,9 @@ import * as mongoose from 'mongoose';
 import { AuthModule } from './auth/auth.module';
 import { AboutModule } from './about/about.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ActionsModule } from './actions/actions.module';
-import { ReactionsModule } from './reactions/reactions.module';
+import { AutomationModule } from './automation/automation.module';
 import { AppletsModule } from './applets/applets.module';
-import { ServicesModule } from './services/services.module';
+import { WebhookModule } from './webhooks/webhook.module';
 
 mongoose.set('debug', true);
 
@@ -26,10 +25,9 @@ mongoose.set('debug', true);
     }),
     AuthModule,
     AboutModule,
-    ActionsModule,
-    ReactionsModule,
+    AutomationModule,
     AppletsModule,
-    ServicesModule,
+    WebhookModule
   ],
   controllers: [AppController],
   providers: [AppService],

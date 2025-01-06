@@ -16,6 +16,7 @@ async function bootstrap() {
     .setDescription('The Area API description')
     .setVersion('1.0')
     .addTag('AREA')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
