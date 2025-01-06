@@ -13,7 +13,7 @@ export const useAuth = () => {
     const checkAuth = async () => {
       try {
         const token = await AsyncStorage.getItem('access_token');
-        console.log("check auth token: " + token);
+        console.log("check auth token: " + token + " at " + apiUrl);
         if (token) {
           const response = await axios.get(`${apiUrl}/auth/protected`, {
             headers: { Authorization: `Bearer ${token}` },

@@ -17,21 +17,22 @@ export class WebhookService {
 
 // --------------------------------------------- [GITHUB PR WEBHOOK] --------------------------------------------- // 
 
-  async handlePRAssignee(githubId: string): Promise<boolean> {
+  async handlePRAssignee(githubId: number): Promise<boolean> {
+    const stringGithubId = String(githubId);
     const triggeredApplets = await this.userModel.aggregate([
-      { 
-        $match: { 
-          oauthProviders: { 
-            $elemMatch: { provider: 'github', accountId: githubId } 
-          } 
-        } 
+      {
+        $match: {
+          oauthProviders: {
+            $elemMatch: { provider: 'github', accountId: stringGithubId }
+          }
+        }
       },
       { $unwind: '$applets' },
-      { 
-        $match: { 
-          'applets.active': true, 
-          'applets.action.name': 'pr_assigned' 
-        } 
+      {
+        $match: {
+          'applets.active': true,
+          'applets.action.name': 'pr_assigned'
+        }
       },
       { $replaceRoot: { newRoot: '$applets' } }
     ]);
@@ -44,8 +45,10 @@ export class WebhookService {
   }
 
   async handlePREvent(body: any) {
-    if (body.action !== 'assigned') {
-      return await this.handlePRAssignee(body.assignee.id);
+    if ("action" in body) {
+      if (body.action !== 'assigned') {
+        return await this.handlePRAssignee(body["assignee"]["id"]);
+      }
     }
     return;
   }
