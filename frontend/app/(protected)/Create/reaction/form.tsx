@@ -32,12 +32,12 @@ const returnField = (
       return (
         <SwitchWithLabel size="$4" label={paramTemplate.name} defaultChecked />
       )
-    case "input":
+    case "string":
       handleInput(defaultValue)
       return (
         <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
       )
-      case "string":
+      case "text":
       handleInput(defaultValue)
       return (
         <TextAreaField defaultValue={defaultValue} param={paramTemplate} event={handleInput} />
@@ -123,7 +123,7 @@ function SwitchWithLabel(props: { size: SizeTokens; label: string; defaultChecke
 
 const getReaction = (reactionId: string, reactions: Reaction[]): Reaction => {
   for (let i = 0; i < reactions.length; i++) {
-    if (reactions[i].id === reactionId) {
+    if (reactions[i]._id === reactionId) {
       return reactions[i];
     }
   }
@@ -140,7 +140,7 @@ export default function ServicesScreen() {
   const [params, setParams] = React.useState<Params[]>([]);
   
   useEffect(() => {
-    const filteredServices = serviceReactionList.filter((service) => service.service === reaction.service);
+    const filteredServices = serviceReactionList.filter((service) => service.service.toLowerCase() === reaction.service.toLowerCase());
     const params = filteredServices[0].effect.filter((effect) => effect.name === reaction.name)[0].argumentsExample;
     setParams(params)
 
@@ -163,12 +163,12 @@ export default function ServicesScreen() {
 
   const saveParams = () => {
     setApplet({
-      id: applet.id,
+      appletId: applet.appletId,
       action: applet.action,
       reactions: applet.reactions.map((reaction) => {
-        if (reaction.id === navigationData.reactionId) {
+        if (reaction._id === navigationData.reactionId) {
           return {
-            id: reaction.id,
+            _id: reaction._id,
             name: reaction.name,
             service: reaction.service,
             params: paramsValue.current.map((param) => {
@@ -188,7 +188,7 @@ export default function ServicesScreen() {
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
         <Link href={"/Create/services"} onPress={() => {setNavigationData({
           currentService: navigationData.currentService,
-          actionType: "reaction",
+          actionType: "modify",
           reactionId: navigationData.reactionId
         })}}>
           <H2>

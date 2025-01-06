@@ -20,7 +20,7 @@ export function ActionButton({ index } : { index : number }) {
       onPress={() => {setNavigationData({
         currentService: applet.action.service,
         actionType: "action",
-        reactionId: applet.action.id ? applet.action.id : ""
+        reactionId: ""
       })}}
       borderWidth="$1"
       borderColor="$color"
