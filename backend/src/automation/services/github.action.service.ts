@@ -120,11 +120,29 @@ export class GithubActionsService {
   }
 
   /**
-   * Destroy the targeted repository applet
-   * @param userId 
-   * @param metadata 
-   * @returns 
-   */
+  * Destroy a Pull Request webhook applet associated with a given repository.
+  * This service handles the deletion of an applet linked to a GitHub repository and ensures
+  * the webhook and associated metadata are removed from the user's account.
+  * 
+  * @param {string} userId - The unique identifier of the user whose applet needs to be deleted.
+  * @param {Object} metadata - The metadata object containing details to locate and delete the webhook applet.
+  * @returns {Promise<boolean>} - Returns a promise that resolves to a boolean containing the operation status.
+  * @throws {Error} - Throws an error if the deletion fails or the applet is not found.
+  * 
+  * @example
+  * try {
+  *   const result = await destroyPullRequestWebhook("677acab17e5c72dd025edfec", {
+  *     response: {
+  *       id: 522590632,
+  *       owner: "mlargeot",
+  *       repository: "AR3M_tests"
+  *     }
+  *   });
+  *   console.log("Webhook deleted successfully:", result);
+  * } catch (error) {
+  *   console.error("Error deleting webhook:", error.message);
+  * }
+  */
   async destroyPullRequestWebhook(userId: string, metadata: any): Promise<boolean> {
 
     const hookId = metadata?.response?.id;
