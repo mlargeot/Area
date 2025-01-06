@@ -4,6 +4,7 @@ import { useApplet, Reaction, emptyReaction, getParamValueString } from '../../.
 import { useServiceList, Params } from '../../../../context/serviceListContext';
 import { Link } from 'expo-router'
 import React, { useEffect, useRef } from 'react';
+import DescriptionHelpButton from '../../../../components/descriptionHelpButton';
 
 
 const returnField = (
@@ -26,11 +27,6 @@ const returnField = (
 
   const defaultValue : string = getParamValueString(paramTemplate.name, reaction)
 
-  handleInput(defaultValue);
-  return (
-    <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
-  )
-
   switch (paramTemplate.type) {
     case "bool":
       return (
@@ -41,10 +37,10 @@ const returnField = (
       return (
         <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
       )
-      case "textArea":
+      case "string":
       handleInput(defaultValue)
       return (
-        <TextAreaField defaultValue={defaultValue} name={paramTemplate.name} event={handleInput} />
+        <TextAreaField defaultValue={defaultValue} param={paramTemplate} event={handleInput} />
       )
     case "date":
       return (
@@ -83,13 +79,14 @@ function NumberField(props: { name: string }) {
   )
 }
 
-function TextAreaField(props: { name: string, defaultValue: string, event: (val : string) => void }) {
+function TextAreaField(props: { param: Params,  defaultValue: string, event: (val : string) => void }) {
   return (
     <XStack gap="$2">
-      <Label size="$4">{props.name}</Label>
-      <TextArea placeholder="Enter text" defaultValue={props.defaultValue} onChangeText={(val) => {
+      <Label size="$4">{props.param.name}</Label>
+      <TextArea placeholder={props.param.example} defaultValue={props.defaultValue} onChangeText={(val) => {
         props.event(val)
       }} />
+      <DescriptionHelpButton description={props.param.description} title={props.param.name}/>
     </XStack>
   )
 }
