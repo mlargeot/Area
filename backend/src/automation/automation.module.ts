@@ -7,21 +7,26 @@ import {
 } from 'src/schemas/user.schema';
 import { ActionsController } from 'src/automation/controllers/actions.controller';
 import { ReactionsController } from 'src/automation/controllers/reactions.controller';
+import { ServicesController } from 'src/automation/controllers/services.controller';
 import { ActionsService } from 'src/automation/services/default.action.service';
-import { GithubActionsService } from './services/github.action.service';
+import { GithubActionsService } from 'src/automation/services/github.action.service';
 import { ReactionsService } from 'src/automation/services/default.reaction.service';
-import { ReactionsDiscordService } from './services/discord.reaction.service';
+import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
+import { ServicesService } from 'src/automation/services/services.service';
 
 @Module({
     providers: [
         ActionsService,
         GithubActionsService,
         ReactionsService,
-        ReactionsDiscordService
+        ReactionsDiscordService,
+        ServicesService,
     ],
     controllers: [
         ActionsController,
-        ReactionsController
+        ReactionsController,
+        ServicesController,
+        
     ],
     imports: [
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
