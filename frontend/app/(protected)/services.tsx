@@ -64,7 +64,7 @@ export default function ProfileScreen() {
                             backgroundColor={service.color}
                             borderRadius="$4"
                             padding="$4"
-                            width={media.sm ? '80%' : '20%'}
+                            width={media.sm ? '20%' : '80%'}
                             alignItems="flex-start"
                             flexDirection="column"
                             gap="$2"
