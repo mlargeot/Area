@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReactionsDto } from 'src/automation/dto/automation.dto';
 import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
 
@@ -13,7 +13,7 @@ export class ReactionsService {
     reactions: Array<ReactionsDto>;
   }> = [
     {
-      service: "discord",
+      service: "Discord",
       reactions: [
         {
           name: "send_webhook_message",
@@ -48,6 +48,18 @@ export class ReactionsService {
   getDefaultReactions() {
     return this.defaultReactions;
   }
+
+  getServiceReactions(service: string) {
+    const serviceReactions = this.defaultReactions.find(
+      (entry) => entry.service === service
+    );
+
+    if (serviceReactions)
+      return serviceReactions.reactions;
+    else
+      throw new NotFoundException("Requested service not found.");
+  }
+  
 
   async executeReaction(name: string, params: {}) {
     const reactionFunction = this.reactionServiceRegistry[name];
