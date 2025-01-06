@@ -12,7 +12,7 @@ export type Params = {
   name: string;
   description: string;
   example: any;
-  type?: string;
+  type: string;
   required: boolean;
 }
 
@@ -104,4 +104,3 @@ export const ServiceListProvider = ({ children } : { children : ReactNode }) => 
 };
 
 export const useServiceList = () => useContext(ServiceListContext);
-
