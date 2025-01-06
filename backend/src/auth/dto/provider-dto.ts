@@ -4,7 +4,7 @@ export class ProviderDto {
   provider: string;
   // optional
   email?: string;
-  token: string;
+  accessToken: string;
   refreshToken: string;
   accountId: string;
 }
