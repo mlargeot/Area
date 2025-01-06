@@ -1,15 +1,10 @@
-#docker compose up db server --build
-
 services:
-
-  #docker compose up db --build
   db:
     image: mongo:8.0.3
     container_name: ar3m-db
     env_file:
       - ./env/mongo.env
-    ports:
-      - "27017:27017"
+    ports: []
     volumes:
       - mongo-data:/data/db
     networks:
@@ -40,3 +35,6 @@ volumes:
 
 networks:
   ar3m-db-network:
+    internal: true
+  ar3m-frontend-network:
+    driver: bridge
