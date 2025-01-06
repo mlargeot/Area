@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ProviderDto {
   provider: string;
-  email: string;
+  // optional
+  email?: string;
   token: string;
   refreshToken: string;
   accountId: string;

@@ -551,7 +551,7 @@ export class AuthService {
 
       return {
         provider: 'github',
-        email: githubUser.data.email,
+        email: githubUser.data.email ? githubUser.data.email : "null",
         token: accessToken,
         refreshToken: null, // GitHub tokens don't have a refresh token
         accountId: githubUser.data.id,
