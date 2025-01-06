@@ -29,12 +29,12 @@ const returnField = (
       return (
         <SwitchWithLabel size="$4" label={paramTemplate.name} defaultChecked />
       )
-    case "input":
+    case "string":
       handleInput(defaultValue)
       return (
         <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
       )
-      case "string":
+      case "text":
       handleInput(defaultValue)
       return (
         <TextAreaField defaultValue={defaultValue} param={paramTemplate} event={handleInput} />
@@ -139,11 +139,11 @@ export default function ServicesScreen() {
 
   const saveParams = () => {
     setApplet({
-      id: applet.id,
+      appletId: applet.appletId,
       action: {
         service: applet.action.service,
         name: applet.action.name,
-        id: applet.action.id,
+        _id: applet.action._id,
         params: paramsValue.current.map((param) => {
           return {
             [param.name]: param.value

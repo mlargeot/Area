@@ -33,21 +33,18 @@ export const AppletListProvider = ({ children } : { children : ReactNode }) => {
     
     try {
       const access_token = await AsyncStorage.getItem('access_token');
-      console.log("access_token :", access_token);
       const applets = await axios.get(`${serverAddress}/applets`, {headers: { Authorization: `Bearer ${access_token}` }});
 
-      console.log("get data :", applets);
-
-    //   for (let i = 0; i < applets.length; i++) {
-    //     setAppletList((prev) => [
-    //         ...prev,
-    //         {
-    //             id: applets[i].id,
-    //             action: applets[i].action,
-    //             reactions: applets[i].reactions,
-    //         }
-    //         ]);
-    //   }
+      for (let i = 0; i < applets.data.length; i++) {
+        setAppletList((prev) => [
+            ...prev,
+            {
+              appletId: applets.data[i].appletId,
+              action: applets.data[i].action,
+              reactions: [applets.data[i].reaction]
+            }
+          ]);
+      }
 
     } catch (error) {
       console.error(error);

@@ -16,7 +16,7 @@ export function ReactionButton({ index, reaction } : { index : number, reaction:
         setNavigationData({
           currentService: reaction.service ? reaction.service : "",
           actionType: !reaction.service ? "reaction" : "modify",
-          reactionId: reaction.id ? reaction.id : ""
+          reactionId: reaction._id ? reaction._id : ""
         })}}
       borderWidth="$1"
       borderColor="$color"

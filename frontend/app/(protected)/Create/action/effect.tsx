@@ -29,11 +29,11 @@ export default function ServicesScreen() {
                         action: {
                           service: currentService,
                           name: action.name,
-                          id: `action-${actions.length.toString()}`,
+                          _id: `action-${actions.length.toString()}`,
                           params: []
                         },
                         reactions: applet.reactions,
-                        id: applet.id
+                        appletId: applet.appletId
                       })
                     }}
                     width="80%"
