@@ -14,11 +14,13 @@ import {
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AppletsService } from './applets.service';
 import { AppletDto, AppletBodyDto } from './dto/applets.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
+@ApiBearerAuth()
 @Controller('applets')
 export class AppletsController {
   constructor(private readonly appletsService: AppletsService) {}
