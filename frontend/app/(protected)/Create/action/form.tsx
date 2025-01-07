@@ -1,8 +1,9 @@
-import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
+import { Button, ScrollView, TextArea, Label, Switch, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
 import { useApplet, Applet, getParamValueString } from '../../../../context/appletContext';
 import { useServiceList, Params } from '../../../../context/serviceListContext';
 import { Link } from 'expo-router'
 import React, { useEffect, useRef } from 'react';
+import DescriptionHelpButton from '../../../../components/descriptionHelpButton';
 
 const returnField = (
   applet: Applet,
@@ -23,25 +24,20 @@ const returnField = (
     });
   }
 
-  handleInput(defaultValue)
-  return (
-    <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
-  )  
-
   switch (paramTemplate.type) {
     case "bool":
       return (
         <SwitchWithLabel size="$4" label={paramTemplate.name} defaultChecked />
       )
-    case "input":
+    case "string":
       handleInput(defaultValue)
       return (
         <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
       )
-      case "textArea":
+      case "text":
       handleInput(defaultValue)
       return (
-        <TextAreaField defaultValue={defaultValue} name={paramTemplate.name} event={handleInput} />
+        <TextAreaField defaultValue={defaultValue} param={paramTemplate} event={handleInput} />
       )
     case "date":
       return (
@@ -80,13 +76,14 @@ function NumberField(props: { name: string }) {
   )
 }
 
-function TextAreaField(props: { name: string, defaultValue: string, event: (val : string) => void }) {
+function TextAreaField(props: { param: Params,  defaultValue: string, event: (val : string) => void }) {
   return (
     <XStack gap="$2">
-      <Label size="$4">{props.name}</Label>
-      <TextArea placeholder="Enter text" defaultValue={props.defaultValue} onChangeText={(val) => {
+      <Label size="$4">{props.param.name}</Label>
+      <TextArea placeholder={props.param.example} defaultValue={props.defaultValue} onChangeText={(val) => {
         props.event(val)
       }} />
+      <DescriptionHelpButton description={props.param.description} title={props.param.name}/>
     </XStack>
   )
 }
@@ -128,7 +125,7 @@ export default function ServicesScreen() {
   const [params, setParams] = React.useState<Params[]>([]);
 
   useEffect(() => {
-    const filteredServices = serviceActionList.filter((service) => service.service === applet.action.service);
+    const filteredServices = serviceActionList.filter((service) => service.service.toLowerCase() === applet.action.service.toLowerCase());
     const params = filteredServices[0].effect.filter((effect) => effect.name === applet.action.name)[0].argumentsExample;
     setParams(params)
 
@@ -142,11 +139,11 @@ export default function ServicesScreen() {
 
   const saveParams = () => {
     setApplet({
-      id: applet.id,
+      appletId: applet.appletId,
       action: {
         service: applet.action.service,
         name: applet.action.name,
-        id: applet.action.id,
+        _id: applet.action._id,
         params: paramsValue.current.map((param) => {
           return {
             [param.name]: param.value

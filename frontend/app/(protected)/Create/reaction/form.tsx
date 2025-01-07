@@ -4,6 +4,7 @@ import { useApplet, Reaction, emptyReaction, getParamValueString } from '../../.
 import { useServiceList, Params } from '../../../../context/serviceListContext';
 import { Link } from 'expo-router'
 import React, { useEffect, useRef } from 'react';
+import DescriptionHelpButton from '../../../../components/descriptionHelpButton';
 
 
 const returnField = (
@@ -26,25 +27,20 @@ const returnField = (
 
   const defaultValue : string = getParamValueString(paramTemplate.name, reaction)
 
-  handleInput(defaultValue);
-  return (
-    <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
-  )
-
   switch (paramTemplate.type) {
     case "bool":
       return (
         <SwitchWithLabel size="$4" label={paramTemplate.name} defaultChecked />
       )
-    case "input":
+    case "string":
       handleInput(defaultValue)
       return (
         <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
       )
-      case "textArea":
+      case "text":
       handleInput(defaultValue)
       return (
-        <TextAreaField defaultValue={defaultValue} name={paramTemplate.name} event={handleInput} />
+        <TextAreaField defaultValue={defaultValue} param={paramTemplate} event={handleInput} />
       )
     case "date":
       return (
@@ -83,13 +79,14 @@ function NumberField(props: { name: string }) {
   )
 }
 
-function TextAreaField(props: { name: string, defaultValue: string, event: (val : string) => void }) {
+function TextAreaField(props: { param: Params,  defaultValue: string, event: (val : string) => void }) {
   return (
     <XStack gap="$2">
-      <Label size="$4">{props.name}</Label>
-      <TextArea placeholder="Enter text" defaultValue={props.defaultValue} onChangeText={(val) => {
+      <Label size="$4">{props.param.name}</Label>
+      <TextArea placeholder={props.param.example} defaultValue={props.defaultValue} onChangeText={(val) => {
         props.event(val)
       }} />
+      <DescriptionHelpButton description={props.param.description} title={props.param.name}/>
     </XStack>
   )
 }
@@ -126,7 +123,7 @@ function SwitchWithLabel(props: { size: SizeTokens; label: string; defaultChecke
 
 const getReaction = (reactionId: string, reactions: Reaction[]): Reaction => {
   for (let i = 0; i < reactions.length; i++) {
-    if (reactions[i].id === reactionId) {
+    if (reactions[i]._id === reactionId) {
       return reactions[i];
     }
   }
@@ -143,7 +140,7 @@ export default function ServicesScreen() {
   const [params, setParams] = React.useState<Params[]>([]);
   
   useEffect(() => {
-    const filteredServices = serviceReactionList.filter((service) => service.service === reaction.service);
+    const filteredServices = serviceReactionList.filter((service) => service.service.toLowerCase() === reaction.service.toLowerCase());
     const params = filteredServices[0].effect.filter((effect) => effect.name === reaction.name)[0].argumentsExample;
     setParams(params)
 
@@ -166,12 +163,12 @@ export default function ServicesScreen() {
 
   const saveParams = () => {
     setApplet({
-      id: applet.id,
+      appletId: applet.appletId,
       action: applet.action,
       reactions: applet.reactions.map((reaction) => {
-        if (reaction.id === navigationData.reactionId) {
+        if (reaction._id === navigationData.reactionId) {
           return {
-            id: reaction.id,
+            _id: reaction._id,
             name: reaction.name,
             service: reaction.service,
             params: paramsValue.current.map((param) => {
@@ -191,7 +188,7 @@ export default function ServicesScreen() {
       <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
         <Link href={"/Create/services"} onPress={() => {setNavigationData({
           currentService: navigationData.currentService,
-          actionType: "reaction",
+          actionType: "modify",
           reactionId: navigationData.reactionId
         })}}>
           <H2>

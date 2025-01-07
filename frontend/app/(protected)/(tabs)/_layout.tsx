@@ -31,6 +31,13 @@ export default function TabLayout() {
         }} 
       />
       <Tabs.Screen 
+        name="library"
+        options={{
+          title: 'Library',
+          tabBarIcon: ({ color }) => <Logs color={color} />
+        }} 
+      />
+      <Tabs.Screen 
         name="create" 
         options={{
           title: 'Create',

@@ -4,18 +4,18 @@ export type Action = {
   service: string;
   name: string;
   params: Record<string, string>[];
-  id: string;
+  _id: string;
 };
 
 export type Reaction = {
   service: string;
   name: string;
   params: Record<string, string>[];
-  id: string;
+  _id: string;
 };
 
 export type Applet = {
-  id: String;
+  appletId: String;
   action: Action;
   reactions: Reaction[];
 };
@@ -23,8 +23,8 @@ export type Applet = {
 
 export const emptyApplet = (): Applet => {
   const applet: Applet = {
-    id: "",
-    action: { service: "", name: "", id: "", params: [] },
+    appletId: "",
+    action: { service: "", name: "", _id: "", params: [] },
     reactions: []
   };
 
@@ -35,7 +35,7 @@ export const emptyReaction = (): Reaction => {
   const reaction: Reaction = {
     service: "",
     name: "",
-    id: "",
+    _id: "",
     params: []
   };
 

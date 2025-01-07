@@ -1,6 +1,7 @@
 import { Slot, SplashScreen } from "expo-router";
 import { TamaguiProvider } from "@tamagui/core";
 import { AppletProvider } from "../context/appletContext";
+import { AppletListProvider } from "../context/appletListContext";
 import { NavigationProvider } from "../context/navigationContext";
 import { ServiceListProvider } from "../context/serviceListContext";
 import { useColorScheme } from "react-native";
@@ -33,11 +34,13 @@ function RootLayoutNav() {
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
       <AppletProvider>
-        <ServiceListProvider>
-          <NavigationProvider>
-            <Slot />
-          </NavigationProvider>
-        </ServiceListProvider>
+        <AppletListProvider>
+          <ServiceListProvider>
+            <NavigationProvider>
+              <Slot />
+            </NavigationProvider>
+          </ServiceListProvider>
+        </AppletListProvider>
       </AppletProvider>
     </TamaguiProvider>
   );
