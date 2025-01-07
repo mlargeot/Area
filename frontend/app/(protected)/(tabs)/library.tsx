@@ -1,13 +1,17 @@
 import { H2, XStack, YStack } from 'tamagui'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useAppletList } from '../../../context/appletListContext'
 import { Link } from 'expo-router';
 import { useApplet } from '../../../context/appletContext';
 
 
 export default function LibraryScreen() {
-  const { appletList } = useAppletList();
+  const { appletList, fetchData } = useAppletList();
   const { setApplet } = useApplet();
+
+  useEffect(() => {
+    fetchData && fetchData();
+  }, []);
 
   return (
     <YStack f={1} ai="center" gap="$8" px="$10" pt="$5" bg="$background">

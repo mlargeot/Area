@@ -5,9 +5,11 @@ import { Applet } from './appletContext';
 
 
 const AppletListContext = createContext<{
-  appletList: Applet[]
+  appletList: Applet[],
+  fetchData?: () => void
 }>({
-  appletList: []
+  appletList: [],
+  fetchData: () => {}
 });
 
 export const AppletListProvider = ({ children } : { children : ReactNode }) => {
@@ -30,7 +32,8 @@ export const AppletListProvider = ({ children } : { children : ReactNode }) => {
   }, []);
 
   const fetchData = async () => {
-    
+    setAppletList([]);
+
     try {
       const access_token = await AsyncStorage.getItem('access_token');
       const applets = await axios.get(`${serverAddress}/applets`, {headers: { Authorization: `Bearer ${access_token}` }});
@@ -69,7 +72,7 @@ export const AppletListProvider = ({ children } : { children : ReactNode }) => {
   }, [serverAddress]);
 
   return (
-    <AppletListContext.Provider value={{ appletList }}>
+    <AppletListContext.Provider value={{ appletList, fetchData }}>
       {children}
     </AppletListContext.Provider>
   );
