@@ -88,11 +88,14 @@ export class ActionsService {
   }
 
   async destroyAction(userId: string, name: string, metadata: {}) {
-    const destroyFunction = this.destroyServiceRegistry[name];
+    if (name in this.destroyServiceRegistry) {
+      const destroyFunction = this.destroyServiceRegistry[name];
 
-    if (!destroyFunction)
-        throw new Error(`Reaction "${name}" not found.`);
+      if (!destroyFunction)
+          throw new Error(`Reaction "${name}" not found.`);
 
-    return destroyFunction(userId, metadata);
+      return destroyFunction(userId, metadata);
+    }
+    return true;
   }
 }
