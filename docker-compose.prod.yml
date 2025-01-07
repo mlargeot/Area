@@ -35,6 +35,6 @@ volumes:
 
 networks:
   ar3m-db-network:
-    internal: true
+
   ar3m-frontend-network:
     driver: bridge
