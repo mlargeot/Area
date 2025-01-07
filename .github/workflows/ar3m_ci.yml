@@ -40,7 +40,6 @@ jobs:
 
   push_to_mirror:
     if : github.event_name == 'pull_request' && github.ref == 'refs/heads/main'
-    needs: check_linter_back
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker:latest
     steps:
