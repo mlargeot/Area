@@ -72,20 +72,6 @@ export class ActionsService {
             },
           ],
         },
-        {
-          name: "pr_closed",
-          description: "Triggered when a pull request is closed in the targeted repository.",
-          argumentsNumber: 1,
-          argumentsExample: [
-            {
-                name: "githubRepoUrl",
-                description: "URL of the github repository with enough rights to create webhooks",
-                example: "https://github.com/owner/repository",
-                type: "string",
-                required: true
-            },
-          ],
-        },
       ],
     },
     {
