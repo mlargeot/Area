@@ -30,6 +30,62 @@ export class ActionsService {
             },
           ],
         },
+        {
+          name: "pr_reopened",
+          description: "Triggered when a pull request is reopened in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "pr_closed",
+          description: "Triggered when a pull request is closed in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "pr_opened",
+          description: "Triggered when a pull request is opened in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "pr_closed",
+          description: "Triggered when a pull request is closed in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
       ],
     },
     {
@@ -55,11 +111,17 @@ export class ActionsService {
 
   private actionServiceRegistry: Record<string, Function> = {
     pr_assigned : this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
+    pr_opened: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
+    pr_reopened: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
+    pr_closed: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
     playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService)
   }
 
   private destroyServiceRegistry: Record<string, Function> = {
     pr_assigned : this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
+    pr_opened: this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
+    pr_reopened: this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
+    pr_closed: this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
   }
 
 

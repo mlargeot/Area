@@ -43,13 +43,53 @@ export class WebhookService {
     return true;
   }
 
-  async handlePREvent(body: any) {
-    if ("action" in body) {
-      if (body.action === 'assigned') {
-        return await this.handlePRAssignee(body["assignee"]["id"]);
-      }
+  async handlePRState(action: string, repositoryName: string): Promise<boolean> {
+    const actionName = `pr_${action}`
+    const owner = repositoryName.split('/')[0];
+    const repository = repositoryName.split('/')[1];
+    const triggeredApplets = await this.userModel.aggregate([
+      {
+        $match: {
+          oauthProviders: {
+            $elemMatch: { provider: 'github'}
+          }
+        }
+      },
+      { $unwind: '$applets' },
+      {
+        $match: {
+          'applets.active': true,
+          'applets.action.name': actionName,
+          'applets.metadata.response.owner': owner,
+          'applets.metadata.response.repository': repository
+        }
+      },
+      { $replaceRoot: { newRoot: '$applets' } }
+    ]);
+
+    for (const applet of triggeredApplets) {
+      await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
     }
-    return;
+
+    return true;
+  }
+
+  async handlePREvent(body: any) {
+    if (!("action" in body))
+      return true;
+  
+    switch (body.action) {
+      case 'assigned':
+        return await this.handlePRAssignee(body["assignee"]["id"]);
+
+      case 'opened':
+      case 'closed':
+      case 'reopened':
+        return await this.handlePRState(body.action, body["repository"]["full_name"]);
+  
+      default:
+        return true;
+    }
   }
 
 // --------------------------------------------- [XXXX WEBHOOK] --------------------------------------------- // 
