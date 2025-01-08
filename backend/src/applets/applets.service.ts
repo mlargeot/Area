@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException
 } from '@nestjs/common';
@@ -108,7 +109,7 @@ export class AppletsService {
       },
       { 'applets.$': 1 }
     ).lean();
-
+  
     if (!user || !user.applets || user.applets.length === 0) {
       throw new NotFoundException(
         `Applet with ID ${appletId} not found for user ${userId}.`
@@ -116,19 +117,42 @@ export class AppletsService {
     }
   
     const existingApplet = user.applets[0];
+    const newMetadata = { response: {} };
   
-    if (appletDto.action && appletDto.action !== null) {
-      if (
-        existingApplet.action.name !== appletDto.action.name ||
-        JSON.stringify(existingApplet.action.params) !==
-          JSON.stringify(appletDto.action.params)
-      ) {
-        // RE-INIT de l'action
-        console.log(`Action successfully updated for applet: ${appletId}.`);
+    if (
+      existingApplet.action.name !== appletDto.action.name ||
+      JSON.stringify(existingApplet.action.params) !==
+        JSON.stringify(appletDto.action.params)
+    ) {
+      try {
+        const initResponse = await this.actionsService.executeAction(
+          userId,
+          appletDto.action.name,
+          appletDto.action.params
+        );
+  
+        if (initResponse) {
+          await this.actionsService.destroyAction(
+            userId,
+            existingApplet.action.name,
+            existingApplet.metadata
+          );
+          newMetadata.response = initResponse;
+        } else {
+          throw new Error(`Failed to init new action.`);
+        }
+      } catch (error) {
+        throw new BadRequestException(
+          `Invalid action name or parameters: ${error.message}`
+        );
       }
+      console.log(`Action successfully updated for applet: ${appletId}.`);
+    } else {
+      newMetadata.response = existingApplet.metadata.response;
     }
   
-    const result = await this.userModel.findOneAndUpdate(
+    // Étape 2 : Mettre à jour l'applet
+    await this.userModel.updateOne(
       {
         _id: userId,
         'applets.appletId': appletId,
@@ -138,18 +162,27 @@ export class AppletsService {
           'applets.$.action': appletDto.action,
           'applets.$.reaction': appletDto.reaction,
           'applets.$.active': appletDto.active,
+          'applets.$.metadata': newMetadata,
         },
+      }
+    );
+  
+    const updatedUser = await this.userModel.findOne(
+      {
+        _id: userId,
+        'applets.appletId': appletId,
       },
-      { new: true, projection: { 'applets.$': 1 } }
-    ).lean();  
-    
-    if (!result || !result.applets || result.applets.length === 0) {
+      { 'applets.$': 1 }
+    ).lean();
+  
+    if (!updatedUser || !updatedUser.applets || updatedUser.applets.length === 0) {
       throw new NotFoundException(
         `Failed to update applet with ID ${appletId} for user ${userId}.`
       );
     }
+  
     console.log(`New applet data set for user: ${userId}`);
-    return result.applets[0];
+    return updatedUser.applets[0];
   }
   
 
