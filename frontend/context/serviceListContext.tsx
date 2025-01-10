@@ -42,7 +42,7 @@ const ServiceListContext = createContext<{
 export const ServiceListProvider = ({ children } : { children : ReactNode }) => {
   const [serviceActionList, setServiceActionList] = useState<Service[]>([]);
   const [serviceReactionList, setServiceReactionList] = useState<Service[]>([]);
-  const [serverAddress, setServerAddress] = useState<string>("http://localhost:8080");
+  const [serverAddress, setServerAddress] = useState<string>(process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080');
 
   const getServerAddress = async () => {
     try {
