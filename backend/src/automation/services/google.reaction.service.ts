@@ -31,6 +31,7 @@ export class ReactionsGoogleService {
         const body = {
             raw: this.constructMail(params.mailSubject, params.mailContent)
         };
+        console.log(`\nRESULT ENCODED: ${this.constructMail(params.mailSubject, params.mailContent)}\n`);
         const response = await firstValueFrom (
             this.httpService.post(url, body, { headers }),
         );
