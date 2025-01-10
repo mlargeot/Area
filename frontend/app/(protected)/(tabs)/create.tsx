@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square } from 'tamagui'
+import { Button, ScrollView, Input, YStack, Text, Label, XStack, Square } from 'tamagui'
 import { ActionButton } from '../../../components/actionButton'
 import { ReactionButton } from '../../../components/reactionButton'
 import { useApplet, Reaction, Applet } from '../../../context/appletContext'
@@ -23,9 +23,12 @@ export default function CreateScreen() {
 
   const saveApplet = () => {
     if (serverAddress.current === "" || !isActionValid(applet)) { return; }
+    const appletName : string = applet.name === "" ? "Unamed Applet" : applet.name;
+    console.log("Saving applet", applet.name, "name:", appletName);
 
     const url = `${serverAddress.current}/applets`;
     const appletData = {
+      name: appletName,
       action: {
         service: applet.action.service.toLowerCase(),
         name: applet.action.name,
@@ -50,12 +53,16 @@ export default function CreateScreen() {
   };
 
   const emptyApplet = () => {
-    setApplet({appletId: "",action: { service: "", name: "", _id: "", params: [] }, reactions: []})
+    setApplet({name: "", appletId: "",action: { service: "", name: "", _id: "", params: [] }, reactions: []})
   }
 
   const deleteReaction = (index: number) => {
     const newReactions = applet.reactions.filter((_, i) => i !== index);
     setApplet({ ...applet, reactions: newReactions });
+  }
+
+  const handleNameInput = (val: string) => {
+    setApplet({ ...applet, name: val });
   }
 
   useEffect(() => {
@@ -83,6 +90,10 @@ export default function CreateScreen() {
     }}
     style={{ flex: 1 }}>
       <YStack paddingVertical="$4" alignItems="center" gap="$1" width="100%">
+        <XStack gap="$2" marginBottom={10}>
+          <Label size="$4">Name of the applet :</Label>
+          <Input placeholder="My applet" value={applet.name} onChangeText={(val) => handleNameInput(val)}/>
+        </XStack>
         <ActionButton index={1}/>
         <Square height={20} width={4} backgroundColor="$color" opacity={0.5} />
         {applet.reactions.flatMap((reaction, i) => [
