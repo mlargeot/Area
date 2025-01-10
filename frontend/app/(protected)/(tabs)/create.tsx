@@ -26,6 +26,7 @@ export default function CreateScreen() {
 
     const url = `${serverAddress.current}/applets`;
     const appletData = {
+      name: "test",
       action: {
         service: applet.action.service.toLowerCase(),
         name: applet.action.name,
