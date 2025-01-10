@@ -22,7 +22,7 @@ export class Applet {
   userId: string;
 
   @Prop({ required: true })
-  name: string;
+  name?: string;
 
   @Prop({ type: AppletModule, required: true })
   action: AppletModule;

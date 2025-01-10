@@ -14,7 +14,7 @@ export class AppletDto {
     userId: string;
 
     @ApiProperty({ example: "Discord Tracker", description: "Applet name."})
-    name: string;
+    name?: string;
 
     @ApiProperty({ example: {
         service: "github",
