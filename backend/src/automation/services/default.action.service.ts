@@ -72,6 +72,34 @@ export class ActionsService {
             },
           ],
         },
+        {
+          name: "security_alert",
+          description: "Triggered when a security alert appears by a dependabot alert in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "security_fix",
+          description: "Triggered when a security fix appears by a dependabot alert in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
       ],
     },
     {
@@ -100,14 +128,18 @@ export class ActionsService {
     pr_opened: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
     pr_reopened: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
     pr_closed: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
-    playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService)
+    security_alert : this.githubActionService.initDependabotWebhook.bind(this.githubActionService),
+    security_fix : this.githubActionService.initDependabotWebhook.bind(this.githubActionService),
+    playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService),
   }
 
   private destroyServiceRegistry: Record<string, Function> = {
-    pr_assigned : this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
-    pr_opened: this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
-    pr_reopened: this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
-    pr_closed: this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
+    pr_assigned : this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    pr_opened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    pr_reopened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    pr_closed: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    security_alert: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    security_fix: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
   }
 
 
