@@ -236,4 +236,51 @@ export class WebhookService {
         return true;
     }
   }
+
+// --------------------------------------------- [GITHUB PUSH WEBHOOK] --------------------------------------------- // 
+
+  /**
+  * Handles GitHub push events triggered by the webhook.
+  * 
+  * This method processes `push` events and identifies applets configured to respond to the `push` action
+  * for a specific repository. It retrieves the relevant applets from the database and executes their
+  * associated reactions.
+  * 
+  * @param body - The payload of the GitHub webhook event.
+  * 
+  * @returns {Promise<boolean>} A promise that resolves to `true` after processing the event
+  * and executing the associated reactions, or immediately for test events.
+  * 
+  * @throws Will throw an error if the reaction execution fails or if the database query encounters issues.
+  */
+  async handlePushEvent(body: any): Promise<boolean> {
+    if ("zen" in body)
+      return true;
+    const owner = body.repository.full_name.split('/')[0];
+    const repository = body.repository.full_name.split('/')[1];
+    const triggeredApplets = await this.userModel.aggregate([
+      {
+        $match: {
+          oauthProviders: {
+            $elemMatch: { provider: 'github'}
+          }
+        }
+      },
+      { $unwind: '$applets' },
+      {
+        $match: {
+          'applets.active': true,
+          'applets.action.name': `push`,
+          'applets.metadata.response.owner': owner,
+          'applets.metadata.response.repository': repository
+        }
+      },
+      { $replaceRoot: { newRoot: '$applets' } }
+    ]);
+
+    for (const applet of triggeredApplets) {
+      await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
+    }
+    return true;
+  }
 }
