@@ -17,7 +17,7 @@ const isActionValid = (applet : Applet) => {
 
 export default function CreateScreen() {
   const { applet, setApplet } = useApplet();
-  const serverAddress = useRef<string>("");
+  const serverAddress = useRef<string>(process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080');
   const accessToken = useRef<string>("");
   
 

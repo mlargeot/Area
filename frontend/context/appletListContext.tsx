@@ -14,7 +14,7 @@ const AppletListContext = createContext<{
 
 export const AppletListProvider = ({ children } : { children : ReactNode }) => {
   const [appletList, setAppletList] = useState<Applet[]>([]);
-  const [serverAddress, setServerAddress] = useState<string>("http://localhost:8080");
+  const [serverAddress, setServerAddress] = useState<string>(process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080');
 
   const getServerAddress = async () => {
     try {

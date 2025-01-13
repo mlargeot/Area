@@ -172,7 +172,7 @@ export class AuthService {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-      scopes: ['openid', 'profile', 'email'],
+      scopes: ['openid', 'profile', 'email', 'https://www.googleapis.com/auth/gmail.send'],
     },
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID,
