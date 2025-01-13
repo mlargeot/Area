@@ -1,24 +1,14 @@
 {
   "cli": {
-    "version": ">= 13.4.1",
+    "version": "14.4.0",
     "appVersionSource": "remote"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {
+    "debug": {
       "android": {
-        "buildType": "apk"
-      },
-      "autoIncrement": true
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleDebug"
+      }
     }
-  },
-  "submit": {
-    "production": {}
   }
 }
