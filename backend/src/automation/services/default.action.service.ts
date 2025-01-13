@@ -130,6 +130,7 @@ export class ActionsService {
     pr_closed: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
     security_alert : this.githubActionService.initDependabotWebhook.bind(this.githubActionService),
     security_fix : this.githubActionService.initDependabotWebhook.bind(this.githubActionService),
+    push: this.githubActionService.initPushWebhook.bind(this.githubActionService),
     playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService),
   }
 
@@ -140,6 +141,7 @@ export class ActionsService {
     pr_closed: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     security_alert: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     security_fix: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    push: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
   }
 
 

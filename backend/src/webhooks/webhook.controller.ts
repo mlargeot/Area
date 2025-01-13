@@ -22,4 +22,10 @@ export class WebhookController {
   async triggerGitSecurityEvent(@Req() req) {
     return this.webhookService.handleSecurityEvent(req.body);
   }
+
+  @Post('github/push')
+  @ApiOkResponse({ description: "Action triggered." })
+  async triggerGitPushEvent(@Req() req) {
+    return this.webhookService.handlePushEvent(req.body);
+  }
 }
