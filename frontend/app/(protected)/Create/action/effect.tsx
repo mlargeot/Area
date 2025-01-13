@@ -25,15 +25,15 @@ export default function ServicesScreen() {
         {actions.flatMap((action, i) => [
             <Link key={`button-${i}`} href="/Create/action/form" asChild >
                 <Button
-                    onPress={() => {action.name !== applet.action.name && setApplet({
+                    onPress={() => {action.name !== applet.action.name && setApplet(
+                      {
+                        ...applet,
                         action: {
                           service: currentService,
                           name: action.name,
                           _id: `action-${actions.length.toString()}`,
                           params: []
-                        },
-                        reactions: applet.reactions,
-                        appletId: applet.appletId
+                        }
                       })
                     }}
                     width="80%"
