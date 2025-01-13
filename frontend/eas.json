@@ -1,0 +1,14 @@
+{
+  "cli": {
+    "version": "14.4.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "debug": {
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleDebug"
+      }
+    }
+  }
+}
