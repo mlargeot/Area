@@ -136,7 +136,7 @@ export class AppletsService {
     const newApplet: AppletDto = {
       appletId: uuidv4(),
       userId,
-      name: "test",
+      name: appletDto.name,
       action: null,
       reaction: appletDto.reaction,
       active: appletDto.active,
