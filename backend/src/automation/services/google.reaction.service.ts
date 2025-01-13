@@ -13,7 +13,7 @@ export class ReactionsGoogleService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly httpService: HttpService) {}
 
-  async sendMail(userId: string, params: {mailSubject: string, mailContent: string})
+  async sendMail(userId: string, params: {mail_object: string, mail_message: string})
   {
     const url = 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send';
 
@@ -28,12 +28,12 @@ export class ReactionsGoogleService {
         'Content-Type': 'application/json'
     };
     try {
-        const messageEncoded = await this.constructMail(params.mailSubject, params.mailContent,
+        const messageEncoded = await this.constructMail(params.mail_object, params.mail_message,
             googleProvider.email);
         const body = {
             raw: messageEncoded
         };
-        console.log(`\nRESULT ENCODED: ${messageEncoded}\n`);
+        console.log(`\nRESULT ENCODED: ${messageEncoded} ${params.mail_object} ${params.mail_message}\n`);
         const response = await firstValueFrom (
             this.httpService.post(url, body, { headers }),
         );
