@@ -42,6 +42,7 @@ export const AppletListProvider = ({ children } : { children : ReactNode }) => {
         setAppletList((prev) => [
             ...prev,
             {
+              name: applets.data[i].name,
               appletId: applets.data[i].appletId,
               action: {
                 service: applets.data[i].action.service,
