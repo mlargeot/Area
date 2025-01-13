@@ -148,5 +148,92 @@ export class WebhookService {
     }
   }
 
-// --------------------------------------------- [XXXX WEBHOOK] --------------------------------------------- // 
+// --------------------------------------------- [GITHUB SECURITY WEBHOOK] --------------------------------------------- // 
+
+
+  /**
+  * Handles security alerts for a specific GitHub repository.
+  * 
+  * This method identifies applets configured to respond to `security_alert` actions
+  * for a given repository. It processes the alert by executing the associated 
+  * reactions for all matching applets.
+  * 
+  * @param repositoryName - The full name of the repository in the format `owner/repository`.
+  * 
+  * @returns {Promise<boolean>} A promise that resolves to `true` if the security alert 
+  * was successfully handled and reactions were triggered.
+  * 
+  * ### Example Usage:
+  * ```typescript
+  * await handleSecurityAlert("owner-name/example-repo");
+  * ```
+  * 
+  * ### Notes:
+  * - Ensure the `repositoryName` follows the format `owner/repository`.
+  * - The reactions for each applet are executed asynchronously.
+  */
+  async handleSecurityAlert(type: string, repositoryName: string) {
+    const owner = repositoryName.split('/')[0];
+    const repository = repositoryName.split('/')[1];
+    const triggeredApplets = await this.userModel.aggregate([
+      {
+        $match: {
+          oauthProviders: {
+            $elemMatch: { provider: 'github'}
+          }
+        }
+      },
+      { $unwind: '$applets' },
+      {
+        $match: {
+          'applets.active': true,
+          'applets.action.name': `security_${type}`,
+          'applets.metadata.response.owner': owner,
+          'applets.metadata.response.repository': repository
+        }
+      },
+      { $replaceRoot: { newRoot: '$applets' } }
+    ]);
+
+    for (const applet of triggeredApplets) {
+      await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
+    }
+  
+    return true;
+  }
+
+  /**
+  * Handles security-related events triggered by the GitHub webhook.
+  * 
+  * This method processes `dependabot_alert` events and identifies applets 
+  * that are configured to respond to `security_alert` actions. Depending on 
+  * the specific action type (e.g., new alert, alert fix), it triggers the 
+  * corresponding reactions.
+  * 
+  * @param body - The payload of the webhook containing event details.
+  * 
+  * @returns {Promise<boolean>} A promise that resolves to `true` if the process 
+  * completes successfully, indicating that the event has been handled and the 
+  * associated reactions have been triggered.
+  */
+  async handleSecurityEvent(body: any): Promise<boolean> {
+    if (!("action" in body))
+      return true;
+
+    switch (body.action) {
+      case 'auto_reopened':
+      case 'created':
+      case 'reopened':
+      case 'reintroduced':
+        return await this.handleSecurityAlert("alert", body.repository.full_name);
+
+      case 'auto_dismissed':
+      case 'dismissed':
+      case 'fixed':
+        return await this.handleSecurityAlert("fix", body.repository.full_name);
+
+      default:
+        return true;
+    }
+  }
 }

@@ -16,4 +16,10 @@ export class WebhookController {
   async triggerGitPREvent(@Req() req) {
     return this.webhookService.handlePREvent(req.body);
   }
+
+  @Post('github/security')
+  @ApiOkResponse({ description: "Action triggered." })
+  async triggerGitSecurityEvent(@Req() req) {
+    return this.webhookService.handleSecurityEvent(req.body);
+  }
 }
