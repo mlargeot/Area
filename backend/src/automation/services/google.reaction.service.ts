@@ -28,7 +28,8 @@ export class ReactionsGoogleService {
         'Content-Type': 'application/json'
     };
     try {
-        const messageEncoded = await this.constructMail(params.mailSubject, params.mailContent);
+        const messageEncoded = await this.constructMail(params.mailSubject, params.mailContent,
+            googleProvider.email);
         const body = {
             raw: messageEncoded
         };
@@ -44,12 +45,12 @@ export class ReactionsGoogleService {
     }
   }
 
-  async constructMail(mailSubject: string, mailContent: string)
+  async constructMail(mailSubject: string, mailContent: string, mailer: string)
   {
     try {
         const message = [
-            `To: me`,
-            `From: me`,
+            `To: ${mailer}`,
+            `From: ${mailer}`,
             `Subject: ${mailSubject}`,
             ``,
             mailContent,
