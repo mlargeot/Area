@@ -17,7 +17,6 @@ export default function AuthHandler() {
 
         const params = new URLSearchParams(url.split('?')[1]);
         const token = params.get('token');
-        console.log('token', token);
         if (!token) {
             router.push('/login');
             return;

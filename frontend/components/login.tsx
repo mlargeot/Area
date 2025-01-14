@@ -67,7 +67,7 @@ export default function Login() {
     }
 
     return (
-        <YStack padding="$6" borderRadius="$4" width={320} shadowOffset={{ width: 0, height: 4 }} shadowRadius={6} shadowOpacity={0.3}>
+        <YStack padding="$6" borderRadius="$4" width={320} shadowOffset={{ width: 0, height: 4 }} shadowRadius={6} shadowOpacity={0.3} bg={'$background'}>
             <Text fontSize="$7" fontWeight="700" textAlign="center" marginBottom="$6">Welcome to our AR3M App</Text>
             <XStack width="100%" marginBottom="$4" justifyContent="center" gap={15}>
                 <Button borderRadius="$3" paddingHorizontal="$4" paddingVertical="$2" icon={<FontAwesome name="google" size={24}/>} onPress={() => LoginService('google')}/>
@@ -85,7 +85,16 @@ export default function Login() {
                     <Text fontStyle='italic' fontSize="$2">Forgotten Password ?</Text>
                 </TouchableOpacity>
             </XStack>
-            <Button marginTop="$4" paddingHorizontal="$6" borderRadius="$3" fontWeight="700" onPress={handleLogin}>Sign In</Button>
+            <Button
+            marginTop="$4"
+            paddingHorizontal="$6"
+            borderRadius="$3"
+            onPress={handleLogin}
+            >
+                <Text fontSize="$5" fontWeight="700" color="$color">
+                    Sign In
+                </Text>
+            </Button>
             {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
             <XStack alignItems="center" justifyContent="center" marginTop="$4">
                 <Link href={"/register"}>

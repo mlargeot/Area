@@ -141,16 +141,16 @@ export default function ProfileScreen() {
                                 </Dialog.Description>
                                 {!selectedService.isActive && (
                                     <Button onPress={() =>ConnectService(selectedService.name.toLowerCase())}>
-                                        <Text color="#fff">Connect</Text>
+                                        <Text>Connect</Text>
                                     </Button>
                                 )}
                                 {selectedService.isActive && (
                                     <Button onPress={() => alert('Connect to ' + selectedService.name)}>
-                                        <Text color="#fff">Sign out</Text>
+                                        <Text>Sign out</Text>
                                     </Button>
                                 )}
                                 <Button onPress={() => setDialogVisible(false)} marginTop="$2">
-                                    <Text color="#fff">Close</Text>
+                                    <Text>Close</Text>
                                 </Button>
                             </>
                         )}

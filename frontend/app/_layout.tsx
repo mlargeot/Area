@@ -31,8 +31,17 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+
+  // Déterminer le thème par défaut
+  let defaultTheme;
+  if (colorScheme === 'dark') {
+    defaultTheme = 'dark';
+  } else {
+    defaultTheme = 'light';
+  }
+
   return (
-    <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
+    <TamaguiProvider config={config} defaultTheme={defaultTheme}>
       <AppletProvider>
         <AppletListProvider>
           <ServiceListProvider>
