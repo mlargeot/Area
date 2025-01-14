@@ -74,6 +74,7 @@ export class TwitchActionsService {
                 secret: this.configService.get<string>('TWITCH_SECRET')
             }
         };
+        console.log("\nREQUEST TO TWITCH: \n", headers, "\n", body);
         try {
             const response = await lastValueFrom(this.httpService.post(url, body, { headers }));
             console.log("\nSuccessfully subscribed to stream start event to ID: ", response.data.data[0].id, "\n");
