@@ -64,9 +64,9 @@ export class TwitchActionsService {
         };
         const body = {
             type: "stream.online",
-            version: 1,
+            version: "1",
             condition: {
-                broadcaster_user_id: broadcasterId
+                broadcaster_user_id: `${broadcasterId}`
             },
             transport: {
                 method: "webhook",
