@@ -22,13 +22,31 @@ services:
     depends_on:
       - db
 
-  client_web:
-    container_name: ar3m-frontend
-    build: ./frontend/
-    ports:
-      - "8081:8081"
+  client_mobile:
+    container_name: ar3m-frontend-mobile
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile.android
+      args:
+        - EXPO_TOKEN=${EXPO_TOKEN}
+    networks:
+      - ar3m-frontend-network
     depends_on:
       - server
+
+  client_web:
+    container_name: ar3m-frontend-web
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+      args:
+        - EXPO_TOKEN=${EXPO_TOKEN}
+    ports:
+      - "8081:8081"
+    networks:
+      - ar3m-frontend-network
+    depends_on:
+      - client_mobile
 
 volumes:
   mongo-data:

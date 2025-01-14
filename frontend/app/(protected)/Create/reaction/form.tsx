@@ -163,14 +163,11 @@ export default function ServicesScreen() {
 
   const saveParams = () => {
     setApplet({
-      appletId: applet.appletId,
-      action: applet.action,
+      ...applet,
       reactions: applet.reactions.map((reaction) => {
         if (reaction._id === navigationData.reactionId) {
           return {
-            _id: reaction._id,
-            name: reaction.name,
-            service: reaction.service,
+            ...reaction,
             params: paramsValue.current.map((param) => {
               return {
                 [param.name]: param.value

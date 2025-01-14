@@ -6,7 +6,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from 'expo-router';
 
-const apiUrl = 'http://localhost:8080';
+const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
 
 const handleGoogleLogin = () => {
     if (Platform.OS === 'web') {

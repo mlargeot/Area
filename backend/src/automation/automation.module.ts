@@ -15,6 +15,7 @@ import { ReactionsService } from 'src/automation/services/default.reaction.servi
 import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
 import { ServicesService } from 'src/automation/services/services.service';
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
+import { ReactionsGoogleService } from 'src/automation/services/google.reaction.service';
 
 @Module({
     providers: [
@@ -24,6 +25,7 @@ import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.se
 
         ReactionsService,
         ReactionsDiscordService,
+        ReactionsGoogleService,
 
         ServicesService,
     ],

@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 export class ReactionsDiscordService {
   constructor(private readonly httpService: HttpService) {}
 
-  async sendMessageToWebhook(params: {url: string; content: string})
+  async sendMessageToWebhook(userId: string, params: {url: string; content: string})
   {
     const { url, content } = params;
     const payload = {

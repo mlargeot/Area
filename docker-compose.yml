@@ -29,7 +29,11 @@ services:
 
   client_web:
     container_name: ar3m-frontend
-    build: ./frontend/
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+      args:
+        - EXPO_TOKEN=${EXPO_TOKEN}
     ports:
       - "8081:8081"
     depends_on:

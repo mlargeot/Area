@@ -39,8 +39,7 @@ export default function ServicesScreen() {
 
     setApplet(
       {
-        appletId: applet.appletId,
-        action: applet.action,
+        ...applet,
         reactions: [...applet.reactions, 
           {
             _id : newId.current,
@@ -68,8 +67,7 @@ export default function ServicesScreen() {
 
     setApplet(
       {
-        appletId: applet.appletId,
-        action: applet.action,
+        ...applet,
         reactions: applet.reactions.map((reaction) => {
           if (reaction._id === reactionId) {
             return {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 export type Action = {
   service: string;
@@ -16,6 +16,7 @@ export type Reaction = {
 
 export type Applet = {
   appletId: String;
+  name: string;
   action: Action;
   reactions: Reaction[];
 };
@@ -23,6 +24,7 @@ export type Applet = {
 
 export const emptyApplet = (): Applet => {
   const applet: Applet = {
+    name: "",
     appletId: "",
     action: { service: "", name: "", _id: "", params: [] },
     reactions: []
@@ -62,6 +64,12 @@ const AppletContext = createContext<{
 
 export const AppletProvider = ({ children } : { children : ReactNode }) => {
   const [applet, setApplet] = useState<Applet>(emptyApplet());
+
+
+  useEffect(() => {
+    console.log("Applet changed", applet.name);
+  }, [applet]);
+
   return (
     <AppletContext.Provider value={{ applet, setApplet }}>
       {children}
