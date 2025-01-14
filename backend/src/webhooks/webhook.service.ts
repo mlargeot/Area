@@ -196,7 +196,7 @@ export class WebhookService {
     ]);
 
     for (const applet of triggeredApplets) {
-      await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
+      await this.reactionsService.executeReaction(applet.userId, applet.reaction.name, applet.reaction.params);
     }
   
     return true;
@@ -279,7 +279,7 @@ export class WebhookService {
     ]);
 
     for (const applet of triggeredApplets) {
-      await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
+      await this.reactionsService.executeReaction(applet.userId, applet.reaction.name, applet.reaction.params);
     }
     return true;
   }
@@ -335,7 +335,7 @@ export class WebhookService {
     ]);
 
     for (const applet of triggeredApplets) {
-      await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
+      await this.reactionsService.executeReaction(applet.userId, applet.reaction.name, applet.reaction.params);
     }
 
     return true;
