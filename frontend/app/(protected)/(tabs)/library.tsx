@@ -10,7 +10,7 @@ export default function LibraryScreen() {
   const { setApplet } = useApplet();
 
   useEffect(() => {
-    fetchData && fetchData();
+    fetchData();
   }, []);
 
   return (

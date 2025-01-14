@@ -65,11 +65,6 @@ const AppletContext = createContext<{
 export const AppletProvider = ({ children } : { children : ReactNode }) => {
   const [applet, setApplet] = useState<Applet>(emptyApplet());
 
-
-  useEffect(() => {
-    console.log("Applet changed", applet.name);
-  }, [applet]);
-
   return (
     <AppletContext.Provider value={{ applet, setApplet }}>
       {children}

@@ -1,12 +1,13 @@
-import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, useContext, ReactNode, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Applet } from './appletContext';
+import { getServerAddress } from '../components/confirmServerAddress';
 
 
 const AppletListContext = createContext<{
   appletList: Applet[],
-  fetchData?: () => void
+  fetchData: () => void
 }>({
   appletList: [],
   fetchData: () => {}
@@ -14,29 +15,17 @@ const AppletListContext = createContext<{
 
 export const AppletListProvider = ({ children } : { children : ReactNode }) => {
   const [appletList, setAppletList] = useState<Applet[]>([]);
-  const [serverAddress, setServerAddress] = useState<string>(process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080');
-
-  const getServerAddress = async () => {
-    try {
-      const address = await AsyncStorage.getItem('serverAddress');
-      if (address !== null && address !== "") {
-        setServerAddress(address);
-      }
-    } catch (error) {
-      console.error('Failed to fetch server address from storage', error);
-    }
-  };
-
-  useEffect(() => {
-    getServerAddress();
-  }, []);
 
   const fetchData = async () => {
     setAppletList([]);
+    const apiUrl = await getServerAddress();
+    if (apiUrl === "") {
+      return;
+    }
 
     try {
       const access_token = await AsyncStorage.getItem('access_token');
-      const applets = await axios.get(`${serverAddress}/applets`, {headers: { Authorization: `Bearer ${access_token}` }});
+      const applets = await axios.get(`${apiUrl}/applets`, {headers: { Authorization: `Bearer ${access_token}` }});
 
       for (let i = 0; i < applets.data.length; i++) {
         setAppletList((prev) => [
@@ -63,14 +52,12 @@ export const AppletListProvider = ({ children } : { children : ReactNode }) => {
       }
 
     } catch (error) {
-      console.error(error);
     }
   };
 
   useEffect(() => {
-    if (serverAddress !== "")
-      fetchData();
-  }, [serverAddress]);
+    fetchData();
+  }, []);
 
   return (
     <AppletListContext.Provider value={{ appletList, fetchData }}>

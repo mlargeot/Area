@@ -5,8 +5,10 @@ import {Linking, Platform} from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { getServerAddress } from '../components/confirmServerAddress';
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
+const [apiUrl, setApiUrl] = useState<string>("");
 
 const handleGoogleLogin = () => {
     if (Platform.OS === 'web') {
@@ -30,6 +32,13 @@ export default function Login() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
+
+    useEffect(() => {
+        getServerAddress().then((url) => {
+            setApiUrl(url);
+        });
+    }, []);
+
 
     const handleSignUp = async () => {
         if (password !== confirmPassword) {

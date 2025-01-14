@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { getServerAddress } from '../components/confirmServerAddress';
 
 export type EffectTemplate = {
   name: string;
@@ -34,37 +34,29 @@ type ReactionInterface = {
 const ServiceListContext = createContext<{
   serviceActionList: Service[];
   serviceReactionList: Service[];
+  fetchData: () => void;
 }>({
   serviceActionList: [],
-  serviceReactionList: []
+  serviceReactionList: [],
+  fetchData: () => {}
 });
 
 export const ServiceListProvider = ({ children } : { children : ReactNode }) => {
   const [serviceActionList, setServiceActionList] = useState<Service[]>([]);
   const [serviceReactionList, setServiceReactionList] = useState<Service[]>([]);
-  const [serverAddress, setServerAddress] = useState<string>(process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080');
-
-  const getServerAddress = async () => {
-    try {
-      const address = await AsyncStorage.getItem('serverAddress');
-      if (address !== null && address !== "") {
-        setServerAddress(address);
-      }
-    } catch (error) {
-      console.error('Failed to fetch server address from storage', error);
-    }
-  };
-
-  useEffect(() => {
-    getServerAddress();
-  }, []);
-
+  
   const fetchData = async () => {
     try {
-      const actionData = await axios.get(`${serverAddress}/actions`);
-      const reactionsData = await axios.get(`${serverAddress}/reactions`);
+      const apiUrl = await getServerAddress();
+      if (apiUrl === "") {
+        return;
+      }
+      const actionData = await axios.get(`${apiUrl}/actions`);
+      const reactionsData = await axios.get(`${apiUrl}/reactions`);
       const actions : ActionInterface[] = actionData.data;
       const reactions : ReactionInterface[] = reactionsData.data;
+      setServiceActionList([]);
+      setServiceReactionList([]);
 
       for (let i = 0; i < actions.length; i++) {
         setServiceActionList((prev) => [
@@ -92,12 +84,11 @@ export const ServiceListProvider = ({ children } : { children : ReactNode }) => 
   };
 
   useEffect(() => {
-    if (serverAddress !== "")
-      fetchData();
-  }, [serverAddress]);
+    fetchData();
+  }, []);
 
   return (
-    <ServiceListContext.Provider value={{ serviceActionList, serviceReactionList }}>
+    <ServiceListContext.Provider value={{ serviceActionList, serviceReactionList, fetchData }}>
       {children}
     </ServiceListContext.Provider>
   );

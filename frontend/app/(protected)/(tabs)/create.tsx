@@ -5,6 +5,8 @@ import { ReactionButton } from '../../../components/reactionButton'
 import { useApplet, Reaction, Applet } from '../../../context/appletContext'
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useServiceList } from '../../../context/serviceListContext';
+import { getServerAddress } from '../../../components/confirmServerAddress';
 
 const emptyReaction = () => {
   const empty : Reaction = {name: "", _id: "", service: "", params: []}
@@ -17,7 +19,8 @@ const isActionValid = (applet : Applet) => {
 
 export default function CreateScreen() {
   const { applet, setApplet } = useApplet();
-  const serverAddress = useRef<string>(process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080');
+  const { fetchData } = useServiceList();
+  const serverAddress = useRef<string>("");
   const accessToken = useRef<string>("");
   
 
@@ -66,19 +69,20 @@ export default function CreateScreen() {
   }
 
   useEffect(() => {
+    fetchData();
+
+    getServerAddress().then((url) => {
+      serverAddress.current = url;
+    });
+
     try {
-      AsyncStorage.getItem("serverAdress").then((value) => {
-        if (value !== null) {
-          serverAddress.current = value;
-        }
-      });
       AsyncStorage.getItem("access_token").then((value) => {
         if (value !== null) {
           accessToken.current = value;
         }
       });
     } catch (error) {
-      console.error("Error while getting server address from AsyncStorage", error);
+      console.error("Error while getting access token from AsyncStorage", error);
     }
   }, []);
 
