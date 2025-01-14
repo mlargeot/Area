@@ -50,7 +50,7 @@ export class TwitchActionsService {
   async initStreamOnlineEvent(userId: string, params: { broadcaster: string }) {
     try {
         const url = "https://api.twitch.tv/helix/eventsub/subscriptions"
-        const broadcasterId = this.getBroadcasterId(userId, params.broadcaster);
+        const broadcasterId = await this.getBroadcasterId(userId, params.broadcaster);
         const user = await this.userModel.findOne({ _id: userId });
         const twitchProvider = user.oauthProviders?.find((provider) => provider.provider === 'twitch');
     
