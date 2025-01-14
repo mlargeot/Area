@@ -28,4 +28,10 @@ export class WebhookController {
   async triggerGitPushEvent(@Req() req) {
     return this.webhookService.handlePushEvent(req.body);
   }
+
+  @Post('github/issues')
+  @ApiOkResponse({ description: "Action triggered." })
+  async triggerGitIssuesEvent(@Req() req) {
+    return this.webhookService.handleIssuesEvent(req.body);
+  }
 }

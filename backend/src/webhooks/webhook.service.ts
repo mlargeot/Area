@@ -283,4 +283,98 @@ export class WebhookService {
     }
     return true;
   }
+
+
+// --------------------------------------------- [GITHUB ISSUE WEBHOOK] --------------------------------------------- // 
+
+
+  /**
+  * Handles Issues state changes (e.g., opened, closed, reopened...).
+  * 
+  * This method checks the current Issue state action (opened, closed, reopened or deleted) 
+  * and triggers the corresponding reactions for any active applets that are 
+  * subscribed to this action and match the repository and owner.
+  * 
+  * @param action - The Issue action that was triggered. This can be one of the following:
+  *    - 'opened'
+  *    - 'closed'
+  *    - 'reopened'
+  *    - 'deleted'
+  * 
+  * @param repositoryName - The full name of the GitHub repository where the Issue 
+  * action occurred. It follows the format: `owner/repository`, where `owner` is 
+  * the GitHub username or organization name, and `repository` is the repository name.
+  * 
+  * @returns {Promise<boolean>} A promise that resolves to `true` if the process 
+  * completes successfully, indicating that the PR state event has been handled and 
+  * the associated reactions have been triggered.
+  * 
+  */
+  async handleIssueState(action: string, repositoryName: string): Promise<boolean> {
+    const actionName = `issue_${action}`
+    const owner = repositoryName.split('/')[0];
+    const repository = repositoryName.split('/')[1];
+    const triggeredApplets = await this.userModel.aggregate([
+      {
+        $match: {
+          oauthProviders: {
+            $elemMatch: { provider: 'github'}
+          }
+        }
+      },
+      { $unwind: '$applets' },
+      {
+        $match: {
+          'applets.active': true,
+          'applets.action.name': actionName,
+          'applets.metadata.response.owner': owner,
+          'applets.metadata.response.repository': repository
+        }
+      },
+      { $replaceRoot: { newRoot: '$applets' } }
+    ]);
+
+    for (const applet of triggeredApplets) {
+      await this.reactionsService.executeReaction(applet.reaction.name, applet.reaction.params);
+    }
+
+    return true;
+  }
+
+  /**
+  * Handles GitHub issue events triggered by a webhook.
+  * 
+  * This method processes various issue-related actions (e.g., opened, reopened, closed, deleted)
+  * and triggers corresponding logic based on the event type. It delegates the handling of specific
+  * actions to the `handleIssueState` method.
+  * 
+  * @param body - The payload of the webhook containing event details.
+  * 
+  * @throws No specific exceptions are thrown in this method, but downstream calls (e.g., `handleIssueState`)
+  *         may throw errors if the processing of specific actions fails.
+  * 
+  * @returns {Promise<boolean>} A promise that resolves to `true` if the event is successfully processed 
+  * or ignored.
+  * 
+  * Example usage:
+  * ```typescript
+  * const eventProcessed = await handleIssuesEvent(webhookPayload);
+  * console.log(eventProcessed); // true if successfully handled or ignored.
+  * ```
+  */
+  async handleIssuesEvent(body: any): Promise<boolean> {
+    if (!("action" in body))
+      return true;
+
+    switch (body.action) {
+      case 'reopened':
+      case 'opened':
+      case 'closed':
+      case 'deleted':
+        return await this.handleIssueState(body.action, body.repository.full_name);
+
+      default:
+        return true;
+    }
+  }
 }
