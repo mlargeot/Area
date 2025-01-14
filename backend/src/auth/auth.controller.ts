@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
+import { LocalAuthService } from './services/local-auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
@@ -24,14 +25,16 @@ import { saveState, getState, deleteState } from './state.store';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+    private localAuthService: LocalAuthService) {}
 
   @Post('register')
   @ApiResponse({ status: 200, description: 'Registration successful' })
+  @ApiResponse({ status: 400, description: 'Email already exists' })
   @ApiBody({ type: CreateUserDto })
   async register(@Body() createUserDto: CreateUserDto) {
     console.log('register');
-    return this.authService.register(createUserDto);
+    return this.localAuthService.register(createUserDto);
   }
 
   @Post('login')
@@ -39,21 +42,21 @@ export class AuthController {
   @ApiBody({ type: LoginUserDto })
   async login(@Body() loginUserDto: LoginUserDto) {
     console.log('login');
-    return this.authService.login(loginUserDto);
+    return this.localAuthService.login(loginUserDto);
   }
 
   @Post('forgot-password')
   @ApiResponse({ status: 200, description: 'Password reset email sent' })
   @ApiBody({ type: ForgotPasswordDto })
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto);
+    return this.localAuthService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset-password')
   @ApiResponse({ status: 200, description: 'Password reset successful' })
   @ApiBody({ type: ResetPasswordDto })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.authService.resetPassword(resetPasswordDto);
+    return this.localAuthService.resetPassword(resetPasswordDto);
   }
 
   @Get('protected')
