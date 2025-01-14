@@ -10,3 +10,5 @@
 # NODE FILES
 .yarn
 .pnp*
+
+**/client.apk

@@ -17,7 +17,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthService } from './services/local-auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiForbiddenResponse, ApiResponse } from '@nestjs/swagger';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as crypto from 'node:crypto';
@@ -62,6 +62,7 @@ export class AuthController {
   @Get('protected')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Protected resource' })
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @ApiBody({ type: CreateUserDto })
   async protectedResource(@Req() req) {
     console.log('protectedResource');
@@ -82,6 +83,7 @@ export class AuthController {
   }
 
   @Get('connect/:provider')
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
   async connectProvider(@Param('provider') provider, @Req() req) {
@@ -100,6 +102,7 @@ export class AuthController {
   }
 
   @Get('disconnect/:provider')
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
   async disconnectProvider(@Param('provider') provider, @Req() req) {
@@ -133,6 +136,7 @@ export class AuthController {
   }
 
   @Get('list-services')
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'List of connected services' })
   async listServices(@Req() req) {
