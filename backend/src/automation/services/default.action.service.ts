@@ -202,7 +202,7 @@ export class ActionsService {
           argumentsNumber: 1,
           argumentsExample: [
             {
-              name: "Streamer login",
+              name: "broadcaster",
               description: "Login username of the streamer",
               example: "lekiweak",
               type: "string",
