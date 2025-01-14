@@ -1,13 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReactionsDto } from 'src/automation/dto/automation.dto';
 import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
-import { ReactionsGoogleService } from './google.reaction.service';
+import { ReactionsGoogleService } from 'src/automation/services/google.reaction.service';
+import { ReactionsGithubService } from 'src/automation/services/github.reaction.service';
 
 @Injectable()
 export class ReactionsService {
   constructor (
     private readonly discordServices : ReactionsDiscordService,
-    private readonly googleService : ReactionsGoogleService
+    private readonly googleService : ReactionsGoogleService,
+    private readonly githubService : ReactionsGithubService
   ) {}
 
   private defaultReactions: Array<{
@@ -65,12 +67,39 @@ export class ReactionsService {
           ],
         },
       ],
+    },
+    {
+      service: "Github",
+      reactions: [
+        {
+          name: "comment_issue",
+          description: "Automatically comment on the specified issue when the action is triggered.",
+          argumentsNumber: 2,
+          argumentsExample: [
+            {
+              name: "issue_url",
+              description: "Url of the issue to comment.",
+              example: "https://github.com/owner/repository/issues/number",
+              type: "string",
+              required: true
+            },
+            {
+              name: "comment",
+              description: "Comment to send to issue.",
+              example: "I'm not here for the week, please contact me later!",
+              type: "text",
+              required: true
+            }
+          ],
+        },
+      ],
     }
   ];
 
   private reactionServiceRegistry: Record<string, Function> = {
     send_webhook_message : this.discordServices.sendMessageToWebhook.bind(this.discordServices),
-    send_mail : this.googleService.sendMail.bind(this.googleService)
+    send_mail : this.googleService.sendMail.bind(this.googleService),
+    comment_issue: this.githubService.sendCommentToIssue.bind(this.githubService)
   }
 
 
