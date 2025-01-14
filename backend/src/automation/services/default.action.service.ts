@@ -100,6 +100,76 @@ export class ActionsService {
             },
           ],
         },
+        {
+          name: "push",
+          description: "Triggered when a push is made on a repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "issue_opened",
+          description: "Triggered when an issue is opened on a requested repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "issue_closed",
+          description: "Triggered when an issue is closed on a requested repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "issue_reopened",
+          description: "Triggered when an issue is reopened on a requested repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "issue_deleted",
+          description: "Triggered when an issue is deleted on a requested repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
       ],
     },
     {
@@ -131,6 +201,10 @@ export class ActionsService {
     security_alert : this.githubActionService.initDependabotWebhook.bind(this.githubActionService),
     security_fix : this.githubActionService.initDependabotWebhook.bind(this.githubActionService),
     push: this.githubActionService.initPushWebhook.bind(this.githubActionService),
+    issue_opened: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
+    issue_closed: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
+    issue_deleted: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
+    issue_reopened: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
     playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService),
   }
 
@@ -142,6 +216,10 @@ export class ActionsService {
     security_alert: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     security_fix: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     push: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    issue_opened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    issue_closed: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    issue_deleted: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    issue_reopened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
   }
 
 
