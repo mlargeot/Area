@@ -11,6 +11,7 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  Provider,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
@@ -22,11 +23,14 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as crypto from 'node:crypto';
 import { saveState, getState, deleteState } from './state.store';
+import { ProviderAuthService } from './services/provider-auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService,
-    private localAuthService: LocalAuthService) {}
+    private localAuthService: LocalAuthService,
+  private poviderAuthService: ProviderAuthService,
+) {}
 
   @Post('register')
   @ApiResponse({ status: 200, description: 'Registration successful' })
@@ -78,7 +82,7 @@ export class AuthController {
     const redirect = req.query.redirect_uri;
     const state = crypto.randomUUID();
     saveState(state, { provider: provider, action: 'login', redirect });
-    const providerUrl = this.authService.loginProvider(provider, state);
+    const providerUrl = this.poviderAuthService.loginProvider(provider, state);
     return res.redirect(providerUrl);
   }
 
@@ -97,7 +101,7 @@ export class AuthController {
       redirect,
       user_id: req.user.userId,
     });
-    const providerUrl = this.authService.loginProvider(provider, state);
+    const providerUrl = this.poviderAuthService.loginProvider(provider, state);
     return { redirect_uri: providerUrl };
   }
 
@@ -107,7 +111,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Service connected' })
   async disconnectProvider(@Param('provider') provider, @Req() req) {
     console.log('disconnectProvider');
-    await this.authService.disconnectProvider(provider, req.user);
+    await this.poviderAuthService.disconnectProvider(provider, req.user);
     return { message: 'Service disconnected' };
   }
 
@@ -122,13 +126,13 @@ export class AuthController {
 
     switch (action) {
       case 'login':
-        const token = await this.authService.loginProviderCallback(
+        const token = await this.poviderAuthService.loginProviderCallback(
           provider,
           code,
         );
         return { url: `${redirect}?token=${token}` };
       case 'connect':
-        await this.authService.connectProviderCallback(provider, code, user_id);
+        await this.poviderAuthService.connectProviderCallback(provider, code, user_id);
         return { url: redirect };
       default:
         throw new HttpException('Invalid action', HttpStatus.BAD_REQUEST);
@@ -140,6 +144,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'List of connected services' })
   async listServices(@Req() req) {
-    return this.authService.listServices(req.user);
+    return this.poviderAuthService.listServices(req.user);
   }
 }

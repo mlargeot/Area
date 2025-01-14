@@ -11,6 +11,7 @@ import { DiscordStrategy } from './strategies/discord.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GithubStrategy } from './strategies/github.startegy';
 import { LocalAuthService } from './services/local-auth.service';
+import { ProviderAuthService } from './services/provider-auth.service';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { LocalAuthService } from './services/local-auth.service';
   ],
 
   controllers: [AuthController],
-  providers: [AuthService, LocalAuthService, GoogleStrategy, DiscordStrategy, GithubStrategy, JwtStrategy],
-  exports: [AuthService, LocalAuthService, JwtModule],
+  providers: [AuthService, LocalAuthService, ProviderAuthService, GoogleStrategy, DiscordStrategy, GithubStrategy, JwtStrategy],
+  exports: [AuthService, ProviderAuthService, LocalAuthService, JwtModule],
 })
 export class AuthModule {}
