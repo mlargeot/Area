@@ -9,6 +9,7 @@ export default function loginScreen() {
             justifyContent="center"
             alignItems="center"
             padding="$4"
+            bg={'$background'}
         >
             <Login/>
         </YStack>
