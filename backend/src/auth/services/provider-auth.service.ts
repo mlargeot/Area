@@ -8,12 +8,12 @@ import * as qs from 'qs';
 import { ProviderDto } from '../dto/provider-dto';
 
 const services = [
-{ name: 'Discord', color: '#5865F2', isActive: false, email: '' },
-{ name: 'Spotify', color: '#1DB954', isActive: false, email: '' },
-{ name: 'Twitch', color: '#9146FF', isActive: false, email: '' },
-{ name: 'Google', color: '#FF0000', isActive: false, email: '' },
-{ name: 'Github', color: '#333333', isActive: false, email: '' },
-{ name: 'Microsoft', color: '#00A4EF', isActive: false, email: '' },
+  { name: 'Discord', color: '#5865F2', isActive: false, email: '' },
+  { name: 'Spotify', color: '#1DB954', isActive: false, email: '' },
+  { name: 'Twitch', color: '#9146FF', isActive: false, email: '' },
+  { name: 'Google', color: '#FF0000', isActive: false, email: '' },
+  { name: 'Github', color: '#333333', isActive: false, email: '' },
+  { name: 'Microsoft', color: '#00A4EF', isActive: false, email: '' },
 ];
 
 @Injectable()
@@ -23,12 +23,25 @@ export class ProviderAuthService {
     private jwtService: JwtService,
   ) {}
 
+  private providerTokenExchangeMethods = {
+    discord: this.exchangeTokenDiscord,
+    github: this.exchangeTokenGithub,
+    twitch: this.exchangeTokenTwitch,
+    spotify: this.exchangeTokenSpotify,
+    microsoft: this.exchangeTokenMicrosoft,
+  };
+
   providers = {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-      scopes: ['openid', 'profile', 'email', 'https://www.googleapis.com/auth/gmail.send'],
+      scopes: [
+        'openid',
+        'profile',
+        'email',
+        'https://www.googleapis.com/auth/gmail.send',
+      ],
     },
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID,
@@ -52,7 +65,9 @@ export class ProviderAuthService {
       clientId: process.env.SPOTIFY_CLIENT_ID,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
       authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      scopes: ['user-read-private user-read-email playlist-read-private playlist-read-collaborative'],
+      scopes: [
+        'user-read-private user-read-email playlist-read-private playlist-read-collaborative',
+      ],
     },
     microsoft: {
       clientId: process.env.MICROSOFT_CLIENT_ID,
@@ -64,7 +79,6 @@ export class ProviderAuthService {
   };
 
   loginProvider(service: string, state: any): string {
-
     const provider = this.providers[service];
     if (!provider) {
       throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
@@ -79,7 +93,6 @@ export class ProviderAuthService {
   }
 
   async loginProviderCallback(provider: string, code: string): Promise<string> {
-
     let providerDto;
     switch (provider) {
       case 'google':
@@ -117,35 +130,19 @@ export class ProviderAuthService {
     code: string,
     userId: string,
   ) {
-
     const user = await this.userModel.findOne({
       _id: userId,
     });
     if (!user)
       throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
 
-    let providerDto;
-    switch (provider) {
-      case 'google':
-        providerDto = await this.exchangeTokenGoogle(code);
-        break;
-      case 'discord':
-        providerDto = await this.exchangeTokenDiscord(code);
-        break;
-      case 'github':
-        providerDto = await this.exchangeTokenGithub(code);
-        break;
-      case 'twitch':
-        providerDto = await this.exchangeTokenTwitch(code);
-        break;
-      case 'spotify':
-        providerDto = await this.exchangeTokenSpotify(code);
-        break;
-      case 'microsoft':
-        providerDto = await this.exchangeTokenMicrosoft(code);
-      default:
-        throw new HttpException('Invalid provider', HttpStatus.BAD_REQUEST);
+    const exchangeTokenMethod = this.providerTokenExchangeMethods[provider];
+
+    if (!exchangeTokenMethod) {
+      throw new HttpException('Invalid provider', HttpStatus.BAD_REQUEST);
     }
+
+    const providerDto = await exchangeTokenMethod.call(this, code);
 
     const providerIndex = user.oauthProviders.findIndex(
       (provider) => provider.provider === providerDto.provider,
@@ -190,13 +187,11 @@ export class ProviderAuthService {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: process.env.API_URL + '/auth/callback',
+        redirect_uri: `${process.env.API_URL}/auth/callback`,
         grant_type: 'authorization_code',
       });
-      console.log(data);
       const idToken = data.id_token;
-      const decoded = this.jwtService.decode(idToken);
-      console.log(decoded);
+      const decoded = this.jwtService.decode(idToken) as any;
 
       return {
         provider: 'google',
@@ -205,8 +200,7 @@ export class ProviderAuthService {
         refreshToken: data.refresh_token,
         accountId: decoded.sub,
       };
-    } catch {
-      console.error('Token exchange failed:');
+    } catch (error) {
       throw new HttpException(
         'Token exchange failed',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -222,40 +216,26 @@ export class ProviderAuthService {
           code,
           client_id: process.env.DISCORD_CLIENT_ID,
           client_secret: process.env.DISCORD_CLIENT_SECRET,
-          redirect_uri: process.env.API_URL + '/auth/callback',
+          redirect_uri: `${process.env.API_URL}/auth/callback`,
           grant_type: 'authorization_code',
         }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
       );
-      console.log(data);
-      const accessToken = data.access_token;
-      const refreshToken = data.refresh_token;
       const discordUser = await axios.get(
         'https://discord.com/api/v9/users/@me',
         {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          headers: { Authorization: `Bearer ${data.access_token}` },
         },
       );
-      console.log(discordUser.data);
 
       return {
         provider: 'discord',
         email: discordUser.data.email,
-        accessToken: accessToken,
-        refreshToken,
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
         accountId: discordUser.data.id,
       };
     } catch (error) {
-      console.error(
-        'Token exchange failed:',
-        error.response?.data || error.message,
-      );
       throw new HttpException(
         'Token exchange failed',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -264,7 +244,6 @@ export class ProviderAuthService {
   }
 
   async exchangeTokenTwitch(code: string): Promise<ProviderDto> {
-
     try {
       const { data } = await axios.post(
         'https://id.twitch.tv/oauth2/token',
@@ -312,7 +291,6 @@ export class ProviderAuthService {
   }
 
   async exchangeTokenSpotify(code: string): Promise<ProviderDto> {
-
     try {
       const { data } = await axios.post(
         'https://accounts.spotify.com/api/token',
@@ -359,7 +337,6 @@ export class ProviderAuthService {
   }
 
   async exchangeTokenGithub(code: string): Promise<ProviderDto> {
-
     try {
       const { data } = await axios.post(
         'https://github.com/login/oauth/access_token',
@@ -387,7 +364,7 @@ export class ProviderAuthService {
 
       return {
         provider: 'github',
-        email: githubUser.data.email ? githubUser.data.email : "null",
+        email: githubUser.data.email ? githubUser.data.email : 'null',
         accessToken: accessToken,
         refreshToken: null, // GitHub tokens don't have a refresh token
         accountId: githubUser.data.id,
@@ -405,7 +382,6 @@ export class ProviderAuthService {
   }
 
   async exchangeTokenMicrosoft(code: string): Promise<ProviderDto> {
-
     try {
       const { data } = await axios.post(
         'https://login.microsoftonline.com/common/oauth2/v2.0/token',
@@ -483,5 +459,4 @@ export class ProviderAuthService {
 
     return servicesCopy;
   }
-
 }

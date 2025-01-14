@@ -4,10 +4,10 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "debug": {
+    "prod": {
       "android": {
         "buildType": "apk",
-        "gradleCommand": ":app:assembleDebug"
+        "gradleCommand": ":app:assembleRelease"
       }
     }
   }
