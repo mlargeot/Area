@@ -11,7 +11,7 @@ export default function GeneralHelp({title}: any) {
   const [services, setServices] = useState<any[]>([]);
   const [actions, setactions] = useState<any[]>([]);
   const [reactions, setreactions] = useState<any[]>([]);
-  const router = useRouter()
+  const router = useRouter();
   const media = useMedia();
 
   const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
@@ -40,6 +40,8 @@ export default function GeneralHelp({title}: any) {
         console.log("response", response);
         if (response.status === 200) {
             setactions(response.data);
+        } else if (response.status === 404) {
+          console.log("Aucune Actions !");
         }
     } catch (error) {
         console.error(error);
@@ -55,6 +57,8 @@ const fetchReactions = async () => {
       console.log("response", response);
       if (response.status === 200) {
           setreactions(response.data);
+      } else if (response.status === 404) {
+        console.log("Aucune Réactions !");
       }
   } catch (error) {
       console.error(error);

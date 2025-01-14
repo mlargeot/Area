@@ -8,7 +8,7 @@ export default function Header({ title, onPress }: any) {
 
     const router = useRouter();
     return (
-        <XStack ai="center" jc="space-between" px="$4" pt="$5" py="$2" bg="$background" borderBottomWidth={1} borderBottomColor="$borderColor">
+        <XStack ai="center" jc="space-between" px="$4" pt="$5" py="$2" borderBottomWidth={1} borderBottomColor="$borderColor">
             <Button onPress={() => router.push(onPress)} icon={ArrowLeft} />
             <Text fontWeight="700" fontSize="$9">{title}</Text>
             <Anchor

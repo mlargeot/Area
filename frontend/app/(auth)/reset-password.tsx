@@ -45,6 +45,7 @@ function Reset() {
             justifyContent="center"
             alignItems="center"
             padding="$6"
+            bg={'$background'}
         >
             <YStack
                 width={320}
