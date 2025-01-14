@@ -34,4 +34,10 @@ export class WebhookController {
   async triggerGitIssuesEvent(@Req() req) {
     return this.webhookService.handleIssuesEvent(req.body);
   }
+
+  @Post('twitch/livestart')
+  @ApiOkResponse({ description: "Live start triggered." })
+  async triggerLiveStartEvent(@Req() req) {
+    return this.webhookService.handleLiveStart(req.body);
+  }
 }
