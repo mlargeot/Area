@@ -13,7 +13,6 @@ import axios from 'axios';
 import * as qs from 'qs';
 import { ProviderDto } from './dto/provider-dto';
 
-// services format:
 const services = [
   { name: 'Discord', color: '#5865F2', isActive: false, email: '' },
   { name: 'Spotify', color: '#1DB954', isActive: false, email: '' },
