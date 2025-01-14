@@ -11,10 +11,11 @@ import { ReactionsController } from 'src/automation/controllers/reactions.contro
 import { ServicesController } from 'src/automation/controllers/services.controller';
 import { ActionsService } from 'src/automation/services/default.action.service';
 import { GithubActionsService } from 'src/automation/services/github.action.service';
+import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
 import { ReactionsService } from 'src/automation/services/default.reaction.service';
 import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
+import { ReactionsGithubService } from 'src/automation/services/github.reaction.service';
 import { ServicesService } from 'src/automation/services/services.service';
-import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
 import { ReactionsGoogleService } from 'src/automation/services/google.reaction.service';
 
 @Module({
@@ -26,6 +27,7 @@ import { ReactionsGoogleService } from 'src/automation/services/google.reaction.
         ReactionsService,
         ReactionsDiscordService,
         ReactionsGoogleService,
+        ReactionsGithubService,
 
         ServicesService,
     ],
