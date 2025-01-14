@@ -34,11 +34,16 @@ export class TwitchActionsService {
         "Client-Id": this.configService.get<string>('TWITCH_CLIENT_ID')
     };
     try {
+        console.log("\nData request: ", {
+            url : `https://api.twitch.tv/helix/users?login=${broadcaster}`,
+            Authorization: `Bearer ${twitchAccessToken}`,
+            "Client-Id": this.configService.get<string>('TWITCH_CLIENT_ID')
+        });
         const response = await axios.get(`https://api.twitch.tv/helix/users?login=${broadcaster}`, { headers });
         const userData = response.data.data
         return userData[0].id;
     } catch (error) {
-        throw new InternalServerErrorException("Failed to retrieve broadcaster ID. Please try again.");
+        throw new InternalServerErrorException("Failed to retrieve broadcaster ID. Please try again. : ", error.message_content);
     }
   }
 
