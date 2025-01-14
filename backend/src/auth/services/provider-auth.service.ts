@@ -64,9 +64,6 @@ export class ProviderAuthService {
   };
 
   loginProvider(service: string, state: any): string {
-    console.log('loginProvider');
-    console.log(service);
-    console.log(state);
 
     const provider = this.providers[service];
     if (!provider) {
@@ -82,7 +79,6 @@ export class ProviderAuthService {
   }
 
   async loginProviderCallback(provider: string, code: string): Promise<string> {
-    console.log('loginProviderCallback');
 
     let providerDto;
     switch (provider) {
@@ -121,7 +117,6 @@ export class ProviderAuthService {
     code: string,
     userId: string,
   ) {
-    console.log('connectProviderCallback');
 
     const user = await this.userModel.findOne({
       _id: userId,
@@ -170,7 +165,6 @@ export class ProviderAuthService {
   }
 
   async disconnectProvider(provider: string, user: any) {
-    console.log('disconnectProvider');
     const existingUser = await this.userModel.findOne({
       _id: user.userId,
     });
@@ -270,7 +264,6 @@ export class ProviderAuthService {
   }
 
   async exchangeTokenTwitch(code: string): Promise<ProviderDto> {
-    console.log('exchangeTokenTwitch');
 
     try {
       const { data } = await axios.post(
@@ -319,7 +312,6 @@ export class ProviderAuthService {
   }
 
   async exchangeTokenSpotify(code: string): Promise<ProviderDto> {
-    console.log('exchangeTokenSpotify');
 
     try {
       const { data } = await axios.post(
@@ -367,7 +359,6 @@ export class ProviderAuthService {
   }
 
   async exchangeTokenGithub(code: string): Promise<ProviderDto> {
-    console.log('exchangeTokenGithub');
 
     try {
       const { data } = await axios.post(
@@ -414,7 +405,6 @@ export class ProviderAuthService {
   }
 
   async exchangeTokenMicrosoft(code: string): Promise<ProviderDto> {
-    console.log('exchangeTokenMicrosoft');
 
     try {
       const { data } = await axios.post(
@@ -465,7 +455,6 @@ export class ProviderAuthService {
   }
 
   async listServices(user: any) {
-    console.log('listServices');
     const { userId } = user;
     const existingUser = await this.userModel.findOne({
       _id: userId,
