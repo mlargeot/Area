@@ -58,18 +58,17 @@ export default function ProfileScreen() {
                     >
                         {services.map((service, index) => (
                         <Card
+                            width={media.sm ? '90%' : '20%'}
                             key={index}
                             bordered
                             borderWidth={2}
                             borderColor={service.color}
                             borderRadius="$4"
-                            width={media.sm ? '90%' : '20%'}
                             >
                             <YStack>
                                 <Card.Header padded>
                                 <XStack gap="$3" alignItems="center">
                                     <XStack flex={1}
-                                        flexDirection={media.sm ? "column" : "row"}
                                         alignItems="center"
                                         gap="$2">
                                         <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">

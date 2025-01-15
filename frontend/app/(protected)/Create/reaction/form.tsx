@@ -1,219 +1,185 @@
-import { Button, ScrollView, TextArea, Label, Switch, Stack, YStack, Text, View, XStack, Square, H2, SizeTokens, Input } from 'tamagui'
-import { useNavigationData } from '../../../../context/navigationContext';
-import { useApplet, Reaction, emptyReaction, getParamValueString } from '../../../../context/appletContext';
-import { useServiceList, Params } from '../../../../context/serviceListContext';
+import React, { useEffect, useState } from 'react'
+import { 
+  ScrollView, YStack, XStack, Card, H1, Text, Button, Input, 
+  TextArea, Switch, Label, Paragraph, Theme 
+} from 'tamagui'
+import { ChevronLeft, Save, HelpCircle } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
-import React, { useEffect, useRef } from 'react';
-import DescriptionHelpButton from '../../../../components/descriptionHelpButton';
+import { useNavigationData } from '../../../../context/navigationContext'
+import { useApplet, Reaction, emptyReaction, getParamValueString } from '../../../../context/appletContext'
+import { useServiceList, Params } from '../../../../context/serviceListContext'
 
+const ParamField = ({ param, value, onChange, reaction }) => {
+  const defaultValue = getParamValueString(param.name, reaction)
 
-const returnField = (
-  paramTemplate : Params,
-  paramsValue: React.MutableRefObject<{name: string; value: string;}[]>,
-  reaction: Reaction
-  ) =>{
-
-  const handleInput = (val : string) => {
-    paramsValue.current = paramsValue.current.map((param) => {
-      if (param.name === paramTemplate.name) {
-        return {
-          name: param.name,
-          value: val
-        }
-      }
-      return param
-    });
-  }
-
-  const defaultValue : string = getParamValueString(paramTemplate.name, reaction)
-
-  switch (paramTemplate.type) {
+  switch (param.type) {
     case "bool":
       return (
-        <SwitchWithLabel size="$4" label={paramTemplate.name} defaultChecked />
+        <XStack alignItems="center" space>
+          <Switch 
+            id={`switch-${param.name}`}
+            size="$4"
+            checked={value === "true"} 
+            onCheckedChange={(checked) => onChange(checked.toString())}
+          >
+            <Switch.Thumb animation="quick" />
+          </Switch>
+          <Label htmlFor={`switch-${param.name}`} size="$4">{param.name}</Label>
+        </XStack>
       )
     case "string":
-      handleInput(defaultValue)
       return (
-        <InputField name={paramTemplate.name} defaultValue={defaultValue} event={handleInput} />
+        <Input
+          placeholder={param.example || "Enter text"}
+          value={value || defaultValue}
+          onChangeText={onChange}
+        />
       )
-      case "text":
-      handleInput(defaultValue)
+    case "text":
       return (
-        <TextAreaField defaultValue={defaultValue} param={paramTemplate} event={handleInput} />
+        <TextArea
+          placeholder={param.example || "Enter text"}
+          value={value || defaultValue}
+          onChangeText={onChange}
+        />
       )
     case "date":
       return (
-        <DateField name={paramTemplate.name} />
+        <Input
+          placeholder="YYYY-MM-DD"
+          value={value || defaultValue}
+          onChangeText={onChange}
+        />
       )
     case "number":
       return (
-        <NumberField name={paramTemplate.name} />
+        <Input
+          placeholder={param.example || "Enter number"}
+          value={value || defaultValue}
+          onChangeText={onChange}
+          keyboardType="numeric"
+        />
       )
     default:
-      return (
-        <Text>{paramTemplate.name}</Text>
-      )
+      return <Text>Unsupported param type: {param.type}</Text>
   }
-}
-
-const toggleSwitch = (value: boolean) => {
-  console.log(value)
-}
-
-function DateField(props: { name: string }) {
-  return (
-    <XStack gap="$2">
-      <Label size="$4">{props.name}</Label>
-      <Text>WORK IN PROGRESS</Text>
-    </XStack>
-  )
-}
-
-function NumberField(props: { name: string }) {
-  return (
-    <XStack gap="$2">
-      <Label size="$4">{props.name}</Label>
-      <Input keyboardType="numeric" placeholder="Enter number" />
-    </XStack>
-  )
-}
-
-function TextAreaField(props: { param: Params,  defaultValue: string, event: (val : string) => void }) {
-  return (
-    <XStack gap="$2">
-      <Label size="$4">{props.param.name}</Label>
-      <TextArea placeholder={props.param.example} defaultValue={props.defaultValue} onChangeText={(val) => {
-        props.event(val)
-      }} />
-      <DescriptionHelpButton description={props.param.description} title={props.param.name}/>
-    </XStack>
-  )
-}
-
-function InputField(props: { name: string, defaultValue: string, event: (val : string) => void }) {
-  return (
-    <XStack gap="$2">
-      <Label size="$4">{props.name}</Label>
-      <Input placeholder="Enter text" defaultValue={props.defaultValue} onChangeText={(val) => {
-        props.event(val)
-      }} />
-    </XStack>
-  )
-}
-
-function SwitchWithLabel(props: { size: SizeTokens; label: string; defaultChecked?: boolean }) {
-  const id = `switch-${props.label}`
-  return (
-    <XStack alignItems="center" gap="$2">
-      <Label htmlFor={id} size="$4">
-        {props.label}
-      </Label>
-      <Switch
-        id={id}
-        size={props.size}
-        defaultChecked={props.defaultChecked}
-        onCheckedChange={toggleSwitch}
-        >
-        <Switch.Thumb animation="quick" />
-      </Switch>
-    </XStack>
-  )
 }
 
 const getReaction = (reactionId: string, reactions: Reaction[]): Reaction => {
-  for (let i = 0; i < reactions.length; i++) {
-    if (reactions[i]._id === reactionId) {
-      return reactions[i];
-    }
-  }
-  return emptyReaction();
+  return reactions.find(r => r._id === reactionId) || emptyReaction()
 }
 
 export default function ServicesScreen() {
-  const { applet, setApplet } = useApplet();
-  const { navigationData, setNavigationData } = useNavigationData();
-  const reaction : Reaction = getReaction(navigationData.reactionId, applet.reactions)
-  const paramsValue = useRef<{ name: string; value: string }[]>([])
+  const { applet, setApplet } = useApplet()
+  const { navigationData, setNavigationData } = useNavigationData()
+  const { serviceReactionList } = useServiceList()
   
-  const { serviceReactionList } = useServiceList();
-  const [params, setParams] = React.useState<Params[]>([]);
-  
-  useEffect(() => {
-    const filteredServices = serviceReactionList.filter((service) => service.service.toLowerCase() === reaction.service.toLowerCase());
-    const params = filteredServices[0].effect.filter((effect) => effect.name === reaction.name)[0].argumentsExample;
-    setParams(params)
+  const reaction = getReaction(navigationData.reactionId, applet.reactions)
+  const [params, setParams] = useState<Params[]>([])
+  const [paramValues, setParamValues] = useState<{[key: string]: string}>({})
 
-    for (let i = 0; i < params.length; i++) {
-      paramsValue.current.push({
-        name: params[i].name,
-        value: ""
-      })
-    }
+  useEffect(() => {
+    const filteredServices = serviceReactionList.filter(
+      (service) => service.service.toLowerCase() === reaction.service.toLowerCase()
+    )
+    const reactionParams = filteredServices[0]?.effect.find(
+      (effect) => effect.name === reaction.name
+    )?.argumentsExample || []
+    setParams(reactionParams)
+
+    const initialValues = {}
+    reactionParams.forEach(param => {
+      initialValues[param.name] = getParamValueString(param.name, reaction) || ''
+    })
+    setParamValues(initialValues)
   }, [serviceReactionList, reaction])
-
-  useEffect(() => {
-    for (let i = 0; i < params.length; i++) {
-      paramsValue.current.push({
-        name: params[i].name,
-        value: ""
-      })
-    }
-  }, [])
 
   const saveParams = () => {
     setApplet({
       ...applet,
-      reactions: applet.reactions.map((reaction) => {
-        if (reaction._id === navigationData.reactionId) {
+      reactions: applet.reactions.map((r) => {
+        if (r._id === navigationData.reactionId) {
           return {
-            ...reaction,
-            params: paramsValue.current.map((param) => {
-              return {
-                [param.name]: param.value
-              }
-            })
+            ...r,
+            params: Object.entries(paramValues).map(([name, value]) => ({ [name]: value }))
           }
         }
-        return reaction
+        return r
       })
     })
   }
 
   return (
-    <ScrollView>
-      <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <Link href={"/Create/services"} onPress={() => {setNavigationData({
-          currentService: navigationData.currentService,
-          actionType: "modify",
-          reactionId: navigationData.reactionId
-        })}}>
-          <H2>
-            {reaction.service}
-          </H2>
-        </Link>
-        <Link href={"/Create/reaction/effect"} onPress={() => {setNavigationData({
-          currentService: navigationData.currentService,
-          actionType: "modify",
-          reactionId: navigationData.reactionId
-        })}}>
-          <H2>
-            {reaction.name}
-          </H2>
-        </Link>
-        {params.map((param, i) => [
-          <View key={`field-${i}-${param.type}`} >
-            {returnField(param, paramsValue, reaction)}
-          </View>
-        ])}
-        <Link href="/create" asChild>
-          <Button onPress={saveParams}>
-            <Button.Text>
-              Save
-            </Button.Text>
-          </Button>
-        </Link>
-      </YStack>
-    </ScrollView>
+    <Theme name="dark">
+      <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: '#000000' }}>
+        <YStack padding="$4" space="$4">
+          <Card backgroundColor="#1C1C1C" borderRadius="$4" padding="$4" elevate>
+            <XStack justifyContent="space-between" alignItems="center">
+              <Link 
+                href="/Create/services" 
+                asChild
+                onPress={() => {
+                  setNavigationData({
+                    currentService: navigationData.currentService,
+                    actionType: "modify",
+                    reactionId: navigationData.reactionId
+                  })
+                }}
+              >
+                <Button icon={ChevronLeft} circular size="$3" backgroundColor="$purple8" />
+              </Link>
+              <H1 color="$purple10" fontWeight="bold">{reaction.service}</H1>
+              <Button icon={Save} circular size="$3" backgroundColor="$purple8" onPress={saveParams} />
+            </XStack>
+          </Card>
+
+          <Card backgroundColor="#1C1C1C" borderRadius="$4" padding="$4" elevate>
+            <YStack space="$4">
+              <Text color="white" fontSize="$6" fontWeight="bold" textAlign="center">
+                {reaction.name}
+              </Text>
+              <Paragraph color="$gray10" textAlign="center">
+                Configure the parameters for this reaction
+              </Paragraph>
+
+              {params.map((param, index) => (
+                <YStack key={index} space="$2">
+                  <XStack justifyContent="space-between" alignItems="center">
+                    <Label htmlFor={param.name} color="white">
+                      {param.name}
+                    </Label>
+                    <Button 
+                      icon={HelpCircle} 
+                      circular 
+                      size="$2"
+                      backgroundColor="transparent"
+                      onPress={() => alert(param.description)}
+                    />
+                  </XStack>
+                  <ParamField
+                    param={param}
+                    value={paramValues[param.name] || ''}
+                    onChange={(value) => setParamValues(prev => ({ ...prev, [param.name]: value }))}
+                    reaction={reaction}
+                  />
+                </YStack>
+              ))}
+            </YStack>
+          </Card>
+
+          <Link href="/create" asChild>
+            <Button 
+              backgroundColor="$purple10"
+              color="white"
+              size="$5"
+              onPress={saveParams}
+            >
+              Save Changes
+            </Button>
+          </Link>
+        </YStack>
+      </ScrollView>
+    </Theme>
   )
 }
+
