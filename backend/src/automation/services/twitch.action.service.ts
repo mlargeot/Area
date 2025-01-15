@@ -47,10 +47,27 @@ export class TwitchActionsService {
     }
   }
 
+  async getAppAcessToken() {
+    const url = "https://id.twitch.tv/oauth2/token";
+    const headers = {
+        "client_id": this.configService.get<string>('TWITCH_CLIENT_ID'),
+        "client_secret": this.configService.get<string>('TWITCH_CLIENT_SECRET'),
+        "grant_type": "client_credentials"
+    };
+    try {
+        const response = await axios.post(url, null, { headers });
+        console.log("\nTwitch App Acess Token: ", response.data.access_token);
+        return response.data.access_token;
+    } catch (error) {
+        throw new InternalServerErrorException("Failed to retreive App Acess Token. Please try again. : ", error.message_content);
+    }
+  }
+
   async initStreamOnlineEvent(userId: string, params: { broadcaster: string }) {
     try {
         const url = "https://api.twitch.tv/helix/eventsub/subscriptions"
         const broadcasterId = await this.getBroadcasterId(userId, params.broadcaster);
+        const appAcessToken = await this.getAppAcessToken();
         const user = await this.userModel.findOne({ _id: userId });
         const twitchProvider = user.oauthProviders?.find((provider) => provider.provider === 'twitch');
     
@@ -58,7 +75,7 @@ export class TwitchActionsService {
         if (!twitchProvider || !twitchProvider.accessToken)
             throw new UnauthorizedException(`Twitch access token not found for user with ID ${userId}.`);
         const headers = {
-            Authorization: `Bearer ${twitchProvider.accessToken}`,
+            Authorization: `Bearer ${appAcessToken}`,
             "Client-Id": this.configService.get<string>('TWITCH_CLIENT_ID'),
             "Content-Type": "application/json"
         };
