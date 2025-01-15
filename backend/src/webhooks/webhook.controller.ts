@@ -39,12 +39,6 @@ export class WebhookController {
   @Post('twitch/livestart')
   @ApiOkResponse({ description: "Live start triggered." })
   async triggerLiveStartEvent(@Req() req) {
-    return this.webhookService.handleLiveStart(req.body);
-  }
-
-  @Get('twitch/livestart')
-  @ApiOkResponse({ description: "Callback check trigger." })
-  async triggerLiveStartEventPing(@Req() req) {
-    return this.webhookService.handleCallbackCheck(req.body);
+    return this.webhookService.handleLiveStart(req.body, req.headers);
   }
 }

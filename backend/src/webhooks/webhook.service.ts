@@ -378,7 +378,11 @@ export class WebhookService {
     }
   }
 
-  async handleLiveStart(body: any): Promise<boolean> {
+  async handleLiveStart(body: any, headers: any): Promise<boolean> {
+    const event = headers.twitch_eventsub_message_type
+    const event1 = headers['twitch-eventsub-message-type']
+
+    console.log("\nEVENT: ", event, " ", event1);
     console.log("\nREQUEST BODY IN CALLBACK : \n", body);
     const id = body.subscription.id;
     const triggeredApplets = await this.userModel.aggregate([
@@ -403,11 +407,6 @@ export class WebhookService {
     for (const applet of triggeredApplets) {
       await this.reactionsService.executeReaction(applet.userId, applet.reaction.name, applet.reaction.params);
     }
-    return true;
-  }
-
-  async handleCallbackCheck(body: any): Promise<boolean> {
-    console.log("\nREQUEST BODY IN CALLBACK FROM GET : \n", body);
     return true;
   }
 }
