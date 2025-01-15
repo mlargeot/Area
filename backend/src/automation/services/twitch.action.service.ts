@@ -55,8 +55,11 @@ export class TwitchActionsService {
         "client_secret": this.configService.get<string>('TWITCH_CLIENT_SECRET'),
         "grant_type": "client_credentials"
     };
+    const headers = {
+        "Content-Type": "application/json"
+    }
     try {
-        const response = await axios.post(url, data, null);
+        const response = await axios.post(url, data, { headers });
         console.log("\nTwitch App Acess Token: ", response.data.access_token);
         return response.data.access_token;
     } catch (error) {
