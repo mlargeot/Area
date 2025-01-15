@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Button, ScrollView, Input, YStack, Text, Label, XStack, Square, Card, H1 } from 'tamagui'
+import { Button, ScrollView, Input, YStack, Text, Label, XStack, Square, Card, H1, ButtonText } from 'tamagui'
 import { ActionButton } from '../../../components/actionButton'
 import { ReactionButton } from '../../../components/reactionButton'
 import { useApplet, Reaction, Applet } from '../../../context/appletContext'
@@ -40,7 +40,7 @@ export default function CreateScreen() {
     const appletName : string = applet.name === "" ? "Unamed Applet" : applet.name;
     console.log("Saving applet", applet.name, "name:", appletName);
 
-    const url = `${serverAddress.current}/applets`;
+    const url = `${serverAddress.current}/applets${applet.appletId === "" ? "" : applet.appletId}`;
     const appletData = {
       name: appletName,
       action: {
@@ -68,6 +68,27 @@ export default function CreateScreen() {
       emptyApplet();
     }).catch(() => {
       const errorString = "Error while saving applet, the parameters given might be invalid";
+      Platform.OS === "web" ? alert(errorString) : Alert.alert(errorString);
+    });
+  };
+
+  const deleteApplet = () => {
+    if (serverAddress.current === "") { return; }
+    if (applet.appletId === "") {
+      const help : string = "this applet is still a draft, if you want to delete it, just discard it";
+      return Platform.OS === "web" ? alert(help) : Alert.alert(help);
+    }
+    console.log("Deleting applet", applet.appletId);
+
+    const url = `${serverAddress.current}/applets/${applet.appletId}`;
+
+    axios.delete(url, {headers: { Authorization: `Bearer ${accessToken.current}` }
+    }).then(() => {
+      const successString = "Applet deleted successfully";
+      Platform.OS === "web" ? alert(successString) : Alert.alert(successString);
+      emptyApplet();
+    }).catch(() => {
+      const errorString = "Error while deleting the applet, please try again later";
       Platform.OS === "web" ? alert(errorString) : Alert.alert(errorString);
     });
   };
