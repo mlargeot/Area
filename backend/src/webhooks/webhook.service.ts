@@ -379,6 +379,7 @@ export class WebhookService {
   }
 
   async handleLiveStart(body: any): Promise<boolean> {
+    console.log("\nLIVE TRIGGER\n");
     const id = body.subscription.id;
     const triggeredApplets = await this.userModel.aggregate([
       {
