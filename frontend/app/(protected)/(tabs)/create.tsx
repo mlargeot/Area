@@ -7,6 +7,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useServiceList } from '../../../context/serviceListContext';
 import { getServerAddress } from '../../../components/confirmServerAddress';
+import { Alert, Platform } from 'react-native';
 
 const emptyReaction = () => {
   const empty : Reaction = {name: "", _id: "", service: "", params: []}
@@ -14,7 +15,17 @@ const emptyReaction = () => {
 }
 
 const isActionValid = (applet : Applet) => {
-  return applet.action.service !== "" && applet.action.name !== "" && applet.action._id !== "" && applet.reactions.length > 0
+  if (applet.action.service === "" || applet.action.name === "" || applet.action._id === "") {
+    const help : string = "you need to choose an action for your applet";
+    Platform.OS === "web" ? alert(help) : Alert.alert(help);
+    return false;
+  }
+  if (applet.reactions.length <= 0) {
+    const help : string = "you need to choose at least one reaction for your applet";
+    Platform.OS === "web" ? alert(help) : Alert.alert(help);
+    return false;
+  }
+  return true;
 }
 
 export default function CreateScreen() {
@@ -50,8 +61,14 @@ export default function CreateScreen() {
     }
     console.log("URL:", url, "DATA:", appletData, "TOKEN:", accessToken.current);
 
-    axios.post(url, appletData, {headers: { Authorization: `Bearer ${accessToken.current}` }}).catch((error) => {
-      console.log("Error while saving applet, the parameters given might be invalid", error);
+    axios.post(url, appletData, {headers: { Authorization: `Bearer ${accessToken.current}` }
+    }).then(() => {
+      const successString = "Applet saved successfully";
+      Platform.OS === "web" ? alert(successString) : Alert.alert(successString);
+      emptyApplet();
+    }).catch(() => {
+      const errorString = "Error while saving applet, the parameters given might be invalid";
+      Platform.OS === "web" ? alert(errorString) : Alert.alert(errorString);
     });
   };
 
