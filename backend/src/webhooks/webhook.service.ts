@@ -379,7 +379,7 @@ export class WebhookService {
   }
 
   async handleLiveStart(body: any): Promise<boolean> {
-    console.log("\nLIVE TRIGGER\n");
+    console.log("\nREQUEST BODY IN CALLBACK : \n", body);
     const id = body.subscription.id;
     const triggeredApplets = await this.userModel.aggregate([
       {
@@ -403,6 +403,11 @@ export class WebhookService {
     for (const applet of triggeredApplets) {
       await this.reactionsService.executeReaction(applet.userId, applet.reaction.name, applet.reaction.params);
     }
+    return true;
+  }
+
+  async handleCallbackCheck(body: any): Promise<boolean> {
+    console.log("\nREQUEST BODY IN CALLBACK : \n", body);
     return true;
   }
 }
