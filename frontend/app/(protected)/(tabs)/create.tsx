@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Button, ScrollView, Input, YStack, Text, Label, XStack, Square } from 'tamagui'
+import { Button, ScrollView, Input, YStack, Text, Label, XStack, Square, Card, H1 } from 'tamagui'
 import { ActionButton } from '../../../components/actionButton'
 import { ReactionButton } from '../../../components/reactionButton'
 import { useApplet, Reaction, Applet } from '../../../context/appletContext'
@@ -85,35 +85,114 @@ export default function CreateScreen() {
   return (
     <ScrollView
     contentContainerStyle={{
-      flexGrow: 1, 
-      backgroundColor: '$background'
+      flexGrow: 1,
+      backgroundColor: '$background',
+      minHeight: '100vh'
     }}
-    style={{ flex: 1 }}>
-      <YStack paddingVertical="$4" alignItems="center" gap="$1" width="100%">
-        <XStack gap="$2" marginBottom={10}>
-          <Label size="$4">Name of the applet :</Label>
-          <Input placeholder="My applet" value={applet.name} onChangeText={(val) => handleNameInput(val)}/>
+    style={{ flex: 1 }}
+  >
+    <YStack 
+      paddingVertical="$4" 
+      alignItems="center" 
+      gap="$1" 
+      width="100%"
+      padding="$4"
+      maxWidth={1200}
+      marginHorizontal="auto"
+    >
+      <H1 
+        marginBottom="$6" 
+        textAlign="center"
+        color="$color"
+        fontSize="$8"
+      >
+        Create a new applet
+      </H1>
+
+      <Card 
+        bordered 
+        elevate 
+        padding="$4"
+        marginBottom="$4"
+        width="100%"
+        borderColor="#10B981"
+      >
+        <XStack gap="$2" marginBottom="$4" alignItems="center">
+          <Label 
+            size="$4" 
+            color="$color"
+          >
+            Name of the applet :
+          </Label>
+          <Input 
+            placeholder="My applet" 
+            value={applet.name} 
+            onChangeText={(val) => handleNameInput(val)}
+            borderColor="#3F3F3F"
+            borderRadius="$4"
+            padding="$3"
+            color="$color"
+            flex={1}
+          />
         </XStack>
-        <ActionButton index={1}/>
-        <Square height={20} width={4} backgroundColor="$color" opacity={0.5} />
-        {applet.reactions.flatMap((reaction, i) => [
-          <ReactionButton key={`card-${reaction._id}`} index={2 + i} reaction={reaction} deleteReaction={() => {deleteReaction(i)}}/>,
-          <Square key={`square-${reaction._id}`} height={20} width={4} backgroundColor="$color" opacity={0.5} />,
-        ])}
-        <ReactionButton index={2 + applet.reactions.length} reaction={emptyReaction()}/>
-        <Button
-          onPress={saveApplet}
-          width="80%" marginTop="$4"
-        >
-          <Text color="white">Save Applet</Text>
-        </Button>
-        <Button
-          onPress={emptyApplet}
-          width="80%" marginTop="$2"
-        >
-          <Text color="white">Discard Applet</Text>
-        </Button>
-      </YStack>
-    </ScrollView>
+
+        <YStack gap="$4" width="100%">
+          <ActionButton 
+            index={1}
+            // Les styles de ActionButton seront gérés dans son composant
+          />
+          
+          <Square 
+            height={20} 
+            width={4} 
+            backgroundColor="$color" 
+            opacity={0.5} 
+            alignSelf="center"
+          />
+
+          {applet.reactions.flatMap((reaction, i) => [
+              <ReactionButton 
+                index={2 + i} 
+                reaction={reaction} 
+                deleteReaction={() => {deleteReaction(i)}}
+              />,
+            <Square 
+              key={`square-${reaction._id}`} 
+              height={20} 
+              width={4} 
+              backgroundColor="$color" 
+              opacity={0.5} 
+              alignSelf="center"
+            />
+          ])}
+
+          <ReactionButton 
+            index={2 + applet.reactions.length} 
+            reaction={emptyReaction()}
+          />
+        </YStack>
+
+        <YStack gap="$2" marginTop="$4" width="100%">
+          <Button
+            onPress={saveApplet}
+            borderRadius="$4"
+            padding="$3"
+            animation="quick"
+          >
+            <Text>Save Applet</Text>
+          </Button>
+
+          <Button
+            onPress={emptyApplet}
+            borderRadius="$4"
+            padding="$3"
+            animation="quick"
+          >
+            <Text>Discard Applet</Text>
+          </Button>
+        </YStack>
+      </Card>
+    </YStack>
+  </ScrollView>
   )
 }

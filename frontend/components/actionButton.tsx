@@ -22,11 +22,11 @@ export function ActionButton({ index } : { index : number }) {
         actionType: "action",
         reactionId: ""
       })}}
+      alignSelf="center"
       borderWidth="$1"
-      borderColor="$color"
+      borderColor="#3B82F6"
       padding="$3"
       borderRadius="$2"
-      borderStyle='dotted'
       height="fit-content"
       width="80%"
       justifyContent='flex-start'
