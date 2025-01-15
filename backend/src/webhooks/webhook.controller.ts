@@ -45,8 +45,8 @@ export class WebhookController {
       res.setHeader('Content-Type', 'text/plain');
       return res.status(200).send(challengeResponse);
     } else {
-      console.log("\nHEADER: ", req.headers);
-      return this.webhookService.handleLiveStart(req.body);
+      this.webhookService.handleLiveStart(req.body);
+      return res.status(200).setHeader("Content-Type", 'application/json').send({result: "Live triggered"});
     }
   }
 }
