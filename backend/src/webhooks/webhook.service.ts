@@ -407,7 +407,7 @@ export class WebhookService {
   }
 
   async handleChallengeCallback(body: any): Promise<string> {
-    console.log("\nChallenge Triggered : ", body);
+    console.log("\nChallenge Triggered : ", body, "\n", body.challenge);
     return body.challenge;
   }
 }
