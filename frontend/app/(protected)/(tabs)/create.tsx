@@ -86,7 +86,7 @@ export default function CreateScreen() {
     <ScrollView
     contentContainerStyle={{
       flexGrow: 1,
-      backgroundColor: '#000000',
+      backgroundColor: '$background',
       minHeight: '100vh'
     }}
     style={{ flex: 1 }}
@@ -115,7 +115,6 @@ export default function CreateScreen() {
         padding="$4"
         marginBottom="$4"
         width="100%"
-        backgroundColor="#1C1C1C"
         borderColor="#10B981"
       >
         <XStack gap="$2" marginBottom="$4" alignItems="center">
@@ -129,7 +128,6 @@ export default function CreateScreen() {
             placeholder="My applet" 
             value={applet.name} 
             onChangeText={(val) => handleNameInput(val)}
-            backgroundColor="#2D2D2D"
             borderColor="#3F3F3F"
             borderRadius="$4"
             padding="$3"
@@ -177,24 +175,20 @@ export default function CreateScreen() {
         <YStack gap="$2" marginTop="$4" width="100%">
           <Button
             onPress={saveApplet}
-            backgroundColor="#10B981"
             borderRadius="$4"
             padding="$3"
-            pressStyle={{ backgroundColor: '#059669' }}
             animation="quick"
           >
-            <Text color="white">Save Applet</Text>
+            <Text>Save Applet</Text>
           </Button>
 
           <Button
             onPress={emptyApplet}
-            backgroundColor="#EF4444"
             borderRadius="$4"
             padding="$3"
-            pressStyle={{ backgroundColor: '#DC2626' }}
             animation="quick"
           >
-            <Text color="white">Discard Applet</Text>
+            <Text>Discard Applet</Text>
           </Button>
         </YStack>
       </Card>

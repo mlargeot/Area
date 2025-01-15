@@ -22,12 +22,11 @@ export default function ActionEffectsScreen() {
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1, 
-        backgroundColor: '#000000'
       }}
       style={{ flex: 1 }}
     >
       <YStack padding="$4" space="$4">
-        <Card backgroundColor="#1C1C1C" borderRadius="$4" padding="$4" elevate>
+        <Card borderRadius="$4" padding="$4" elevate>
           <XStack justifyContent="space-between" alignItems="center">
             <Link href="/Create/services" asChild>
               <Button icon={ChevronLeft} circular size="$3" backgroundColor="$blue8" />
@@ -46,7 +45,6 @@ export default function ActionEffectsScreen() {
             {actions.map((action, i) => (
               <Card
                 key={`action-${i}`}
-                backgroundColor="#1C1C1C"
                 borderRadius="$4"
                 padding="$4"
                 marginBottom="$2"
@@ -69,7 +67,10 @@ export default function ActionEffectsScreen() {
                         }
                       })
                     }}
-                    backgroundColor="transparent"
+                    hoverStyle={{
+                      backgroundColor: "$blue10",
+                      scale: 1.01,
+                    }}
                     paddingVertical="$2"
                     animation="quick"
                   >
@@ -82,14 +83,13 @@ export default function ActionEffectsScreen() {
                           borderRadius="$2"
                         />
                         <YStack>
-                          <Text 
-                            color="white" 
+                        <Text 
                             fontSize="$5"
                             fontWeight="bold"
                           >
                             {action.name}
                           </Text>
-                          <Text color="$gray10" fontSize="$3">
+                          <Text fontSize="$3">
                             {action.description || "Déclenche une action spécifique"}
                           </Text>
                         </YStack>

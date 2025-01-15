@@ -31,20 +31,17 @@ const ServiceButton = ({ service, currentService, setNavigationData, type }) => 
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
-        backgroundColor={isActive ? '$color' : '#2C2C2C'}
         borderColor={type === "action" ? "#3B82F6" : "#7C3AED"}
         borderWidth={2}
         borderRadius="$4"
         marginBottom="$2"
         hoverStyle={{ 
           scale: 1.03,
-          backgroundColor: isActive ? '$color' : '#3C3C3C'
         }}
         pressStyle={{ scale: 0.97 }}
         animation="quick"
       >
         <Text 
-          color={isActive ? 'black' : 'white'} 
           fontSize="$4" 
           fontWeight="bold"
         >
@@ -84,17 +81,15 @@ export default function ServicesScreen() {
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
-        backgroundColor: '#000000'
       }}
       style={{ flex: 1 }}
     >
       <YStack padding="$4" space="$4">
         <Card
-          backgroundColor="#1C1C1C"
           borderRadius="$4"
           padding="$4"
         >
-          <H1 color="white" textAlign="center" marginBottom="$4">
+          <H1 textAlign="center" marginBottom="$4">
             {type === "action" ? "Choose an Action" : "Choose a Reaction"}
           </H1>
           <XStack space="$2" justifyContent="center" marginBottom="$4">
@@ -104,7 +99,7 @@ export default function ServicesScreen() {
               borderColor="#3B82F6"
               borderWidth={1}
             >
-              <Text color="white">Actions</Text>
+              <Text>Actions</Text>
             </Button>
             <Button 
               icon={Workflow} 
@@ -112,7 +107,7 @@ export default function ServicesScreen() {
               borderColor="#7C3AED"
               borderWidth={1}
             >
-              <Text color="white">Reactions</Text>
+              <Text>Reactions</Text>
             </Button>
           </XStack>
           <ServiceList type={type} />
