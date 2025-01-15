@@ -44,7 +44,7 @@ export function ActionButton({ index } : { index : number }) {
           </XStack>
           <Button.Text
             opacity={0.60}
-          >{index.toString()}. { applet.action.name ? applet.action.name : " Select the event that start the workflow"}</Button.Text>
+          >{index.toString()}. { applet.action.name ? applet.action.name : " Select the trigger"}</Button.Text>
         </YStack>
       </Button>
     </Link>
