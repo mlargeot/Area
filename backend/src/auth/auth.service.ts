@@ -11,6 +11,11 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  /**
+    * Register a new user
+    * @param createUserDto - user data
+    * @returns user
+    */
   async protectedResource(tmpUser: any) {
     const user = await this.userModel.findOne({ _id: tmpUser.userId });
     if (!user) {

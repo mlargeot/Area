@@ -23,6 +23,9 @@ export class ProviderAuthService {
     private jwtService: JwtService,
   ) {}
 
+  /**
+   * Object containing methods to exchange tokens for each provider
+   */
   private providerTokenExchangeMethods = {
     discord: this.exchangeTokenDiscord,
     github: this.exchangeTokenGithub,
@@ -31,6 +34,9 @@ export class ProviderAuthService {
     microsoft: this.exchangeTokenMicrosoft,
   };
 
+  /**
+   * Object containing provider configuration
+   */
   providers = {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -78,6 +84,12 @@ export class ProviderAuthService {
     },
   };
 
+  /**
+    * Redirects the user to the provider's login page
+    * @param service - provider name
+    * @param state - CSRF token
+    * @returns URL to redirect the user to
+    */
   loginProvider(service: string, state: any): string {
     const provider = this.providers[service];
     if (!provider) {
@@ -92,6 +104,12 @@ export class ProviderAuthService {
     return authorizationUrl;
   }
 
+  /**
+    * Handles the callback from the provider
+    * @param provider - provider name
+    * @param code - authorization code
+    * @returns access
+    */
   async loginProviderCallback(provider: string, code: string): Promise<string> {
     let providerDto;
     switch (provider) {
@@ -125,6 +143,12 @@ export class ProviderAuthService {
     }
   }
 
+  /**
+    * Handles the callback from the provider
+    * @param provider - provider name
+    * @param code - authorization code
+    * @param userId - user id
+    */
   async connectProviderCallback(
     provider: string,
     code: string,
@@ -161,6 +185,11 @@ export class ProviderAuthService {
     user.save();
   }
 
+  /**
+    * Disconnects a provider from the user
+    * @param provider - provider name
+    * @param user - user object
+    */
   async disconnectProvider(provider: string, user: any) {
     const existingUser = await this.userModel.findOne({
       _id: user.userId,
@@ -181,6 +210,11 @@ export class ProviderAuthService {
     }
   }
 
+  /**
+    * Exchanges the authorization code for a token
+    * @param code - authorization code
+    * @returns providerDto
+    */
   async exchangeTokenGoogle(code: string): Promise<ProviderDto> {
     try {
       const { data } = await axios.post('https://oauth2.googleapis.com/token', {
@@ -208,6 +242,11 @@ export class ProviderAuthService {
     }
   }
 
+  /**
+    * Exchanges the authorization code for a token
+    * @param code - authorization code
+    * @returns providerDto
+    */
   async exchangeTokenDiscord(code: string): Promise<ProviderDto> {
     try {
       const { data } = await axios.post(
@@ -243,6 +282,11 @@ export class ProviderAuthService {
     }
   }
 
+  /**
+    * Exchanges the authorization code for a token
+    * @param code - authorization code
+    * @returns providerDto
+    */
   async exchangeTokenTwitch(code: string): Promise<ProviderDto> {
     try {
       const { data } = await axios.post(
@@ -290,6 +334,11 @@ export class ProviderAuthService {
     }
   }
 
+  /**
+    * Exchanges the authorization code for a token
+    * @param code - authorization code
+    * @returns providerDto
+    */
   async exchangeTokenSpotify(code: string): Promise<ProviderDto> {
     try {
       const { data } = await axios.post(
@@ -336,6 +385,11 @@ export class ProviderAuthService {
     }
   }
 
+  /**
+    * Exchanges the authorization code for a token
+    * @param code - authorization code
+    * @returns providerDto
+    */
   async exchangeTokenGithub(code: string): Promise<ProviderDto> {
     try {
       const { data } = await axios.post(
@@ -381,6 +435,11 @@ export class ProviderAuthService {
     }
   }
 
+  /**
+    * Exchanges the authorization code for a token
+    * @param code - authorization code
+    * @returns providerDto
+    */
   async exchangeTokenMicrosoft(code: string): Promise<ProviderDto> {
     try {
       const { data } = await axios.post(
@@ -430,6 +489,11 @@ export class ProviderAuthService {
     }
   }
 
+  /**
+    * Lists the services connected to the user
+    * @param user - user object
+    * @returns list of services
+    */
   async listServices(user: any) {
     const { userId } = user;
     const existingUser = await this.userModel.findOne({
