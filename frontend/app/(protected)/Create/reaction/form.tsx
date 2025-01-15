@@ -110,10 +110,10 @@ export default function ServicesScreen() {
   }
 
   return (
-    <Theme name="dark">
-      <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: '#000000' }}>
+    <Theme>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <YStack padding="$4" space="$4">
-          <Card backgroundColor="#1C1C1C" borderRadius="$4" padding="$4" elevate>
+          <Card borderRadius="$4" padding="$4" elevate>
             <XStack justifyContent="space-between" alignItems="center">
               <Link 
                 href="/Create/services" 
@@ -133,19 +133,19 @@ export default function ServicesScreen() {
             </XStack>
           </Card>
 
-          <Card backgroundColor="#1C1C1C" borderRadius="$4" padding="$4" elevate>
+          <Card borderRadius="$4" padding="$4" elevate>
             <YStack space="$4">
-              <Text color="white" fontSize="$6" fontWeight="bold" textAlign="center">
+              <Text fontSize="$6" fontWeight="bold" textAlign="center">
                 {reaction.name}
               </Text>
-              <Paragraph color="$gray10" textAlign="center">
+              <Paragraph textAlign="center">
                 Configure the parameters for this reaction
               </Paragraph>
 
               {params.map((param, index) => (
                 <YStack key={index} space="$2">
                   <XStack justifyContent="space-between" alignItems="center">
-                    <Label htmlFor={param.name} color="white">
+                    <Label htmlFor={param.name}>
                       {param.name}
                     </Label>
                     <Button 
@@ -170,7 +170,6 @@ export default function ServicesScreen() {
           <Link href="/create" asChild>
             <Button 
               backgroundColor="$purple10"
-              color="white"
               size="$5"
               onPress={saveParams}
             >

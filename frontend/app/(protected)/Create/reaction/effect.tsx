@@ -70,12 +70,11 @@ export default function ReactionEffectsScreen() {
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1, 
-        backgroundColor: '#000000'
       }}
       style={{ flex: 1 }}
     >
       <YStack padding="$4" space="$4">
-        <Card backgroundColor="#1C1C1C" borderRadius="$4" padding="$4" elevate>
+        <Card borderRadius="$4" padding="$4" elevate>
           <XStack justifyContent="space-between" alignItems="center">
             <Link href="/Create/services" asChild>
               <Button icon={ChevronLeft} circular size="$3" backgroundColor="$purple8" />
@@ -85,7 +84,7 @@ export default function ReactionEffectsScreen() {
           </XStack>
         </Card>
 
-        <Text color="white" fontSize="$6" fontWeight="bold" textAlign="center">
+        <Text fontSize="$6" fontWeight="bold" textAlign="center">
           Choisissez une Réaction
         </Text>
 
@@ -94,7 +93,6 @@ export default function ReactionEffectsScreen() {
             {reactions.map((reaction, i) => (
               <Card
                 key={`reaction-${i}`}
-                backgroundColor="#1C1C1C"
                 borderRadius="$4"
                 padding="$4"
                 marginBottom="$2"
@@ -113,7 +111,10 @@ export default function ReactionEffectsScreen() {
                         modifyReaction(reaction.name)
                       }
                     }}
-                    backgroundColor="transparent"
+                    hoverStyle={{
+                      backgroundColor: "$purple10",
+                      scale: 1.01,
+                    }}
                     paddingVertical="$2"
                     animation="quick"
                   >
@@ -121,19 +122,18 @@ export default function ReactionEffectsScreen() {
                       <XStack space="$3" alignItems="center" flex={1}>
                         <Image 
                           source={{ uri: '/placeholder.svg?height=40&width=40' }}
-                          width={40} 
+                          width={40}
                           height={40} 
                           borderRadius="$2"
                         />
                         <YStack>
                           <Text 
-                            color="white" 
                             fontSize="$5"
                             fontWeight="bold"
                           >
                             {reaction.name}
                           </Text>
-                          <Text color="$gray10" fontSize="$3">
+                          <Text fontSize="$3">
                             {reaction.description || "Déclenche une réaction spécifique"}
                           </Text>
                         </YStack>
