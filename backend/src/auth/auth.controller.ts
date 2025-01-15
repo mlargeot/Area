@@ -11,27 +11,34 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  Provider,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
+import { LocalAuthService } from './services/local-auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiForbiddenResponse, ApiResponse } from '@nestjs/swagger';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as crypto from 'node:crypto';
 import { saveState, getState, deleteState } from './state.store';
+import { ProviderAuthService } from './services/provider-auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+    private localAuthService: LocalAuthService,
+  private poviderAuthService: ProviderAuthService,
+) {}
 
   @Post('register')
   @ApiResponse({ status: 200, description: 'Registration successful' })
+  @ApiResponse({ status: 400, description: 'Email already exists' })
   @ApiBody({ type: CreateUserDto })
   async register(@Body() createUserDto: CreateUserDto) {
     console.log('register');
-    return this.authService.register(createUserDto);
+    return this.localAuthService.register(createUserDto);
   }
 
   @Post('login')
@@ -39,26 +46,27 @@ export class AuthController {
   @ApiBody({ type: LoginUserDto })
   async login(@Body() loginUserDto: LoginUserDto) {
     console.log('login');
-    return this.authService.login(loginUserDto);
+    return this.localAuthService.login(loginUserDto);
   }
 
   @Post('forgot-password')
   @ApiResponse({ status: 200, description: 'Password reset email sent' })
   @ApiBody({ type: ForgotPasswordDto })
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto);
+    return this.localAuthService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset-password')
   @ApiResponse({ status: 200, description: 'Password reset successful' })
   @ApiBody({ type: ResetPasswordDto })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.authService.resetPassword(resetPasswordDto);
+    return this.localAuthService.resetPassword(resetPasswordDto);
   }
 
   @Get('protected')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Protected resource' })
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @ApiBody({ type: CreateUserDto })
   async protectedResource(@Req() req) {
     console.log('protectedResource');
@@ -74,11 +82,12 @@ export class AuthController {
     const redirect = req.query.redirect_uri;
     const state = crypto.randomUUID();
     saveState(state, { provider: provider, action: 'login', redirect });
-    const providerUrl = this.authService.loginProvider(provider, state);
+    const providerUrl = this.poviderAuthService.loginProvider(provider, state);
     return res.redirect(providerUrl);
   }
 
   @Get('connect/:provider')
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
   async connectProvider(@Param('provider') provider, @Req() req) {
@@ -92,16 +101,17 @@ export class AuthController {
       redirect,
       user_id: req.user.userId,
     });
-    const providerUrl = this.authService.loginProvider(provider, state);
+    const providerUrl = this.poviderAuthService.loginProvider(provider, state);
     return { redirect_uri: providerUrl };
   }
 
   @Get('disconnect/:provider')
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Service connected' })
   async disconnectProvider(@Param('provider') provider, @Req() req) {
     console.log('disconnectProvider');
-    await this.authService.disconnectProvider(provider, req.user);
+    await this.poviderAuthService.disconnectProvider(provider, req.user);
     return { message: 'Service disconnected' };
   }
 
@@ -116,13 +126,13 @@ export class AuthController {
 
     switch (action) {
       case 'login':
-        const token = await this.authService.loginProviderCallback(
+        const token = await this.poviderAuthService.loginProviderCallback(
           provider,
           code,
         );
         return { url: `${redirect}?token=${token}` };
       case 'connect':
-        await this.authService.connectProviderCallback(provider, code, user_id);
+        await this.poviderAuthService.connectProviderCallback(provider, code, user_id);
         return { url: redirect };
       default:
         throw new HttpException('Invalid action', HttpStatus.BAD_REQUEST);
@@ -130,9 +140,10 @@ export class AuthController {
   }
 
   @Get('list-services')
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'List of connected services' })
   async listServices(@Req() req) {
-    return this.authService.listServices(req.user);
+    return this.poviderAuthService.listServices(req.user);
   }
 }
