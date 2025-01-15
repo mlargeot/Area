@@ -22,6 +22,32 @@ export class TwitchActionsService {
     private configService: ConfigService
   ) {}
 
+  async isExistingWebhook(event: string, broadcaster: string): Promise<Record<string, any> | null> {
+    const result = await this.userModel.aggregate([
+      { $unwind: '$applets', },
+      {
+        $match: {
+          'applets.action.params.broadcaster': broadcaster,
+          'applets.metadata.response.event': event,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          metadata: '$applets.metadata',
+        },
+      },
+    ]);
+
+    if (result.length > 0) {
+      console.log("Existing broadcaster event : ", result[0].metadata);  
+      return result[0].metadata;
+    } else {
+      console.log("Existing broadcaster event : ", result[0].metadata);
+      return null;
+    }
+  }
+
   async getBroadcasterId(userId: string, broadcaster: string) {
     const user = await this.userModel.findOne({ _id: userId });
     const twitchProvider = user.oauthProviders?.find((provider) => provider.provider === 'twitch');
@@ -69,6 +95,9 @@ export class TwitchActionsService {
         const user = await this.userModel.findOne({ _id: userId });
         const twitchProvider = user.oauthProviders?.find((provider) => provider.provider === 'twitch');
     
+        const hook = await this.isExistingWebhook("stream.online", params.broadcaster);
+        if (hook)
+            return hook['response'];
         console.log("\nBroadcaster Id : ", broadcasterId)
         if (!twitchProvider || !twitchProvider.accessToken)
             throw new UnauthorizedException(`Twitch access token not found for user with ID ${userId}.`);
@@ -93,7 +122,10 @@ export class TwitchActionsService {
         try {
             const response = await lastValueFrom(this.httpService.post(url, body, { headers }));
             console.log("\nSuccessfully subscribed to stream start event to ID: ", response.data.data[0].id, "\n");
-            return { id: response.data.data[0].id };
+            return { 
+                id: response.data.data[0].id,
+                event: "stream.online"
+            };
         } catch (error) {
             throw new InternalServerErrorException(error.message_content);
         }
