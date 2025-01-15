@@ -128,7 +128,7 @@ const fetchReactions = async () => {
                       Available Actions
                     </Text>
                     <Text fontSize={media.sm ? "$2" : "$3"}>
-                      Actions are events on {service?.name} that can trigger a reaction in AREA.
+                      Actions are events on {service?.service} that can trigger a reaction in AREA.
                     </Text>
                   </YStack>
                 </XStack>

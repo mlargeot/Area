@@ -22,10 +22,10 @@ export function ReactionButton({ index, reaction, deleteReaction } : { index : n
             reactionId: reaction._id ? reaction._id : ""
           })}}
         borderWidth="$1"
-        borderColor="$color"
+        alignSelf="center"
+        borderColor="#7C3AED"
         padding="$3"
         borderRadius="$2"
-        borderStyle='dotted'
         height="fit-content"
         width={width}
         justifyContent='flex-start'
