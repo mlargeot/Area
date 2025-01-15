@@ -41,8 +41,8 @@ export class WebhookController {
   @ApiOkResponse({ description: "Live start triggered." })
   async triggerLiveStartEvent(@Req() req, @Res() res: Response) {
     if (req.headers['twitch-eventsub-message-type'] == "webhook_callback_verification") {
-      const challengeResponse = this.webhookService.handleChallengeCallback(req.body);
-      res.setHeader('Content-Type', 'plain/text');
+      const challengeResponse = await this.webhookService.handleChallengeCallback(req.body);
+      res.setHeader('Content-Type', 'text/plain');
       return res.status(200).send(challengeResponse);
     } else {
       return this.webhookService.handleLiveStart(req.body);
