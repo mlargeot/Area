@@ -92,6 +92,34 @@ export class ReactionsService {
             }
           ],
         },
+        {
+          name: "create_issue",
+          description: "Automatically create an issue on the specified repository when the action is triggered.",
+          argumentsNumber: 2,
+          argumentsExample: [
+            {
+              name: "repository_url",
+              description: "Url of the repository where create the issue.",
+              example: "https://github.com/owner/repository/issues/number",
+              type: "string",
+              required: true
+            },
+            {
+              name: "title",
+              description: "Title of the issue issue.",
+              example: "NEW REALEASE",
+              type: "string",
+              required: true
+            },
+            {
+              name: "body",
+              description: "Body of the issue.",
+              example: "This repository has a new realse, you should check it out",
+              type: "text",
+              required: true
+            }
+          ],
+        },
       ],
     }
   ];
@@ -99,7 +127,8 @@ export class ReactionsService {
   private reactionServiceRegistry: Record<string, Function> = {
     send_webhook_message : this.discordServices.sendMessageToWebhook.bind(this.discordServices),
     send_mail : this.googleService.sendMail.bind(this.googleService),
-    comment_issue: this.githubService.sendCommentToIssue.bind(this.githubService)
+    comment_issue: this.githubService.sendCommentToIssue.bind(this.githubService),
+    create_issue: this.githubService.createIssue.bind(this.githubService)
   }
 
 
