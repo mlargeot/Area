@@ -43,6 +43,7 @@ export class TwitchActionsService {
         const userData = response.data.data
         return userData[0].id;
     } catch (error) {
+        console.log("Failed to retrieve broadcaster ID. Please try again. : ", error.message_content);
         throw new InternalServerErrorException("Failed to retrieve broadcaster ID. Please try again. : ", error.message_content);
     }
   }
