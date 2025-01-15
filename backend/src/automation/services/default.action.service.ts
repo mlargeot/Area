@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ActionsDto } from 'src/automation/dto/automation.dto';
 import { GithubActionsService } from 'src/automation/services/github.action.service';
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
+import { LeagueofLegendsActionsService } from './leagueoflegends.action.service';
 
 @Injectable()
 export class ActionsService {
   constructor(
         private readonly githubActionService : GithubActionsService,
-        private readonly spotifyActionService : SpotifyAcitonsService
+        private readonly spotifyActionService : SpotifyAcitonsService,
+        private readonly leagueofLegendsActionService : LeagueofLegendsActionsService
   ) {}
   private defaultActions: Array<{
     service: string;
@@ -169,7 +171,7 @@ export class ActionsService {
                 required: true
             },
           ],
-        },
+        }
       ],
     },
     {
@@ -190,6 +192,46 @@ export class ActionsService {
           ]
         }
       ]
+    },
+    {
+      service: "League of Legends",
+      actions: [
+        {
+          name: "lol_match_history",
+          description: "Triggered when a new match appears in the user's match history. EUW region only.",
+          argumentsNumber: 2,
+          argumentsExample: [
+            {
+              name: "playerName",
+              description: "Name of the user to check.",
+              example: "SummonerName",
+              type: "string",
+              required: true,
+            },
+            {
+              name: "tagLine",
+              description: "Tagline of the user to check.",
+              example: "1234",
+              type: "string",
+              required: true,
+            }
+          ],
+        },
+        {
+          name: "lol_users_activity",
+          description: "Triggered when a user from a list plays a game in the EUW region.",
+          argumentsNumber: 2,
+          argumentsExample: [
+            {
+              name: "playerlist",
+              description: "list of users to check.",
+              example: "Diabolo#1234, Diabolo#1234",
+              type: "string",
+              required: true,
+            }
+          ],
+        }
+      ]
     }
   ];
 
@@ -206,6 +248,8 @@ export class ActionsService {
     issue_deleted: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
     issue_reopened: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
     playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService),
+    lol_match_history : this.leagueofLegendsActionService.initLeagueofLegendsAction.bind(this.leagueofLegendsActionService),
+    lol_users_activity : this.leagueofLegendsActionService.initLeagueofLegendsStatusAction.bind(this.leagueofLegendsActionService),
   }
 
   private destroyServiceRegistry: Record<string, Function> = {
