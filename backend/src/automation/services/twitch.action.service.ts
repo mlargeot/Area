@@ -49,13 +49,13 @@ export class TwitchActionsService {
 
   async getAppAcessToken() {
     const url = "https://id.twitch.tv/oauth2/token";
-    const headers = {
+    const data = {
         "client_id": this.configService.get<string>('TWITCH_CLIENT_ID'),
         "client_secret": this.configService.get<string>('TWITCH_CLIENT_SECRET'),
         "grant_type": "client_credentials"
     };
     try {
-        const response = await axios.post(url, null, { headers });
+        const response = await axios.post(url, data, null);
         console.log("\nTwitch App Acess Token: ", response.data.access_token);
         return response.data.access_token;
     } catch (error) {
