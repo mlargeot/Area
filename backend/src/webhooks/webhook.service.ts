@@ -407,7 +407,7 @@ export class WebhookService {
   }
 
   async handleCallbackCheck(body: any): Promise<boolean> {
-    console.log("\nREQUEST BODY IN CALLBACK : \n", body);
+    console.log("\nREQUEST BODY IN CALLBACK FROM GET : \n", body);
     return true;
   }
 }
