@@ -194,6 +194,7 @@ export default function CreateScreen() {
 
           {applet.reactions.flatMap((reaction, i) => [
               <ReactionButton 
+                key={`reaction-${reaction._id}`}
                 index={2 + i} 
                 reaction={reaction} 
                 deleteReaction={() => {deleteReaction(i)}}
@@ -230,7 +231,16 @@ export default function CreateScreen() {
             padding="$3"
             animation="quick"
           >
-            <Text>Discard Applet</Text>
+            <Text>Discard Applet Draft</Text>
+          </Button>
+
+          <Button
+            onPress={deleteApplet}
+            borderRadius="$4"
+            padding="$3"
+            animation="quick"
+          >
+            <Text>Delete Applet</Text>
           </Button>
         </YStack>
       </Card>
