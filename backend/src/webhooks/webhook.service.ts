@@ -377,4 +377,37 @@ export class WebhookService {
         return true;
     }
   }
+
+  async handleLiveStart(body: any): Promise<any> {
+    console.log("\nREQUEST BODY IN CALLBACK : \n", body);
+    const id = body.subscription.id;
+    const triggeredApplets = await this.userModel.aggregate([
+      {
+        $match: {
+          oauthProviders: {
+            $elemMatch: { provider: 'twitch'}
+          }
+        }
+      },
+      { $unwind: '$applets' },
+      {
+        $match: {
+          'applets.active': true,
+          'applets.action.name': `live_start`,
+          'applets.metadata.response.id': `${id}`
+        }
+      },
+      { $replaceRoot: { newRoot: '$applets' } }
+    ]);
+
+    for (const applet of triggeredApplets) {
+      await this.reactionsService.executeReaction(applet.userId, applet.reaction.name, applet.reaction.params);
+    }
+    return true;
+  }
+
+  async handleChallengeCallback(body: any): Promise<string> {
+    console.log("\nChallenge Triggered : ", body, "\n", body.challenge);
+    return body.challenge;
+  }
 }

@@ -11,6 +11,7 @@ import { ReactionsController } from 'src/automation/controllers/reactions.contro
 import { ServicesController } from 'src/automation/controllers/services.controller';
 import { ActionsService } from 'src/automation/services/default.action.service';
 import { GithubActionsService } from 'src/automation/services/github.action.service';
+import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
 import { ReactionsService } from 'src/automation/services/default.reaction.service';
 import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
@@ -23,6 +24,7 @@ import { ReactionsGoogleService } from 'src/automation/services/google.reaction.
         ActionsService,
         GithubActionsService,
         SpotifyAcitonsService,
+        TwitchActionsService,
 
         ReactionsService,
         ReactionsDiscordService,

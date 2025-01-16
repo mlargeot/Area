@@ -8,4 +8,8 @@ last_apk_url=$(echo "$apk_urls" | tail -n 1)
 
 echo "Last APK URL: $last_apk_url"
 
-curl -o public/client.apk $last_apk_url
+# create public folder if doesnt exist
+mkdir -p public
+
+#return success even if curl fails
+curl -o public/client.apk $last_apk_url || true

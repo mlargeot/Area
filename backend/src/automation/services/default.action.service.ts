@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ActionsDto } from 'src/automation/dto/automation.dto';
 import { GithubActionsService } from 'src/automation/services/github.action.service';
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
+import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
 
 @Injectable()
 export class ActionsService {
   constructor(
         private readonly githubActionService : GithubActionsService,
-        private readonly spotifyActionService : SpotifyAcitonsService
+        private readonly spotifyActionService : SpotifyAcitonsService,
+        private readonly twitchActionService : TwitchActionsService
   ) {}
   private defaultActions: Array<{
     service: string;
@@ -190,6 +192,25 @@ export class ActionsService {
           ]
         }
       ]
+    },
+    {
+      service: "Twitch",
+      actions: [
+        {
+          name: "live_start",
+          description: "Triggered when live of specified streamer start.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+              name: "broadcaster",
+              description: "Login username of the streamer",
+              example: "lekiweak",
+              type: "string",
+              required: true
+            }
+          ]
+        }
+      ]
     }
   ];
 
@@ -206,6 +227,7 @@ export class ActionsService {
     issue_deleted: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
     issue_reopened: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
     playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService),
+    live_start: this.twitchActionService.initStreamOnlineEvent.bind(this.twitchActionService),
   }
 
   private destroyServiceRegistry: Record<string, Function> = {
@@ -220,6 +242,7 @@ export class ActionsService {
     issue_closed: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     issue_deleted: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     issue_reopened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    live_start: this.twitchActionService.destroyTwitchWebhook.bind(this.twitchActionService),
   }
 
 
