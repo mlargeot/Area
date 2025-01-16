@@ -98,9 +98,9 @@ export class TwitchActionsService {
         const user = await this.userModel.findOne({ _id: userId });
         const twitchProvider = user.oauthProviders?.find((provider) => provider.provider === 'twitch');
     
-        // const hook = await this.isExistingWebhook("stream.online", params.broadcaster);
-        // if (hook)
-        //     return hook['response'];
+        const hook = await this.isExistingWebhook("stream.online", params.broadcaster);
+        if (hook)
+            return hook['response'];
         console.log("\nBroadcaster Id : ", broadcasterId)
         if (!twitchProvider || !twitchProvider.accessToken)
             throw new UnauthorizedException(`Twitch access token not found for user with ID ${userId}.`);
