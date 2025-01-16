@@ -18,14 +18,15 @@ import { ReactionsDiscordService } from 'src/automation/services/discord.reactio
 import { ReactionsGithubService } from 'src/automation/services/github.reaction.service';
 import { ServicesService } from 'src/automation/services/services.service';
 import { ReactionsGoogleService } from 'src/automation/services/google.reaction.service';
+import { LeagueofLegendsActionsService } from './services/leagueoflegends.action.service';
 
 @Module({
     providers: [
         ActionsService,
         GithubActionsService,
         SpotifyAcitonsService,
+        LeagueofLegendsActionsService,
         TwitchActionsService,
-
         ReactionsService,
         ReactionsDiscordService,
         ReactionsGoogleService,

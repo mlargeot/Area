@@ -21,9 +21,9 @@ export class ReactionsGoogleService {
     const googleProvider = user.oauthProviders?.find((provider) => provider.provider === 'google');
     if (!googleProvider || !googleProvider.accessToken)
         throw new UnauthorizedException(`Google access token not found for user with ID ${userId}.`);
-    const googleAccessToken = googleProvider.accessToken; 
+    const googleAccessToken = googleProvider.accessToken;
 
-    const headers = { 
+    const headers = {
         Authorization: `Bearer ${googleAccessToken}`,
         'Content-Type': 'application/json'
     };

@@ -1,13 +1,8 @@
 {
-  "cli": {
-    "version": "14.4.1",
-    "appVersionSource": "remote"
-  },
   "build": {
-    "prod": {
+    "preview": {
       "android": {
-        "buildType": "apk",
-        "gradleCommand": ":app:assembleRelease"
+        "buildType": "apk"
       }
     }
   }

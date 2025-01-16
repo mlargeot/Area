@@ -146,14 +146,13 @@ export class ReactionsService {
     else
       throw new NotFoundException("Requested service not found.");
   }
-  
 
-  async executeReaction(userId: string, name: string, params: {}) {
+  async executeReaction(userId: string, name: string, params: {}, actionData: any = {}) {
     const reactionFunction = this.reactionServiceRegistry[name];
 
     if (!reactionFunction) {
         throw new Error(`Reaction "${name}" not found.`);
     }
-    return reactionFunction(userId, params);
+    return reactionFunction(userId, params, actionData);
   }
 }
