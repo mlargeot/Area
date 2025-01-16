@@ -3,6 +3,7 @@ import { ActionsDto } from 'src/automation/dto/automation.dto';
 import { GithubActionsService } from 'src/automation/services/github.action.service';
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
 import { LeagueofLegendsActionsService } from './leagueoflegends.action.service';
+import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
 
 @Injectable()
 export class ActionsService {
@@ -10,6 +11,7 @@ export class ActionsService {
         private readonly githubActionService : GithubActionsService,
         private readonly spotifyActionService : SpotifyAcitonsService,
         private readonly leagueofLegendsActionService : LeagueofLegendsActionsService
+        private readonly twitchActionService : TwitchActionsService
   ) {}
   private defaultActions: Array<{
     service: string;
@@ -233,6 +235,25 @@ export class ActionsService {
         }
       ]
     }
+    {
+      service: "Twitch",
+      actions: [
+        {
+          name: "live_start",
+          description: "Triggered when live of specified streamer start.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+              name: "broadcaster",
+              description: "Login username of the streamer",
+              example: "lekiweak",
+              type: "string",
+              required: true
+            }
+          ]
+        }
+      ]
+    }
   ];
 
   private actionServiceRegistry: Record<string, Function> = {
@@ -250,6 +271,7 @@ export class ActionsService {
     playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService),
     lol_match_history : this.leagueofLegendsActionService.initLeagueofLegendsAction.bind(this.leagueofLegendsActionService),
     lol_users_activity : this.leagueofLegendsActionService.initLeagueofLegendsStatusAction.bind(this.leagueofLegendsActionService),
+    live_start: this.twitchActionService.initStreamOnlineEvent.bind(this.twitchActionService),
   }
 
   private destroyServiceRegistry: Record<string, Function> = {
@@ -264,6 +286,7 @@ export class ActionsService {
     issue_closed: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     issue_deleted: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     issue_reopened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    live_start: this.twitchActionService.destroyTwitchWebhook.bind(this.twitchActionService),
   }
 
 

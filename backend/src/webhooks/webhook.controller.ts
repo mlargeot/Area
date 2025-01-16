@@ -1,10 +1,12 @@
 import {
     Controller,
     Post,
-    Req 
+    Req, 
+    Res
 } from '@nestjs/common';
 import { ApiOkResponse} from '@nestjs/swagger'
 import { WebhookService } from './webhook.service';
+import { Response } from 'express';
 
 @Controller('webhook')
 export class WebhookController {
@@ -33,5 +35,18 @@ export class WebhookController {
   @ApiOkResponse({ description: "Action triggered." })
   async triggerGitIssuesEvent(@Req() req) {
     return this.webhookService.handleIssuesEvent(req.body);
+  }
+
+  @Post('twitch/livestart')
+  @ApiOkResponse({ description: "Live start triggered." })
+  async triggerLiveStartEvent(@Req() req, @Res() res: Response) {
+    if (req.headers['twitch-eventsub-message-type'] == "webhook_callback_verification") {
+      const challengeResponse = await this.webhookService.handleChallengeCallback(req.body);
+      res.setHeader('Content-Type', 'text/plain');
+      return res.status(200).send(challengeResponse);
+    } else {
+      this.webhookService.handleLiveStart(req.body);
+      return res.status(200).setHeader("Content-Type", 'application/json').send({result: "Live triggered"});
+    }
   }
 }

@@ -32,7 +32,7 @@ export class ReactionsService {
               required: true
             },
             {
-              name: "message_content",
+              name: "content",
               description: "Content of the message to send.",
               example: "A new Issue as been assigned.",
               type: "text",
