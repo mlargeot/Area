@@ -24,7 +24,7 @@ export class TwitchActionsService {
 
   async isExistingWebhook(event: string, broadcaster: string): Promise<Record<string, any> | null> {
     const result = await this.userModel.aggregate([
-      { $unwind: '$applets', },
+      { $unwind: '$applets' },
       {
         $match: {
           'applets.action.params.broadcaster': broadcaster,
@@ -37,13 +37,16 @@ export class TwitchActionsService {
           metadata: '$applets.metadata',
         },
       },
+      { 
+        $limit: 1
+      },
     ]);
-
+    console.log("\nVoila ce que j'ai trouvé pour existing applet : ", result);
     if (result.length > 0) {
       console.log("Existing broadcaster event : ", result[0].metadata);  
       return result[0].metadata;
     } else {
-      console.log("Existing broadcaster event : ", result[0].metadata);
+      console.log("No existing\n");
       return null;
     }
   }
