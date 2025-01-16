@@ -25,7 +25,7 @@ const services = [
 
 @Injectable()
 export class ProvidersService {
-  public providerList: ProviderService[];
+  public providerList: any;
 
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
@@ -37,75 +37,14 @@ export class ProvidersService {
     public spotifyService: SpotifyService,
     public microsoftService: MicrosoftService,
   ) {
-    this.providerList = [
-      googleService,
-      discordService,
-      githubService,
-      twitchService,
-      spotifyService,
-      microsoftService,
-    ];
-  }
-
-  /**
-   * Object containing methods to exchange tokens for each provider
-   */
-  private providerTokenExchangeMethods = {
-    discord: this.exchangeTokenDiscord,
-    github: this.exchangeTokenGithub,
-    twitch: this.exchangeTokenTwitch,
-    spotify: this.exchangeTokenSpotify,
-    microsoft: this.exchangeTokenMicrosoft,
-  };
-
-  /**
-   * Object containing provider configuration
-   */
-  providers = {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-      scopes: [
-        'openid',
-        'profile',
-        'email',
-        'https://www.googleapis.com/auth/gmail.send',
-      ],
-    },
-    discord: {
-      clientId: process.env.DISCORD_CLIENT_ID,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET,
-      authorizationEndpoint: 'https://discord.com/api/oauth2/authorize',
-      scopes: ['identify', 'email'],
-    },
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-      scopes: ['user:email', 'repo', 'admin:webhook', 'admin:repo_hook'],
-    },
-    twitch: {
-      clientId: process.env.TWITCH_CLIENT_ID,
-      clientSecret: process.env.TWITCH_CLIENT_SECRET,
-      authorizationEndpoint: 'https://id.twitch.tv/oauth2/authorize',
-      scopes: ['user:read:email'],
-    },
-    spotify: {
-      clientId: process.env.SPOTIFY_CLIENT_ID,
-      clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      scopes: [
-        'user-read-private user-read-email playlist-read-private playlist-read-collaborative',
-      ],
-    },
-    microsoft: {
-      clientId: process.env.MICROSOFT_CLIENT_ID,
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
-      authorizationEndpoint:
-        'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-      scopes: ['user.read'],
-    },
+    this.providerList = {
+      google: googleService,
+      discord: discordService,
+      github: githubService,
+      twitch: twitchService,
+      spotify: spotifyService,
+      microsoft: microsoftService,
+    }
   };
 
   /**
@@ -115,13 +54,13 @@ export class ProvidersService {
     * @returns URL to redirect the user to
     */
   loginProvider(service: string, state: any): string {
-    const provider = this.providers[service];
+    const provider = this.providerList[service];
     if (!provider) {
       throw new HttpException('Invalid service', HttpStatus.BAD_REQUEST);
     }
 
     const redirectUri = process.env.API_URL + '/auth/callback';
-    const authorizationUrl = `${provider.authorizationEndpoint}?client_id=${provider.clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${provider.scopes.join(
+    const authorizationUrl = `${provider.config.authorizationEndpoint}?client_id=${provider.config.clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${provider.config.scopes.join(
       ' ',
     )}&state=${state}`;
 
@@ -136,12 +75,13 @@ export class ProvidersService {
     */
   async loginProviderCallback(provider: string, code: string): Promise<string> {
     let providerDto;
+
     switch (provider) {
       case 'google':
-        providerDto = await this.exchangeTokenGoogle(code);
+        providerDto = await this.providerList.google.exchangeCode(code);
         break;
       case 'discord':
-        providerDto = await this.exchangeTokenDiscord(code);
+        providerDto = await this.providerList.discord.exchangeCode(code);
         break;
       default:
         throw new HttpException('Invalid provider', HttpStatus.BAD_REQUEST);
@@ -184,13 +124,13 @@ export class ProvidersService {
     if (!user)
       throw new HttpException('User not found, get out!', HttpStatus.NOT_FOUND);
 
-    const exchangeTokenMethod = this.providerTokenExchangeMethods[provider];
-
+    const exchangeTokenMethod = this.providerList[provider].exchangeCode;
     if (!exchangeTokenMethod) {
       throw new HttpException('Invalid provider', HttpStatus.BAD_REQUEST);
     }
 
-    const providerDto = await exchangeTokenMethod.call(this, code);
+    const providerService = this.providerList[provider];
+    const providerDto = await providerService.exchangeCode(code);
 
     const providerIndex = user.oauthProviders.findIndex(
       (provider) => provider.provider === providerDto.provider,
@@ -231,285 +171,6 @@ export class ProvidersService {
     if (providerIndex !== -1) {
       existingUser.oauthProviders.splice(providerIndex, 1);
       existingUser.save();
-    }
-  }
-
-  /**
-    * Exchanges the authorization code for a token
-    * @param code - authorization code
-    * @returns providerDto
-    */
-  async exchangeTokenGoogle(code: string): Promise<ProviderDto> {
-    try {
-      const { data } = await axios.post('https://oauth2.googleapis.com/token', {
-        code,
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: `${process.env.API_URL}/auth/callback`,
-        grant_type: 'authorization_code',
-      });
-      const idToken = data.id_token;
-      const decoded = this.jwtService.decode(idToken) as any;
-
-      return {
-        provider: 'google',
-        email: decoded.email,
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-        accountId: decoded.sub,
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Token exchange failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  /**
-    * Exchanges the authorization code for a token
-    * @param code - authorization code
-    * @returns providerDto
-    */
-  async exchangeTokenDiscord(code: string): Promise<ProviderDto> {
-    try {
-      const { data } = await axios.post(
-        'https://discord.com/api/oauth2/token',
-        qs.stringify({
-          code,
-          client_id: process.env.DISCORD_CLIENT_ID,
-          client_secret: process.env.DISCORD_CLIENT_SECRET,
-          redirect_uri: `${process.env.API_URL}/auth/callback`,
-          grant_type: 'authorization_code',
-        }),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
-      );
-      const discordUser = await axios.get(
-        'https://discord.com/api/v9/users/@me',
-        {
-          headers: { Authorization: `Bearer ${data.access_token}` },
-        },
-      );
-
-      return {
-        provider: 'discord',
-        email: discordUser.data.email,
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-        accountId: discordUser.data.id,
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Token exchange failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  /**
-    * Exchanges the authorization code for a token
-    * @param code - authorization code
-    * @returns providerDto
-    */
-  async exchangeTokenTwitch(code: string): Promise<ProviderDto> {
-    try {
-      const { data } = await axios.post(
-        'https://id.twitch.tv/oauth2/token',
-        qs.stringify({
-          code,
-          client_id: process.env.TWITCH_CLIENT_ID,
-          client_secret: process.env.TWITCH_CLIENT_SECRET,
-          redirect_uri: process.env.API_URL + '/auth/callback',
-          grant_type: 'authorization_code',
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      );
-      console.log(data);
-      const accessToken = data.access_token;
-      const refreshToken = data.refresh_token;
-      const twitchUser = await axios.get('https://api.twitch.tv/helix/users', {
-        headers: {
-          'Client-ID': process.env.TWITCH_CLIENT_ID,
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      console.log(twitchUser.data);
-
-      return {
-        provider: 'twitch',
-        email: twitchUser.data.data[0].email,
-        accessToken: accessToken,
-        refreshToken,
-        accountId: twitchUser.data.data[0].id,
-      };
-    } catch (error) {
-      console.error(
-        'Token exchange failed:',
-        error.response?.data || error.message,
-      );
-      throw new HttpException(
-        'Token exchange failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  /**
-    * Exchanges the authorization code for a token
-    * @param code - authorization code
-    * @returns providerDto
-    */
-  async exchangeTokenSpotify(code: string): Promise<ProviderDto> {
-    try {
-      const { data } = await axios.post(
-        'https://accounts.spotify.com/api/token',
-        qs.stringify({
-          code,
-          client_id: process.env.SPOTIFY_CLIENT_ID,
-          client_secret: process.env.SPOTIFY_CLIENT_SECRET,
-          redirect_uri: process.env.API_URL + '/auth/callback',
-          grant_type: 'authorization_code',
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      );
-      console.log(data);
-      const accessToken = data.access_token;
-      const refreshToken = data.refresh_token;
-      const spotifyUser = await axios.get('https://api.spotify.com/v1/me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      console.log(spotifyUser.data);
-
-      return {
-        provider: 'spotify',
-        email: spotifyUser.data.email,
-        accessToken: accessToken,
-        refreshToken,
-        accountId: spotifyUser.data.id,
-      };
-    } catch (error) {
-      console.error(
-        'Token exchange failed:',
-        error.response?.data || error.message,
-      );
-      throw new HttpException(
-        'Token exchange failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  /**
-    * Exchanges the authorization code for a token
-    * @param code - authorization code
-    * @returns providerDto
-    */
-  async exchangeTokenGithub(code: string): Promise<ProviderDto> {
-    try {
-      const { data } = await axios.post(
-        'https://github.com/login/oauth/access_token',
-        {
-          code,
-          client_id: process.env.GITHUB_CLIENT_ID,
-          client_secret: process.env.GITHUB_CLIENT_SECRET,
-          redirect_uri: process.env.API_URL + '/auth/callback',
-        },
-        {
-          headers: {
-            Accept: 'application/json',
-          },
-        },
-      );
-      console.log(data);
-
-      const accessToken = data.access_token;
-      const githubUser = await axios.get('https://api.github.com/user', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      console.log(githubUser.data);
-
-      return {
-        provider: 'github',
-        email: githubUser.data.email ? githubUser.data.email : 'null',
-        accessToken: accessToken,
-        refreshToken: null, // GitHub tokens don't have a refresh token
-        accountId: githubUser.data.id,
-      };
-    } catch (error) {
-      console.error(
-        'Token exchange failed:',
-        error.response?.data || error.message,
-      );
-      throw new HttpException(
-        'Token exchange failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  /**
-    * Exchanges the authorization code for a token
-    * @param code - authorization code
-    * @returns providerDto
-    */
-  async exchangeTokenMicrosoft(code: string): Promise<ProviderDto> {
-    try {
-      const { data } = await axios.post(
-        'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-        qs.stringify({
-          code,
-          client_id: process.env.MICROSOFT_CLIENT_ID,
-          client_secret: process.env.MICROSOFT_CLIENT_SECRET,
-          redirect_uri: process.env.API_URL + '/auth/callback',
-          grant_type: 'authorization_code',
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      );
-      console.log(data);
-      const accessToken = data.access_token;
-      const refreshToken = data.refresh_token;
-      const microsoftUser = await axios.get(
-        'https://graph.microsoft.com/v1.0/me',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      console.log(microsoftUser.data);
-
-      return {
-        provider: 'microsoft',
-        email: microsoftUser.data.userPrincipalName,
-        accessToken: accessToken,
-        refreshToken,
-        accountId: microsoftUser.data.id,
-      };
-    } catch (error) {
-      console.error(
-        'Token exchange failed:',
-        error.response?.data || error.message,
-      );
-      throw new HttpException(
-        'Token exchange failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
     }
   }
 
