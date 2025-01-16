@@ -15,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { LocalAuthService } from './services/local-auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiBody, ApiForbiddenResponse, ApiResponse } from '@nestjs/swagger';
@@ -23,13 +22,12 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as crypto from 'node:crypto';
 import { saveState, getState, deleteState } from './state.store';
-import { ProviderAuthService } from './services/provider-auth.service';
+import { ProvidersService } from './services/providers.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService,
-    private localAuthService: LocalAuthService,
-  private poviderAuthService: ProviderAuthService,
+  private providersService: ProvidersService,
 ) {}
 
   @Post('register')
@@ -38,7 +36,7 @@ export class AuthController {
   @ApiBody({ type: CreateUserDto })
   async register(@Body() createUserDto: CreateUserDto) {
     console.log('register');
-    return this.localAuthService.register(createUserDto);
+    return this.authService.register(createUserDto);
   }
 
   @Post('login')
@@ -46,21 +44,21 @@ export class AuthController {
   @ApiBody({ type: LoginUserDto })
   async login(@Body() loginUserDto: LoginUserDto) {
     console.log('login');
-    return this.localAuthService.login(loginUserDto);
+    return this.authService.login(loginUserDto);
   }
 
   @Post('forgot-password')
   @ApiResponse({ status: 200, description: 'Password reset email sent' })
   @ApiBody({ type: ForgotPasswordDto })
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.localAuthService.forgotPassword(forgotPasswordDto);
+    return this.authService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset-password')
   @ApiResponse({ status: 200, description: 'Password reset successful' })
   @ApiBody({ type: ResetPasswordDto })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.localAuthService.resetPassword(resetPasswordDto);
+    return this.authService.resetPassword(resetPasswordDto);
   }
 
   @Get('protected')
@@ -82,7 +80,7 @@ export class AuthController {
     const redirect = req.query.redirect_uri;
     const state = crypto.randomUUID();
     saveState(state, { provider: provider, action: 'login', redirect });
-    const providerUrl = this.poviderAuthService.loginProvider(provider, state);
+    const providerUrl = this.providersService.loginProvider(provider, state);
     return res.redirect(providerUrl);
   }
 
@@ -101,7 +99,7 @@ export class AuthController {
       redirect,
       user_id: req.user.userId,
     });
-    const providerUrl = this.poviderAuthService.loginProvider(provider, state);
+    const providerUrl = this.providersService.loginProvider(provider, state);
     return { redirect_uri: providerUrl };
   }
 
@@ -111,7 +109,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Service connected' })
   async disconnectProvider(@Param('provider') provider, @Req() req) {
     console.log('disconnectProvider');
-    await this.poviderAuthService.disconnectProvider(provider, req.user);
+    await this.providersService.disconnectProvider(provider, req.user);
     return { message: 'Service disconnected' };
   }
 
@@ -126,13 +124,13 @@ export class AuthController {
 
     switch (action) {
       case 'login':
-        const token = await this.poviderAuthService.loginProviderCallback(
+        const token = await this.providersService.loginProviderCallback(
           provider,
           code,
         );
         return { url: `${redirect}?token=${token}` };
       case 'connect':
-        await this.poviderAuthService.connectProviderCallback(provider, code, user_id);
+        await this.providersService.connectProviderCallback(provider, code, user_id);
         return { url: redirect };
       default:
         throw new HttpException('Invalid action', HttpStatus.BAD_REQUEST);
@@ -144,6 +142,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'List of connected services' })
   async listServices(@Req() req) {
-    return this.poviderAuthService.listServices(req.user);
+    return this.providersService.listServices(req.user);
   }
 }

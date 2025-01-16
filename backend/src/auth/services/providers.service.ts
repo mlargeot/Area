@@ -6,6 +6,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import axios from 'axios';
 import * as qs from 'qs';
 import { ProviderDto } from '../dto/provider-dto';
+import { ProviderService } from './interfaces/provider.interface';
+import { GoogleService } from './google-provider.service';
+import { DiscordService } from './discord-provider.service';
+import { GithubService } from './github-provider.service';
+import { TwitchService } from './twitch-provider.service';
+import { SpotifyService } from './spotify-provider.service';
+import { MicrosoftService } from './microsoft-provider.service';
 
 const services = [
   { name: 'Discord', color: '#5865F2', isActive: false, email: '' },
@@ -17,11 +24,28 @@ const services = [
 ];
 
 @Injectable()
-export class ProviderAuthService {
+export class ProvidersService {
+  public providerList: ProviderService[];
+
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
-  ) {}
+    public googleService: GoogleService,
+    public discordService: DiscordService,
+    public githubService: GithubService,
+    public twitchService: TwitchService,
+    public spotifyService: SpotifyService,
+    public microsoftService: MicrosoftService,
+  ) {
+    this.providerList = [
+      googleService,
+      discordService,
+      githubService,
+      twitchService,
+      spotifyService,
+      microsoftService,
+    ];
+  }
 
   /**
    * Object containing methods to exchange tokens for each provider
