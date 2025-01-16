@@ -6,10 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { GoogleStrategy } from './strategies/google.strategy';
-import { DiscordStrategy } from './strategies/discord.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { GithubStrategy } from './strategies/github.startegy';
 import { ProvidersService } from './services/providers.service';
 import { GoogleService } from './services/google-provider.service';
 import { GithubService } from './services/github-provider.service';
@@ -36,7 +33,7 @@ import { MicrosoftService } from './services/microsoft-provider.service';
   ],
 
   controllers: [AuthController],
-  providers: [AuthService, ProvidersService, GoogleStrategy, DiscordStrategy, GithubStrategy, JwtStrategy,
+  providers: [AuthService, ProvidersService, JwtStrategy,
     GoogleService, DiscordService, GithubService, TwitchService, SpotifyService, MicrosoftService
   ],
   exports: [AuthService, ProvidersService, JwtModule],
