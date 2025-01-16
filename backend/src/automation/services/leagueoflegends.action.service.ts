@@ -110,8 +110,9 @@ export class LeagueofLegendsActionsService {
     }
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async checkMatchHistory() {
+    console.log('Checking match history...');
     try {
       const users = await this.userModel.find({
         'applets.active': true,
@@ -142,10 +143,7 @@ export class LeagueofLegendsActionsService {
     } catch (error) {
       console.error('Failed to process active applets:', error.message);
     }
-  }
-
-  @Cron(CronExpression.EVERY_10_MINUTES)
-  async checkPlayerStatus() {
+    console.log('Checking players status...');
     try {
       const users = await this.userModel.find({
         'applets.active': true,
@@ -155,7 +153,7 @@ export class LeagueofLegendsActionsService {
       for (const user of users) {
         const activeApplets = user.applets.filter(applet => applet.active && applet.action.name === 'new_lol_status');
         for (const applet of activeApplets) {
-          
+
         }
       }
     } catch (error) {
