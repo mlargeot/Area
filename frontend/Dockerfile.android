@@ -15,4 +15,4 @@ RUN npm install
 
 COPY . .
 
-RUN npx eas-cli build --platform android --profile prod --non-interactive --no-wait
+RUN npx eas-cli build -p android --profile preview || true
