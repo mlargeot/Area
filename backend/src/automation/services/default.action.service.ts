@@ -10,7 +10,7 @@ export class ActionsService {
   constructor(
         private readonly githubActionService : GithubActionsService,
         private readonly spotifyActionService : SpotifyAcitonsService,
-        private readonly leagueofLegendsActionService : LeagueofLegendsActionsService
+        private readonly leagueofLegendsActionService : LeagueofLegendsActionsService,
         private readonly twitchActionService : TwitchActionsService
   ) {}
   private defaultActions: Array<{
@@ -234,7 +234,7 @@ export class ActionsService {
           ],
         }
       ]
-    }
+    },
     {
       service: "Twitch",
       actions: [
