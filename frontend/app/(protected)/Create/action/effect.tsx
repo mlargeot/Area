@@ -1,13 +1,14 @@
 import React from 'react'
 import { 
   ScrollView, YStack, XStack, Card, H1, Text, Button, 
-  Image, AnimatePresence 
+  Image, AnimatePresence, Paragraph
 } from 'tamagui'
 import { useNavigationData } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
 import { useApplet } from '../../../../context/appletContext'
 import { useServiceList } from '../../../../context/serviceListContext'
 import { ChevronLeft, Zap, ArrowRight } from '@tamagui/lucide-icons'
+import { useMedia } from 'tamagui'
 
 export default function ActionEffectsScreen() {
   const { applet, setApplet } = useApplet()
@@ -17,6 +18,8 @@ export default function ActionEffectsScreen() {
   const actions = serviceActionList.find(
     (service) => service.service.toLowerCase() === currentService.toLowerCase()
   )?.effect || []
+
+  const media = useMedia();
 
   return (
     <ScrollView
@@ -36,8 +39,8 @@ export default function ActionEffectsScreen() {
           </XStack>
         </Card>
 
-        <Text color="white" fontSize="$6" fontWeight="bold" textAlign="center">
-          Choisissez une Action
+        <Text fontSize="$6" fontWeight="bold" textAlign="center">
+          Choose an action
         </Text>
 
         <YStack space="$2">
@@ -71,6 +74,7 @@ export default function ActionEffectsScreen() {
                       backgroundColor: "$blue10",
                       scale: 1.01,
                     }}
+                    height="auto"
                     paddingVertical="$2"
                     animation="quick"
                   >
@@ -82,16 +86,16 @@ export default function ActionEffectsScreen() {
                           height={40} 
                           borderRadius="$2"
                         />
-                        <YStack>
-                        <Text 
+                        <YStack textAlign="center" flex={1}>
+                          <Text 
                             fontSize="$5"
                             fontWeight="bold"
                           >
                             {action.name}
                           </Text>
-                          <Text fontSize="$3">
+                          <Paragraph size={media.sm ? "$2" : "$3"}>
                             {action.description || "Déclenche une action spécifique"}
-                          </Text>
+                          </Paragraph>
                         </YStack>
                       </XStack>
                       <ArrowRight size={20} color="$blue10" />
