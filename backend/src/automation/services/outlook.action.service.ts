@@ -20,7 +20,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { ReactionsService } from 'src/automation/services/default.reaction.service';
 import { ProviderDto } from 'src/auth/dto/provider-dto';
-import { LogService } from 'src/logs/log.service';
+import { LogService } from 'src/log/log.service';
 
 @Injectable()
 export class OutlookActionsService {
@@ -61,6 +61,10 @@ export class OutlookActionsService {
         createdDateTime: task.createdDateTime,
       };
     });
+  }
+
+  async initOutlookMailWebhook(userId: string, params: {}) {
+
   }
 
   async initOutlookTaskAction(userId: string, params: { listName: string }) {

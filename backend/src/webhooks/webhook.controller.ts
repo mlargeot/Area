@@ -37,6 +37,12 @@ export class WebhookController {
     return this.webhookService.handleIssuesEvent(req.body);
   }
 
+  @Post('outlook/mail')
+  @ApiOkResponse({ description: "Action triggered." })
+  async triggerOutlookMailEvent(@Req() req) {
+    return this.webhookService.handleOutlookMailEvent(req.body);
+  }
+
   @Post('twitch/livestart')
   @ApiOkResponse({ description: "Live start triggered." })
   async triggerLiveStartEvent(@Req() req, @Res() res: Response) {

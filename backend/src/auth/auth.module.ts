@@ -15,7 +15,7 @@ import { DiscordService } from './services/discord-provider.service';
 import { SpotifyService } from './services/spotify-provider.service';
 import { MicrosoftService } from './services/microsoft-provider.service';
 import { StravaService } from './services/strava-provider.service';
-import { LogModule } from 'src/logs/log.module';
+import { LogModule } from 'src/log/log.module';
 
 @Module({
   imports: [
