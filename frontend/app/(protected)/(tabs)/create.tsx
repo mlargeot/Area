@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { Button, ScrollView, Input, YStack, Text, Label, XStack, Square, Card, H1 } from 'tamagui'
+import { Button, ScrollView, Input, YStack, Text, Label, XStack, Square, Card, H1, ButtonText } from 'tamagui'
 import { ActionButton } from '../../../components/actionButton'
 import { ReactionButton } from '../../../components/reactionButton'
 import { useApplet, Reaction, Applet } from '../../../context/appletContext'
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useServiceList } from '../../../context/serviceListContext';
+import { getServerAddress } from '../../../components/confirmServerAddress';
+import { Alert, Platform } from 'react-native';
 
 const emptyReaction = () => {
   const empty : Reaction = {name: "", _id: "", service: "", params: []}
@@ -12,12 +15,23 @@ const emptyReaction = () => {
 }
 
 const isActionValid = (applet : Applet) => {
-  return applet.action.service !== "" && applet.action.name !== "" && applet.action._id !== "" && applet.reactions.length > 0
+  if (applet.action.service === "" || applet.action.name === "" || applet.action._id === "") {
+    const help : string = "you need to choose an action for your applet";
+    Platform.OS === "web" ? alert(help) : Alert.alert(help);
+    return false;
+  }
+  if (applet.reactions.length <= 0) {
+    const help : string = "you need to choose at least one reaction for your applet";
+    Platform.OS === "web" ? alert(help) : Alert.alert(help);
+    return false;
+  }
+  return true;
 }
 
 export default function CreateScreen() {
   const { applet, setApplet } = useApplet();
-  const serverAddress = useRef<string>(process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080');
+  const { fetchData } = useServiceList();
+  const serverAddress = useRef<string>("");
   const accessToken = useRef<string>("");
   
 
@@ -26,7 +40,7 @@ export default function CreateScreen() {
     const appletName : string = applet.name === "" ? "Unamed Applet" : applet.name;
     console.log("Saving applet", applet.name, "name:", appletName);
 
-    const url = `${serverAddress.current}/applets`;
+    const url = `${serverAddress.current}/applets${applet.appletId === "" ? "" : "/" + applet.appletId}`;
     const appletData = {
       name: appletName,
       action: {
@@ -47,8 +61,35 @@ export default function CreateScreen() {
     }
     console.log("URL:", url, "DATA:", appletData, "TOKEN:", accessToken.current);
 
-    axios.post(url, appletData, {headers: { Authorization: `Bearer ${accessToken.current}` }}).catch((error) => {
-      console.log("Error while saving applet, the parameters given might be invalid", error);
+    axios.post(url, appletData, {headers: { Authorization: `Bearer ${accessToken.current}` }
+    }).then(() => {
+      const successString = "Applet saved successfully";
+      Platform.OS === "web" ? alert(successString) : Alert.alert(successString);
+      emptyApplet();
+    }).catch(() => {
+      const errorString = "Error while saving applet, the parameters given might be invalid";
+      Platform.OS === "web" ? alert(errorString) : Alert.alert(errorString);
+    });
+  };
+
+  const deleteApplet = () => {
+    if (serverAddress.current === "") { return; }
+    if (applet.appletId === "") {
+      const help : string = "this applet is still a draft, if you want to delete it, just discard it";
+      return Platform.OS === "web" ? alert(help) : Alert.alert(help);
+    }
+    console.log("Deleting applet", applet.appletId);
+
+    const url = `${serverAddress.current}/applets/${applet.appletId}`;
+
+    axios.delete(url, {headers: { Authorization: `Bearer ${accessToken.current}` }
+    }).then(() => {
+      const successString = "Applet deleted successfully";
+      Platform.OS === "web" ? alert(successString) : Alert.alert(successString);
+      emptyApplet();
+    }).catch(() => {
+      const errorString = "Error while deleting the applet, please try again later";
+      Platform.OS === "web" ? alert(errorString) : Alert.alert(errorString);
     });
   };
 
@@ -66,19 +107,20 @@ export default function CreateScreen() {
   }
 
   useEffect(() => {
+    fetchData();
+
+    getServerAddress().then((url) => {
+      serverAddress.current = url;
+    });
+
     try {
-      AsyncStorage.getItem("serverAdress").then((value) => {
-        if (value !== null) {
-          serverAddress.current = value;
-        }
-      });
       AsyncStorage.getItem("access_token").then((value) => {
         if (value !== null) {
           accessToken.current = value;
         }
       });
     } catch (error) {
-      console.error("Error while getting server address from AsyncStorage", error);
+      console.error("Error while getting access token from AsyncStorage", error);
     }
   }, []);
 
@@ -152,6 +194,7 @@ export default function CreateScreen() {
 
           {applet.reactions.flatMap((reaction, i) => [
               <ReactionButton 
+                key={`reaction-${reaction._id}`}
                 index={2 + i} 
                 reaction={reaction} 
                 deleteReaction={() => {deleteReaction(i)}}
@@ -188,7 +231,16 @@ export default function CreateScreen() {
             padding="$3"
             animation="quick"
           >
-            <Text>Discard Applet</Text>
+            <Text>Discard Applet Draft</Text>
+          </Button>
+
+          <Button
+            onPress={deleteApplet}
+            borderRadius="$4"
+            padding="$3"
+            animation="quick"
+          >
+            <Text>Delete Applet</Text>
           </Button>
         </YStack>
       </Card>

@@ -3,14 +3,14 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 export type Action = {
   service: string;
   name: string;
-  params: Record<string, string>[];
+  params: Record<string, any>[];
   _id: string;
 };
 
 export type Reaction = {
   service: string;
   name: string;
-  params: Record<string, string>[];
+  params: Record<string, any>[];
   _id: string;
 };
 
@@ -64,11 +64,6 @@ const AppletContext = createContext<{
 
 export const AppletProvider = ({ children } : { children : ReactNode }) => {
   const [applet, setApplet] = useState<Applet>(emptyApplet());
-
-
-  useEffect(() => {
-    console.log("Applet changed", applet.name);
-  }, [applet]);
 
   return (
     <AppletContext.Provider value={{ applet, setApplet }}>

@@ -8,7 +8,7 @@ import { Link } from 'expo-router'
 import { useApplet, Applet, getParamValueString } from '../../../../context/appletContext'
 import { useServiceList, Params } from '../../../../context/serviceListContext'
 
-const ParamField = ({ param, value, onChange, applet }) => {
+const ParamField = ({ param, value, onChange, applet } : {param : Params, value : any, onChange : (value : any) => void, applet : Applet}) => {
   const defaultValue = getParamValueString(param.name, applet.action)
 
   switch (param.type) {
@@ -18,8 +18,8 @@ const ParamField = ({ param, value, onChange, applet }) => {
           <Switch 
             id={`switch-${param.name}`}
             size="$4"
-            checked={value === "true"} 
-            onCheckedChange={(checked) => onChange(checked.toString())}
+            checked={value === "true"}
+            onCheckedChange={(checked) => onChange(checked)}
           >
             <Switch.Thumb animation="quick" />
           </Switch>
@@ -79,7 +79,7 @@ export default function ServicesScreen() {
     )?.argumentsExample || []
     setParams(actionParams)
 
-    const initialValues = {}
+    const initialValues: { [key: string]: string } = {}
     actionParams.forEach(param => {
       initialValues[param.name] = getParamValueString(param.name, applet.action) || ''
     })
@@ -136,7 +136,7 @@ export default function ServicesScreen() {
                   <ParamField
                     param={param}
                     value={paramValues[param.name] || ''}
-                    onChange={(value) => setParamValues(prev => ({ ...prev, [param.name]: value }))}
+                    onChange={(value : any) => setParamValues(prev => ({ ...prev, [param.name]: value }))}
                     applet={applet}
                   />
                 </YStack>

@@ -2,12 +2,10 @@ import { Platform } from 'react-native';
 import { YStack, Theme, Text } from 'tamagui';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import {useEffect} from "react";
 
 export default function AuthHandler() {
     const router = useRouter();
-    const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
 
     const handleAuth = async () => {
         const url = Platform.select({

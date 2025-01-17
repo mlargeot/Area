@@ -1,11 +1,12 @@
 import { Button, YStack, XStack, Text, ScrollView, Card, H1, Paragraph} from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import React from 'react';
 import { Info, CheckCircle, Play, Bolt } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMedia } from 'tamagui'
 import axios from 'axios';
+import { getServerAddress } from './confirmServerAddress';
 
 export default function GeneralHelp({title}: any) {
   const [services, setServices] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export default function GeneralHelp({title}: any) {
   const router = useRouter();
   const media = useMedia();
 
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
+  const apiUrl = useRef<string>("");
 
   const fetchServices = async () => {
     const token = await AsyncStorage.getItem('access_token');
@@ -66,10 +67,18 @@ const fetchReactions = async () => {
 }
 
   useEffect(() => {
-      fetchServices();
-      fetchActions();
-      fetchReactions();
-  } , []);
+      if (apiUrl.current !== "") {
+          fetchServices();
+          fetchActions();
+          fetchReactions();
+      }
+  } , [apiUrl.current]);
+
+  useEffect(() => {
+      getServerAddress().then((url) => {
+          apiUrl.current = url;
+      });
+  }, []);
 
   const service = services.find((s) => s.service.toLowerCase() === title.toLowerCase());
   console.log(services);

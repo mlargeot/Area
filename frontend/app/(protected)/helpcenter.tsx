@@ -7,7 +7,7 @@ import { useMedia } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Header from './../../components/header';
 import axios from 'axios';
-import ConnectService from "../../hooks/connectService";
+import { getServerAddress } from '../../components/confirmServerAddress';
 
 export default function helpcenter() {
     const [services, setServices] = useState<any[]>([]);
@@ -15,10 +15,14 @@ export default function helpcenter() {
     const media = useMedia();
     const router = useRouter();
 
-    const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
 
     const fetchServices = async () => {
         const token = await AsyncStorage.getItem('access_token');
+        const apiUrl = await getServerAddress();
+        if (apiUrl === "") {
+            return;
+        }
+
         try {
             const response = await axios.get(apiUrl + `/services`, {
                 headers: { Authorization: `Bearer ${token}` },

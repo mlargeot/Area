@@ -1,12 +1,10 @@
-import { XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Card, Paragraph, Fieldset, Input, Label, Select, TooltipSimple, Unspaced } from 'tamagui'
+import { XStack, YStack, Text, Button, ScrollView, Dialog, Card, Paragraph } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useRouter } from 'expo-router';
-import { ArrowLeft } from '@tamagui/lucide-icons';
+import { getServerAddress } from '../../components/confirmServerAddress';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { useMedia } from 'tamagui'
 import axios from 'axios';
-import { Platform } from 'react-native';
 import ConnectService from "../../hooks/connectService";
 import Header from './../../components/header';
 
@@ -17,10 +15,15 @@ export default function ProfileScreen() {
     const [isDialogVisible, setDialogVisible] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
 
-    const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
+    
 
     const fetchServices = async () => {
         const token = await AsyncStorage.getItem('access_token');
+        const apiUrl = await getServerAddress();
+        if (apiUrl === "") {
+            return;
+        }
+
         try {
             const response = await axios.get(apiUrl + `/auth/list-services`, {
                 headers: { Authorization: `Bearer ${token}` },
