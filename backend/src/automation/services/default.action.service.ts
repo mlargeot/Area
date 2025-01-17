@@ -4,6 +4,8 @@ import { GithubActionsService } from 'src/automation/services/github.action.serv
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
 import { LeagueofLegendsActionsService } from './leagueoflegends.action.service';
 import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
+import { OutlookActionsService } from './outlook.action.service';
+import { LogService } from 'src/logs/log.service';
 
 @Injectable()
 export class ActionsService {
@@ -11,7 +13,9 @@ export class ActionsService {
         private readonly githubActionService : GithubActionsService,
         private readonly spotifyActionService : SpotifyAcitonsService,
         private readonly leagueofLegendsActionService : LeagueofLegendsActionsService,
-        private readonly twitchActionService : TwitchActionsService
+        private readonly twitchActionService : TwitchActionsService,
+        private readonly outlookActionService : OutlookActionsService,
+        private logService: LogService
   ) {}
   private defaultActions: Array<{
     service: string;
@@ -253,6 +257,25 @@ export class ActionsService {
           ]
         }
       ]
+    },
+    {
+      service: "Outlook, Microsoft",
+      actions: [
+        {
+          name: "new_task_in_list",
+          description: "Triggered when a new task is added to a specified list.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+              name: "listName",
+              description: "Name of the list to check.",
+              example: "To Do",
+              type: "string",
+              required: true
+            }
+          ]
+        }
+      ]
     }
   ];
 
@@ -272,6 +295,7 @@ export class ActionsService {
     lol_match_history : this.leagueofLegendsActionService.initLeagueofLegendsAction.bind(this.leagueofLegendsActionService),
     lol_users_activity : this.leagueofLegendsActionService.initLeagueofLegendsStatusAction.bind(this.leagueofLegendsActionService),
     live_start: this.twitchActionService.initStreamOnlineEvent.bind(this.twitchActionService),
+    new_task_in_list: this.outlookActionService.initOutlookTaskAction.bind(this.outlookActionService),
   }
 
   private destroyServiceRegistry: Record<string, Function> = {

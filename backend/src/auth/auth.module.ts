@@ -14,6 +14,8 @@ import { TwitchService } from './services/twitch-provider.service';
 import { DiscordService } from './services/discord-provider.service';
 import { SpotifyService } from './services/spotify-provider.service';
 import { MicrosoftService } from './services/microsoft-provider.service';
+import { StravaService } from './services/strava-provider.service';
+import { LogModule } from 'src/logs/log.module';
 
 @Module({
   imports: [
@@ -30,11 +32,12 @@ import { MicrosoftService } from './services/microsoft-provider.service';
       }),
       inject: [ConfigService],
     }),
+    LogModule,
   ],
 
   controllers: [AuthController],
   providers: [AuthService, ProvidersService, JwtStrategy,
-    GoogleService, DiscordService, GithubService, TwitchService, SpotifyService, MicrosoftService
+    GoogleService, DiscordService, GithubService, TwitchService, SpotifyService, MicrosoftService, StravaService
   ],
   exports: [AuthService, ProvidersService, JwtModule],
 })

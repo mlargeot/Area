@@ -11,7 +11,7 @@ export class MicrosoftService implements ProviderService {
       clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
       authorizationEndpoint:
         'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-      scopes: ['user.read'],
+      scopes: ['user.read', 'tasks.readwrite'],
   };
 
   async refreshToken(): Promise<void> {
@@ -19,6 +19,7 @@ export class MicrosoftService implements ProviderService {
   }
   async exchangeCode(code: string): Promise<ProviderDto> {
     console.log('Exchanging code for Microsoft');
+    console.log(code);
     try {
       const { data } = await axios.post(
         'https://login.microsoftonline.com/common/oauth2/v2.0/token',

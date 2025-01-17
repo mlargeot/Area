@@ -13,14 +13,16 @@ import { GithubService } from './github-provider.service';
 import { TwitchService } from './twitch-provider.service';
 import { SpotifyService } from './spotify-provider.service';
 import { MicrosoftService } from './microsoft-provider.service';
+import { StravaService } from './strava-provider.service';
 
 const services = [
-  { name: 'Discord', color: '#5865F2', isActive: false, email: '' },
-  { name: 'Spotify', color: '#1DB954', isActive: false, email: '' },
-  { name: 'Twitch', color: '#9146FF', isActive: false, email: '' },
-  { name: 'Google', color: '#FF0000', isActive: false, email: '' },
-  { name: 'Github', color: '#333333', isActive: false, email: '' },
-  { name: 'Microsoft', color: '#00A4EF', isActive: false, email: '' },
+  { name: 'Discord', color: '#5865F2', isActive: false, email: '', icon: 'https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png' },
+  { name: 'Spotify', color: '#1DB954', isActive: false, email: '', icon: 'https://docs.expo.dev/static/images/sdk/auth-session/spotify.png' },
+  { name: 'Twitch', color: '#9146FF', isActive: false, email: '', icon: 'https://docs.expo.dev/static/images/sdk/auth-session/twitch.png' },
+  { name: 'Google', color: '#FF0000', isActive: false, email: '', icon: 'https://docs.expo.dev/static/images/sdk/auth-session/google.png' },
+  { name: 'Github', color: '#333333', isActive: false, email: '', icon: 'https://docs.expo.dev/static/images/sdk/auth-session/github.png' },
+  { name: 'Microsoft', color: '#00A4EF', isActive: false, email: '', icon: 'https://cdn-icons-png.flaticon.com/512/732/732221.png' },
+  { name: 'Strava', color: '#FC4C02', isActive: false, email: '', icon: 'https://docs.expo.dev/static/images/sdk/auth-session/strava.png' },
 ];
 
 @Injectable()
@@ -36,6 +38,7 @@ export class ProvidersService {
     public twitchService: TwitchService,
     public spotifyService: SpotifyService,
     public microsoftService: MicrosoftService,
+    public stravaService: StravaService,
   ) {
     this.providerList = {
       google: googleService,
@@ -44,6 +47,7 @@ export class ProvidersService {
       twitch: twitchService,
       spotify: spotifyService,
       microsoft: microsoftService,
+      strava: stravaService,
     }
   };
 

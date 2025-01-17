@@ -19,6 +19,8 @@ import { ReactionsGithubService } from 'src/automation/services/github.reaction.
 import { ServicesService } from 'src/automation/services/services.service';
 import { ReactionsGoogleService } from 'src/automation/services/google.reaction.service';
 import { LeagueofLegendsActionsService } from './services/leagueoflegends.action.service';
+import { OutlookActionsService } from './services/outlook.action.service';
+import { LogModule } from 'src/logs/log.module';
 
 @Module({
     providers: [
@@ -26,12 +28,12 @@ import { LeagueofLegendsActionsService } from './services/leagueoflegends.action
         GithubActionsService,
         SpotifyAcitonsService,
         LeagueofLegendsActionsService,
+        OutlookActionsService,
         TwitchActionsService,
         ReactionsService,
         ReactionsDiscordService,
         ReactionsGoogleService,
         ReactionsGithubService,
-
         ServicesService,
     ],
     controllers: [
@@ -43,6 +45,7 @@ import { LeagueofLegendsActionsService } from './services/leagueoflegends.action
         ScheduleModule.forRoot(),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         HttpModule,
+        LogModule,
     ],
     exports: [
         ActionsService,
