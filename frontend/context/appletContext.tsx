@@ -3,14 +3,14 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 export type Action = {
   service: string;
   name: string;
-  params: Record<string, string>[];
+  params: Record<string, any>[];
   _id: string;
 };
 
 export type Reaction = {
   service: string;
   name: string;
-  params: Record<string, string>[];
+  params: Record<string, any>[];
   _id: string;
 };
 

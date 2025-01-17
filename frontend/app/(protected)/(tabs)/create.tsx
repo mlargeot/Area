@@ -40,7 +40,7 @@ export default function CreateScreen() {
     const appletName : string = applet.name === "" ? "Unamed Applet" : applet.name;
     console.log("Saving applet", applet.name, "name:", appletName);
 
-    const url = `${serverAddress.current}/applets${applet.appletId === "" ? "" : applet.appletId}`;
+    const url = `${serverAddress.current}/applets${applet.appletId === "" ? "" : "/" + applet.appletId}`;
     const appletData = {
       name: appletName,
       action: {
