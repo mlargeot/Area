@@ -20,7 +20,7 @@ import { ServicesService } from 'src/automation/services/services.service';
 import { ReactionsGoogleService } from 'src/automation/services/google.reaction.service';
 import { LeagueofLegendsActionsService } from './services/leagueoflegends.action.service';
 import { OutlookActionsService } from './services/outlook.action.service';
-import { LogModule } from 'src/logs/log.module';
+import { LogModule } from 'src/log/log.module';
 
 @Module({
     providers: [

@@ -23,7 +23,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as crypto from 'node:crypto';
 import { saveState, getState, deleteState } from './state.store';
 import { ProvidersService } from './services/providers.service';
-import { LogService } from 'src/logs/log.service';
+import { LogService } from 'src/log/log.service';
 
 @Controller('auth')
 export class AuthController {

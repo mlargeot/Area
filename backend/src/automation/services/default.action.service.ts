@@ -5,7 +5,7 @@ import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.se
 import { LeagueofLegendsActionsService } from './leagueoflegends.action.service';
 import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
 import { OutlookActionsService } from './outlook.action.service';
-import { LogService } from 'src/logs/log.service';
+import { LogService } from 'src/log/log.service';
 
 @Injectable()
 export class ActionsService {
