@@ -19,7 +19,6 @@ import {
  } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ReactionsService } from 'src/automation/services/default.reaction.service';
-import { ProviderDto } from 'src/auth/dto/provider-dto';
 import { LogService } from 'src/log/log.service';
 
 @Injectable()
@@ -61,10 +60,6 @@ export class OutlookActionsService {
         createdDateTime: task.createdDateTime,
       };
     });
-  }
-
-  async initOutlookMailWebhook(userId: string, params: {}) {
-
   }
 
   async initOutlookTaskAction(userId: string, params: { listName: string }) {
@@ -130,6 +125,8 @@ export class OutlookActionsService {
         }
       }
     } catch (error) {
+      console.error('action: new_task_in_list', error.message);
+
       console.error('Failed to process active applets:', error.message);
     }
   }

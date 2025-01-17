@@ -6,6 +6,8 @@ import { LeagueofLegendsActionsService } from './leagueoflegends.action.service'
 import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
 import { OutlookActionsService } from './outlook.action.service';
 import { LogService } from 'src/log/log.service';
+import { OutlookEmailsActionsService } from './outlook-emails.action.service';
+import { OutlookEventsActionsService } from './outlook-events.action.service';
 
 @Injectable()
 export class ActionsService {
@@ -15,6 +17,8 @@ export class ActionsService {
         private readonly leagueofLegendsActionService : LeagueofLegendsActionsService,
         private readonly twitchActionService : TwitchActionsService,
         private readonly outlookActionService : OutlookActionsService,
+        private readonly outlookEmailsActionService : OutlookEmailsActionsService,
+        private readonly outlookEventsActionService : OutlookEventsActionsService,
         private logService: LogService
   ) {}
   private defaultActions: Array<{
@@ -274,8 +278,40 @@ export class ActionsService {
               required: true
             }
           ]
+        },
+        {
+          name: "new_email",
+          description: "Triggered when a new email is received.",
+          argumentsNumber: 0,
+          argumentsExample: []
+        },
+        {
+          name: "new_calendar_event",
+          description: "Triggered when a new calendar event is added.",
+          argumentsNumber: 0,
+          argumentsExample: []
         }
       ]
+    },
+    {
+      service: "Youtube",
+      actions: [
+        {
+          name: "new_video",
+          description: "Triggered when a new video is uploaded to the channel.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+              name: "channelId",
+              description: "Id of the channel to check.",
+              example: "UC-lHJZR3Gqxm24_Vd_AJ5Yw",
+              type: "string",
+              required: true
+            }
+          ]
+        }
+      ]
+
     }
   ];
 
@@ -296,6 +332,8 @@ export class ActionsService {
     lol_users_activity : this.leagueofLegendsActionService.initLeagueofLegendsStatusAction.bind(this.leagueofLegendsActionService),
     live_start: this.twitchActionService.initStreamOnlineEvent.bind(this.twitchActionService),
     new_task_in_list: this.outlookActionService.initOutlookTaskAction.bind(this.outlookActionService),
+    new_email: this.outlookEmailsActionService.initEmailCheck.bind(this.outlookEmailsActionService),
+    new_calendar_event: this.outlookEventsActionService.initCalendarCheck.bind(this.outlookEventsActionService),
   }
 
   private destroyServiceRegistry: Record<string, Function> = {

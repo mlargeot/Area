@@ -168,6 +168,8 @@ export class SpotifyAcitonsService {
         }
       }
     } catch (error) {
+      console.error('action: playlist_activity', error.message);
+
       console.error('Failed to process active applets:', error.message);
     }
   }
