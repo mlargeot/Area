@@ -20,6 +20,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { ReactionsService } from 'src/automation/services/default.reaction.service';
 import { LogService } from 'src/log/log.service';
+import { title } from 'process';
 
 @Injectable()
 export class OutlookActionsService {
@@ -120,7 +121,10 @@ export class OutlookActionsService {
               'success',
               'New task detected in list ' + applet.action.params.listName,
             );
-            await this.reactionsService.executeReaction(userId, reaction.name, reaction.params);
+            const actionData: Record<string, any> = {
+              title: newParsedTaskList[newParsedTaskList.length - 1].title,
+            };
+            await this.reactionsService.executeReaction(userId, reaction.name, reaction.params, actionData);
           }
         }
       }

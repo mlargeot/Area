@@ -3,13 +3,15 @@ import { ReactionsDto } from 'src/automation/dto/automation.dto';
 import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
 import { ReactionsGoogleService } from 'src/automation/services/google.reaction.service';
 import { ReactionsGithubService } from 'src/automation/services/github.reaction.service';
+import { ReactionsMicrosoftService } from './microsoft.reaction.service';
 
 @Injectable()
 export class ReactionsService {
   constructor (
     private readonly discordServices : ReactionsDiscordService,
     private readonly googleService : ReactionsGoogleService,
-    private readonly githubService : ReactionsGithubService
+    private readonly githubService : ReactionsGithubService,
+    private readonly microsoftService : ReactionsMicrosoftService,
   ) {}
 
   private defaultReactions: Array<{
@@ -121,14 +123,41 @@ export class ReactionsService {
           ],
         },
       ],
-    }
+    },
+    {
+      service: "Microsoft",
+      reactions: [
+        {
+          name: "send_mail_microsoft",
+          description: "Send mail to the user connected with microsoft service.",
+          argumentsNumber: 2,
+          argumentsExample: [
+            {
+              name: "mail_object",
+              description: "Object of the mail to send.",
+              example: "[Youtube notification]",
+              type: "string",
+              required: true
+            },
+            {
+              name: "mail_message",
+              description: "Content of the message to send.",
+              example: "Video from AR3M has been posted !",
+              type: "text",
+              required: true
+            }
+          ],
+        },
+      ],
+    },
   ];
 
   private reactionServiceRegistry: Record<string, Function> = {
     send_webhook_message : this.discordServices.sendMessageToWebhook.bind(this.discordServices),
     send_mail : this.googleService.sendMail.bind(this.googleService),
     comment_issue: this.githubService.sendCommentToIssue.bind(this.githubService),
-    create_issue: this.githubService.createIssue.bind(this.githubService)
+    create_issue: this.githubService.createIssue.bind(this.githubService),
+    send_mail_microsoft: this.microsoftService.sendMail.bind(this.microsoftService),
   }
 
 
@@ -147,7 +176,7 @@ export class ReactionsService {
       throw new NotFoundException("Requested service not found.");
   }
 
-  async executeReaction(userId: string, name: string, params: {}, actionData: any = {}) {
+  async executeReaction(userId: string, name: string, params: {}, actionData: Record<string, any> = {}) {
     const reactionFunction = this.reactionServiceRegistry[name];
     if (!reactionFunction) {
       throw new Error(`Reaction "${name}" not found.`);

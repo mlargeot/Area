@@ -11,7 +11,7 @@ export class MicrosoftService implements ProviderService {
       clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
       authorizationEndpoint:
         'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-      scopes: ['user.read', 'tasks.readwrite'],
+      scopes: ['user.read', 'tasks.readwrite', 'Mail.Send', 'Mail.ReadWrite', 'Calendars.ReadWrite'],
   };
 
   async refreshToken(): Promise<void> {

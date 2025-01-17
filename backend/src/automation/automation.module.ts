@@ -23,6 +23,7 @@ import { OutlookActionsService } from './services/outlook.action.service';
 import { LogModule } from 'src/log/log.module';
 import { OutlookEmailsActionsService } from './services/outlook-emails.action.service';
 import { OutlookEventsActionsService } from './services/outlook-events.action.service';
+import { ReactionsMicrosoftService } from './services/microsoft.reaction.service';
 
 @Module({
     providers: [
@@ -37,6 +38,7 @@ import { OutlookEventsActionsService } from './services/outlook-events.action.se
         ReactionsService,
         ReactionsDiscordService,
         ReactionsGoogleService,
+        ReactionsMicrosoftService,
         ReactionsGithubService,
         ServicesService,
     ],
