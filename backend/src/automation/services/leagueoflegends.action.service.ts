@@ -161,7 +161,24 @@ export class LeagueofLegendsActionsService {
         const activeApplets = user.applets.filter(applet => applet.active && applet.action.name === 'new_lol_status');
         for (const applet of activeApplets) {
 
-          
+          const { appletId, userId, reaction } = applet;
+
+          const { puuidList, statusList } = applet.metadata.response;
+          const currentStatusList = await Promise.all(puuidList.map(async (puuid) => {
+            return await this.getPlayerStatus(puuid);
+          }));
+
+          if (statusList !== currentStatusList) {
+            await this.setNewMatchHistory(
+              {
+                newPUUID: puuidList,
+                newMatchHistory: currentStatusList,
+              },
+              userId,
+              appletId
+            );
+            await this.reactionsService.executeReaction(userId, reaction.name, reaction.params);
+          }
         }
       }
     } catch (error) {
