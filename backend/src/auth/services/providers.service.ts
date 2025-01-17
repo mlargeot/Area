@@ -13,6 +13,7 @@ import { GithubService } from './github-provider.service';
 import { TwitchService } from './twitch-provider.service';
 import { SpotifyService } from './spotify-provider.service';
 import { MicrosoftService } from './microsoft-provider.service';
+import { StravaService } from './strava-provider.service';
 
 const services = [
   { name: 'Discord', color: '#5865F2', isActive: false, email: '' },
@@ -21,6 +22,7 @@ const services = [
   { name: 'Google', color: '#FF0000', isActive: false, email: '' },
   { name: 'Github', color: '#333333', isActive: false, email: '' },
   { name: 'Microsoft', color: '#00A4EF', isActive: false, email: '' },
+  { name: 'Strava', color: '#FC4C02', isActive: false, email: '' },
 ];
 
 @Injectable()
@@ -36,6 +38,7 @@ export class ProvidersService {
     public twitchService: TwitchService,
     public spotifyService: SpotifyService,
     public microsoftService: MicrosoftService,
+    public stravaService: StravaService,
   ) {
     this.providerList = {
       google: googleService,
@@ -44,6 +47,7 @@ export class ProvidersService {
       twitch: twitchService,
       spotify: spotifyService,
       microsoft: microsoftService,
+      strava: stravaService,
     }
   };
 
