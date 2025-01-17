@@ -14,6 +14,7 @@ import { TwitchService } from './twitch-provider.service';
 import { SpotifyService } from './spotify-provider.service';
 import { MicrosoftService } from './microsoft-provider.service';
 import { StravaService } from './strava-provider.service';
+import { FacebookService } from './facebook-provider.service';
 
 const services = [
   { name: 'Discord', color: '#5865F2', isActive: false, email: '', icon: 'https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png' },
@@ -23,6 +24,7 @@ const services = [
   { name: 'Github', color: '#333333', isActive: false, email: '', icon: 'https://docs.expo.dev/static/images/sdk/auth-session/github.png' },
   { name: 'Microsoft', color: '#00A4EF', isActive: false, email: '', icon: 'https://cdn-icons-png.flaticon.com/512/732/732221.png' },
   { name: 'Strava', color: '#FC4C02', isActive: false, email: '', icon: 'https://docs.expo.dev/static/images/sdk/auth-session/strava.png' },
+  { name: 'Facebook', color: '#1877F2', isActive: false, email: '', icon: 'https://docs.expo.dev/static/images/sdk/auth-session/facebook.png' },
 ];
 
 @Injectable()
@@ -39,6 +41,7 @@ export class ProvidersService {
     public spotifyService: SpotifyService,
     public microsoftService: MicrosoftService,
     public stravaService: StravaService,
+    public facebookService: FacebookService,
   ) {
     this.providerList = {
       google: googleService,
@@ -48,6 +51,7 @@ export class ProvidersService {
       spotify: spotifyService,
       microsoft: microsoftService,
       strava: stravaService,
+      facebook: facebookService,
     }
   };
 
