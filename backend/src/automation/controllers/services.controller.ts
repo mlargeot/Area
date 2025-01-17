@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOkResponse} from '@nestjs/swagger'
 import { ServicesService } from 'src/automation/services/services.service';
-import { LogService } from '../services/log.service';
+import { LogService } from '../../logs/log.service';
 
 @Controller('services')
 export class ServicesController {

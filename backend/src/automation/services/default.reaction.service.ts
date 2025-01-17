@@ -149,10 +149,10 @@ export class ReactionsService {
 
   async executeReaction(userId: string, name: string, params: {}, actionData: any = {}) {
     const reactionFunction = this.reactionServiceRegistry[name];
-
     if (!reactionFunction) {
-        throw new Error(`Reaction "${name}" not found.`);
+      throw new Error(`Reaction "${name}" not found.`);
     }
+    console.log("Executing reaction", name, "with params", params);
     return reactionFunction(userId, params, actionData);
   }
 }

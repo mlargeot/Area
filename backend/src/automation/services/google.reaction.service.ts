@@ -39,9 +39,13 @@ export class ReactionsGoogleService {
         );
         console.log(`Mail sent successfully : ${response.data}`);
     } catch (error) {
-        console.log(`Mail error : ${error.response?.data || error.message}`);
-        throw new InternalServerErrorException(`Unexpected error occurs: ${error.response?.data || 
-            error.message}`);
+        console.error('Mail error:', error); // Log the full error object
+        console.error('Error response data:', error.response?.data); // Log the response data if available
+        console.error('Error message:', error.message); // Log the error message
+        console.error('Error stack:', error.stack); // Log the error stack trace
+        throw new InternalServerErrorException(
+            `Unexpected error occurs: ${error.response?.data || error.message}`,
+        );
     }
   }
 

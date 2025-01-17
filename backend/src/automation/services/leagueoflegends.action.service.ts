@@ -57,12 +57,19 @@ export class LeagueofLegendsActionsService {
       return {name, tag};
     });
     //get puuid
-    const puuidList = playerData.map(async (player) => {
+    const puuidList = await Promise.all(playerData.map(async (player) => {
       return await this.getPlayerPUUID(player.name, player.tag);
-    });
+    }));
 
+    //get status
+    const statusList = await Promise.all(puuidList.map(async (puuid) => {
+      return await this.getPlayerStatus(puuid);
+    }));
 
-
+    return {
+      puuidList,
+      statusList,
+    };
   }
 
 
@@ -154,6 +161,7 @@ export class LeagueofLegendsActionsService {
         const activeApplets = user.applets.filter(applet => applet.active && applet.action.name === 'new_lol_status');
         for (const applet of activeApplets) {
 
+          
         }
       }
     } catch (error) {
@@ -164,8 +172,8 @@ export class LeagueofLegendsActionsService {
   private async setNewMatchHistory(newMatchHistory: { newPUUID: string, newMatchHistory: any }, userId: string, appletId: string) {
     await this.userModel.updateOne(
       {
-        _id: userId,
-        'applets._id': appletId,
+        _id: new Types.ObjectId(userId),
+        'applets.appletId': appletId,
       },
       {
         $set: {
