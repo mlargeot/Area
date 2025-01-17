@@ -19,6 +19,7 @@ import { ReactionsGithubService } from 'src/automation/services/github.reaction.
 import { ServicesService } from 'src/automation/services/services.service';
 import { ReactionsGoogleService } from 'src/automation/services/google.reaction.service';
 import { LeagueofLegendsActionsService } from './services/leagueoflegends.action.service';
+import { LogService } from './services/log.service';
 
 @Module({
     providers: [
@@ -31,6 +32,8 @@ import { LeagueofLegendsActionsService } from './services/leagueoflegends.action
         ReactionsDiscordService,
         ReactionsGoogleService,
         ReactionsGithubService,
+
+        LogService,
 
         ServicesService,
     ],
