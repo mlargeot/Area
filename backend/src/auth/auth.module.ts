@@ -15,6 +15,7 @@ import { DiscordService } from './services/discord-provider.service';
 import { SpotifyService } from './services/spotify-provider.service';
 import { MicrosoftService } from './services/microsoft-provider.service';
 import { StravaService } from './services/strava-provider.service';
+import { LogModule } from 'src/logs/log.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { StravaService } from './services/strava-provider.service';
       }),
       inject: [ConfigService],
     }),
+    LogModule,
   ],
 
   controllers: [AuthController],

@@ -23,11 +23,13 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as crypto from 'node:crypto';
 import { saveState, getState, deleteState } from './state.store';
 import { ProvidersService } from './services/providers.service';
+import { LogService } from 'src/logs/log.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService,
   private providersService: ProvidersService,
+  private logService: LogService
 ) {}
 
   @Post('register')
@@ -110,6 +112,7 @@ export class AuthController {
   async disconnectProvider(@Param('provider') provider, @Req() req) {
     console.log('disconnectProvider');
     await this.providersService.disconnectProvider(provider, req.user);
+    this.logService.createLog(req.user.userId, 'Service disconnected', 'success', provider);
     return { message: 'Service disconnected' };
   }
 
@@ -131,6 +134,7 @@ export class AuthController {
         return { url: `${redirect}?token=${token}` };
       case 'connect':
         await this.providersService.connectProviderCallback(provider, code, user_id);
+        this.logService.createLog(user_id, 'Service connected', 'success', provider);
         return { url: redirect };
       default:
         throw new HttpException('Invalid action', HttpStatus.BAD_REQUEST);
