@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
-import { H2, Input, Label, Text, Button, Image, YStack, XStack } from 'tamagui';
+import { H2, Separator, Label, Text, Button, Image, YStack, XStack, Switch } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, Link } from 'expo-router';
 import { useAuth } from "../../../hooks/useAuth";
+import { useTheme } from '../../../context/themeContext';
 
 export default function ProfileScreen() {
   const { email} = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const disconnect = () => {
     AsyncStorage.removeItem('access_token');
@@ -38,6 +40,21 @@ export default function ProfileScreen() {
         <Link href="#" onPress={disconnect} asChild>
           <Text fontWeight="700" fontSize="$8">Sign Out</Text>
         </Link>
+        <XStack width={200} alignItems="center" gap="$4">
+          <Label
+            paddingRight="$0"
+            minWidth={90}
+            justifyContent="flex-end"
+            size={"$4"}
+            htmlFor={"themeSwitchLabel"}
+          >
+            Dark Mode
+          </Label>
+          <Separator minHeight={20} vertical />
+          <Switch id={"themeSwitch"} size="$4" defaultChecked={theme === 'dark'} onCheckedChange={toggleTheme}>
+            <Switch.Thumb />
+          </Switch>
+        </XStack>
       </YStack>
       <XStack 
         justifyContent="space-between" 

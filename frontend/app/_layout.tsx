@@ -1,10 +1,10 @@
 import { Slot, SplashScreen } from "expo-router";
-import { TamaguiProvider } from "@tamagui/core";
+import { TamaguiProvider, Theme } from "@tamagui/core";
 import { AppletProvider } from "../context/appletContext";
 import { AppletListProvider } from "../context/appletListContext";
 import { NavigationProvider } from "../context/navigationContext";
 import { ServiceListProvider } from "../context/serviceListContext";
-import { useColorScheme } from "react-native";
+import { ThemeProvider, useTheme } from '../context/themeContext';
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import config from "../tamagui.config";
@@ -26,31 +26,29 @@ export default function RootLayout() {
   if (!interLoaded && !interError) {
     return null;
   }
-  return <RootLayoutNav />;
+  return (
+    <ThemeProvider>
+      <RootLayoutNav />
+    </ThemeProvider>
+  ) 
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
-  // Déterminer le thème par défaut
-  let defaultTheme;
-  if (colorScheme === 'dark') {
-    defaultTheme = 'dark';
-  } else {
-    defaultTheme = 'light';
-  }
+  const { theme } = useTheme();
 
   return (
-    <TamaguiProvider config={config} defaultTheme={defaultTheme}>
-      <AppletProvider>
-        <AppletListProvider>
-          <ServiceListProvider>
-            <NavigationProvider>
-              <Slot />
-            </NavigationProvider>
-          </ServiceListProvider>
-        </AppletListProvider>
-      </AppletProvider>
+    <TamaguiProvider config={config}>
+      <Theme name={theme}>
+        <AppletProvider>
+          <AppletListProvider>
+            <ServiceListProvider>
+              <NavigationProvider>
+                <Slot />
+              </NavigationProvider>
+            </ServiceListProvider>
+          </AppletListProvider>
+        </AppletProvider>
+      </Theme>
     </TamaguiProvider>
   );
 }
