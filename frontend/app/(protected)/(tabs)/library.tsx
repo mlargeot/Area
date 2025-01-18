@@ -17,8 +17,8 @@ export default function LibraryScreen() {
   }, []);
 
   return (
-    <ScrollView bg="$background">
       <YStack f={1} ai="center" px="$4" pt="$5" bg="$background">
+        <ScrollView bg="$background">
         <H2 mb="$4">My Applets</H2>
 
         {appletList.length === 0 ? (
@@ -60,7 +60,7 @@ export default function LibraryScreen() {
             ))}
           </YStack>
         )}
+        </ScrollView>
       </YStack>
-    </ScrollView>
   )
 }
