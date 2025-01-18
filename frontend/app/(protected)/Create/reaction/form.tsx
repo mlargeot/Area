@@ -111,7 +111,7 @@ export default function ServicesScreen() {
 
   return (
     <Theme>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: '$background' }}>
         <YStack padding="$4" space="$4">
           <Card borderRadius="$4" padding="$4" elevate>
             <XStack justifyContent="space-between" alignItems="center">

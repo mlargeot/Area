@@ -1,10 +1,12 @@
-import { XStack, YStack, Text, Button, ScrollView, Dialog, Card, Paragraph } from 'tamagui'
+import { XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Card, Paragraph, Fieldset, Input, Label, Select, TooltipSimple, Unspaced, Image } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getServerAddress } from '../../components/confirmServerAddress';
+import { useRouter } from 'expo-router';
+import { ArrowLeft } from '@tamagui/lucide-icons';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { useMedia } from 'tamagui'
 import axios from 'axios';
+import { Platform } from 'react-native';
 import ConnectService from "../../hooks/connectService";
 import Header from './../../components/header';
 
@@ -15,15 +17,10 @@ export default function ProfileScreen() {
     const [isDialogVisible, setDialogVisible] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
 
-    
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
 
     const fetchServices = async () => {
         const token = await AsyncStorage.getItem('access_token');
-        const apiUrl = await getServerAddress();
-        if (apiUrl === "") {
-            return;
-        }
-
         try {
             const response = await axios.get(apiUrl + `/auth/list-services`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -61,17 +58,24 @@ export default function ProfileScreen() {
                     >
                         {services.map((service, index) => (
                         <Card
-                            width={media.sm ? '90%' : '20%'}
                             key={index}
                             bordered
                             borderWidth={2}
                             borderColor={service.color}
                             borderRadius="$4"
+                            width={media.sm ? '90%' : '20%'}
                             >
                             <YStack>
                                 <Card.Header padded>
                                 <XStack gap="$3" alignItems="center">
+                                    <Image
+                                        source={{ uri: service?.icon_url }}
+                                        width={media.sm ? 24 : 32}
+                                        height={media.sm ? 24 : 32}
+                                        resizeMode="contain"
+                                    />
                                     <XStack flex={1}
+                                        flexDirection={media.sm ? "column" : "row"}
                                         alignItems="center"
                                         gap="$2">
                                         <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">

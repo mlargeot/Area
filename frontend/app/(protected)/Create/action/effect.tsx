@@ -25,6 +25,7 @@ export default function ActionEffectsScreen() {
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1, 
+        backgroundColor: '$background'
       }}
       style={{ flex: 1 }}
     >
