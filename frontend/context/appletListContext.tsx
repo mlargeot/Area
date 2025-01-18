@@ -28,6 +28,13 @@ export const AppletListProvider = ({ children } : { children : ReactNode }) => {
       const applets = await axios.get(`${apiUrl}/applets`, {headers: { Authorization: `Bearer ${access_token}` }});
 
       for (let i = 0; i < applets.data.length; i++) {
+        if (applets.data[i].action.params === undefined || applets.data[i].action.params === null) {
+          return;
+        }
+        if (applets.data[i].reaction.params === undefined || applets.data[i].reaction.params === null) {
+          return;
+        }
+
         setAppletList((prev) => [
             ...prev,
             {
