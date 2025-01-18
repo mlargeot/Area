@@ -9,7 +9,7 @@ function Header() {
     return (
         <XStack ai="center" jc="space-between" px="$4" py="$2" borderBottomWidth={1} borderBottomColor="$borderColor" width="100%">
             <Button onPress={() => router.back()} icon={ArrowLeft} />
-            <Stack width={40} /> {/* Placeholder for alignment */}
+            <Stack width={40} />
         </XStack>
     );
 }
