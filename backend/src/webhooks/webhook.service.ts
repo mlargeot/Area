@@ -410,9 +410,4 @@ export class WebhookService {
     console.log("\nChallenge Triggered : ", body, "\n", body.challenge);
     return body.challenge;
   }
-
-  async handleOutlookMailEvent(body: any): Promise<boolean> {
-
-    return true;
-  }
 }

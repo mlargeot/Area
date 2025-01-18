@@ -148,6 +148,8 @@ export class LeagueofLegendsActionsService {
         }
       }
     } catch (error) {
+      console.error('action: new_lol_match', error.message);
+
       console.error('Failed to process active applets:', error.message);
     }
     console.log('Checking players status...');
@@ -182,6 +184,8 @@ export class LeagueofLegendsActionsService {
         }
       }
     } catch (error) {
+      console.error('action: new_lol_status', error.message);
+
       console.error('Failed to process active applets:', error.message);
     }
   }

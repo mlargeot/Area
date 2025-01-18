@@ -21,6 +21,9 @@ import { ReactionsGoogleService } from 'src/automation/services/google.reaction.
 import { LeagueofLegendsActionsService } from './services/leagueoflegends.action.service';
 import { OutlookActionsService } from './services/outlook.action.service';
 import { LogModule } from 'src/log/log.module';
+import { OutlookEmailsActionsService } from './services/outlook-emails.action.service';
+import { OutlookEventsActionsService } from './services/outlook-events.action.service';
+import { ReactionsMicrosoftService } from './services/microsoft.reaction.service';
 
 @Module({
     providers: [
@@ -29,10 +32,13 @@ import { LogModule } from 'src/log/log.module';
         SpotifyAcitonsService,
         LeagueofLegendsActionsService,
         OutlookActionsService,
+        OutlookEmailsActionsService,
+        OutlookEventsActionsService,
         TwitchActionsService,
         ReactionsService,
         ReactionsDiscordService,
         ReactionsGoogleService,
+        ReactionsMicrosoftService,
         ReactionsGithubService,
         ServicesService,
     ],
