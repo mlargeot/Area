@@ -151,7 +151,7 @@ export class SpotifyAcitonsService {
               userId,
               appletId
             );
-            await this.reactionsService.executeReaction(reaction.name, reaction.params);
+            await this.reactionsService.executeReaction(userId, reaction.name, reaction.params);
           } else if (lastSong !== currentResponse.tracks.items[currentResponse.tracks.total - 1]?.track.name) {
             await this.setNewPlaylistMetadata(
               {
@@ -162,12 +162,14 @@ export class SpotifyAcitonsService {
               userId,
               appletId
             );
-            await this.reactionsService.executeReaction(reaction.name, reaction.params);
+            await this.reactionsService.executeReaction(userId, reaction.name, reaction.params);
           } else
             continue;
         }
       }
     } catch (error) {
+      console.error('action: playlist_activity', error.message);
+
       console.error('Failed to process active applets:', error.message);
     }
   }

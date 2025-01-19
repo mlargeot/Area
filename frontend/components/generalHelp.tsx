@@ -1,23 +1,28 @@
 import { Button, YStack, XStack, Text, ScrollView, Card, H1, Paragraph} from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import React from 'react';
 import { Info, CheckCircle, Play, Bolt } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMedia } from 'tamagui'
 import axios from 'axios';
+import { getServerAddress } from './confirmServerAddress';
 
 export default function GeneralHelp({title}: any) {
   const [services, setServices] = useState<any[]>([]);
   const [actions, setactions] = useState<any[]>([]);
   const [reactions, setreactions] = useState<any[]>([]);
-  const router = useRouter()
+  const router = useRouter();
   const media = useMedia();
 
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
+  const apiUrl = useRef<string>("");
 
   const fetchServices = async () => {
     const token = await AsyncStorage.getItem('access_token');
+    const apiUrl = await getServerAddress();
+    if (apiUrl === "") {
+        return;
+    }
     try {
         const response = await axios.get(apiUrl + `/services`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -33,6 +38,10 @@ export default function GeneralHelp({title}: any) {
 
   const fetchActions = async () => {
     const token = await AsyncStorage.getItem('access_token');
+    const apiUrl = await getServerAddress();
+    if (apiUrl === "") {
+      return;
+    }
     try {
         const response = await axios.get(apiUrl + `/actions/` + title, {
             headers: { Authorization: `Bearer ${token}` },
@@ -40,6 +49,8 @@ export default function GeneralHelp({title}: any) {
         console.log("response", response);
         if (response.status === 200) {
             setactions(response.data);
+        } else if (response.status === 404) {
+          console.log("Aucune Actions !");
         }
     } catch (error) {
         console.error(error);
@@ -48,6 +59,10 @@ export default function GeneralHelp({title}: any) {
 
 const fetchReactions = async () => {
   const token = await AsyncStorage.getItem('access_token');
+  const apiUrl = await getServerAddress();
+  if (apiUrl === "") {
+      return;
+  } 
   try {
       const response = await axios.get(apiUrl + `/reactions/` + title, {
           headers: { Authorization: `Bearer ${token}` },
@@ -55,6 +70,8 @@ const fetchReactions = async () => {
       console.log("response", response);
       if (response.status === 200) {
           setreactions(response.data);
+      } else if (response.status === 404) {
+        console.log("Aucune Réactions !");
       }
   } catch (error) {
       console.error(error);
@@ -62,10 +79,16 @@ const fetchReactions = async () => {
 }
 
   useEffect(() => {
-      fetchServices();
-      fetchActions();
-      fetchReactions();
-  } , []);
+    fetchServices();
+    fetchActions();
+    fetchReactions();
+  } , [apiUrl.current]);
+
+  useEffect(() => {
+      getServerAddress().then((url) => {
+          apiUrl.current = url;
+      });
+  }, []);
 
   const service = services.find((s) => s.service.toLowerCase() === title.toLowerCase());
   console.log(services);
@@ -124,7 +147,7 @@ const fetchReactions = async () => {
                       Available Actions
                     </Text>
                     <Text fontSize={media.sm ? "$2" : "$3"}>
-                      Actions are events on {service?.name} that can trigger a reaction in AREA.
+                      Actions are events on {service?.service} that can trigger a reaction in AREA.
                     </Text>
                   </YStack>
                 </XStack>

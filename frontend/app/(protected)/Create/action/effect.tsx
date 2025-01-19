@@ -1,51 +1,114 @@
-import { Button, ScrollView, Stack, YStack, Text, View, XStack, Square, H2 } from 'tamagui'
+import React from 'react'
+import { 
+  ScrollView, YStack, XStack, Card, H1, Text, Button, 
+  Image, AnimatePresence, Paragraph
+} from 'tamagui'
 import { useNavigationData } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
-import { useApplet } from '../../../../context/appletContext';
-import { useServiceList, EffectTemplate } from '../../../../context/serviceListContext'
-import React from 'react';
+import { useApplet } from '../../../../context/appletContext'
+import { useServiceList } from '../../../../context/serviceListContext'
+import { ChevronLeft, Zap, ArrowRight } from '@tamagui/lucide-icons'
+import { useMedia } from 'tamagui'
 
+export default function ActionEffectsScreen() {
+  const { applet, setApplet } = useApplet()
+  const { serviceActionList } = useServiceList()
+  const { navigationData } = useNavigationData()
+  const currentService = navigationData.currentService
+  const actions = serviceActionList.find(
+    (service) => service.service.toLowerCase() === currentService.toLowerCase()
+  )?.effect || []
 
-export default function ServicesScreen() {
-  const { applet, setApplet } = useApplet();
-  const { serviceActionList } = useServiceList();
-  const { navigationData } = useNavigationData();
-  const currentService = navigationData.currentService;
-  const actions = serviceActionList.filter((service) => service.service.toLowerCase() === currentService.toLowerCase())[0].effect
+  const media = useMedia();
 
   return (
     <ScrollView
-    contentContainerStyle={{
-      flexGrow: 1, 
-      backgroundColor: '$background'
-    }}
-    style={{ flex: 1 }}>
-      <YStack paddingVertical="$4" width="100%" alignItems='center' gap="$2" >
-        <H2>{currentService}</H2>
-        {actions.flatMap((action, i) => [
-            <Link key={`button-${i}`} href="/Create/action/form" asChild >
-                <Button
-                    onPress={() => {action.name !== applet.action.name && setApplet({
+      contentContainerStyle={{
+        flexGrow: 1, 
+        backgroundColor: '$background'
+      }}
+      style={{ flex: 1 }}
+    >
+      <YStack padding="$4" space="$4">
+        <Card borderRadius="$4" padding="$4" elevate>
+          <XStack justifyContent="space-between" alignItems="center">
+            <Link href="/Create/services" asChild>
+              <Button icon={ChevronLeft} circular size="$3" backgroundColor="$blue8" />
+            </Link>
+            <H1 color="$blue10" fontWeight="bold">{currentService}</H1>
+            <Zap size={24} color="$blue10" />
+          </XStack>
+        </Card>
+
+        <Text fontSize="$6" fontWeight="bold" textAlign="center">
+          Choose an action
+        </Text>
+
+        <YStack space="$2">
+          <AnimatePresence>
+            {actions.map((action, i) => (
+              <Card
+                key={`action-${i}`}
+                borderRadius="$4"
+                padding="$4"
+                marginBottom="$2"
+                animation="quick"
+                enterStyle={{ opacity: 0, scale: 0.9 }}
+                exitStyle={{ opacity: 0, scale: 0.9 }}
+                pressStyle={{ scale: 0.97 }}
+                elevate
+              >
+                <Link href="/Create/action/form" asChild>
+                  <Button
+                    onPress={() => {
+                      action.name !== applet.action.name && setApplet({
+                        ...applet,
                         action: {
                           service: currentService,
                           name: action.name,
                           _id: `action-${actions.length.toString()}`,
                           params: []
-                        },
-                        reactions: applet.reactions,
-                        appletId: applet.appletId
+                        }
                       })
                     }}
-                    width="80%"
-                    size={applet.action.name === action.name ? "$8" : "$6"}
-                    >
-                    <Button.Text>
-                      {action.name}
-                    </Button.Text>
-                </Button>
-            </Link>
-        ])}
+                    hoverStyle={{
+                      backgroundColor: "$blue10",
+                      scale: 1.01,
+                    }}
+                    height="auto"
+                    paddingVertical="$2"
+                    animation="quick"
+                  >
+                    <XStack flex={1} alignItems="center" justifyContent="space-between">
+                      <XStack space="$3" alignItems="center" flex={1}>
+                        <Image 
+                          source={{ uri: '/placeholder.svg?height=40&width=40' }}
+                          width={40} 
+                          height={40} 
+                          borderRadius="$2"
+                        />
+                        <YStack textAlign="center" flex={1}>
+                          <Text 
+                            fontSize="$5"
+                            fontWeight="bold"
+                          >
+                            {action.name}
+                          </Text>
+                          <Paragraph size={media.sm ? "$2" : "$3"}>
+                            {action.description || "Déclenche une action spécifique"}
+                          </Paragraph>
+                        </YStack>
+                      </XStack>
+                      <ArrowRight size={20} color="$blue10" />
+                    </XStack>
+                  </Button>
+                </Link>
+              </Card>
+            ))}
+          </AnimatePresence>
+        </YStack>
       </YStack>
     </ScrollView>
   )
 }
+

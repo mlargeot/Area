@@ -1,0 +1,18 @@
+FROM node:23-alpine
+
+RUN apk add --no-cache openjdk21
+
+WORKDIR /usr/src/app
+
+ARG EXPO_TOKEN
+ENV EXPO_TOKEN=${EXPO_TOKEN}
+
+ENV EAS_NO_VCS=1
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npx eas-cli build -p android --profile preview || true

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
-import { H2, Input, Label, Text, Button, Image, YStack, XStack, Stack } from 'tamagui';
+import React, { useEffect, useRef, useState } from 'react';
+import { H2, Input, Label, Text, Button, ButtonText, Image, YStack, XStack, Stack } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, Link } from 'expo-router';
 import { useAuth } from "./../../hooks/useAuth";
 import { ArrowLeft } from '@tamagui/lucide-icons';
+import { confirmServerAddress } from '../../components/confirmServerAddress';
+import { getServerAddress } from '../../components/confirmServerAddress';
 
 function Header() {
     const router = useRouter();
@@ -18,21 +19,13 @@ function Header() {
 }
 
 export default function account() {
-  const { email} = useAuth();
-  const router = useRouter();
-
-  const [serverAddress, setServerAddress] = useState('');
-  const [serverPort, setServerPort] = useState('');
-  const [userId, setUserId] = useState('');
+  const { email, userId} = useAuth();
+  const [id, setUserId] = useState('');
+  const [apiUrl, setApiUrl] = useState<string>("");
+  const tempUrl = useRef<string>("");
 
   const getDefaultValues = async () => {
     try {
-      AsyncStorage.getItem('serverAdress').then((value) => {
-        setServerAddress(value || 'http://localhost:8080');
-      });
-      AsyncStorage.getItem('serverPort').then((value) => {
-        setServerPort(value || '8080');
-      });
       AsyncStorage.getItem('userId').then((value) => {
         setUserId(value || '');
       });
@@ -43,15 +36,10 @@ export default function account() {
 
   useEffect(() => {
     getDefaultValues();
+    getServerAddress().then((url) => {
+      setApiUrl(url);
+    });
   }, []);
-
-  const handleServerAddress = async (e : any) => {
-    AsyncStorage.setItem('serverAdress', e.target.value);
-  };
-
-  const handleServerPort = async (e : any) => {
-    AsyncStorage.setItem('serverPort', e.target.value);
-  };
 
   const handleUserId = async (e : any) => {
     AsyncStorage.setItem('userId', e.target.value);
@@ -70,12 +58,18 @@ export default function account() {
         <Text fontSize="$5" fontWeight="700">
             {email}
         </Text>
+        <Text fontSize="$5" fontWeight="700">
+            id: {userId}
+        </Text>
         <Label>Server address</Label>
-        <Input defaultValue={serverAddress} onBlur={handleServerAddress} />
-        <Label>Server port</Label>
-        <Input defaultValue={serverPort} onBlur={handleServerPort} />
+        <Input defaultValue={apiUrl} onChangeText={(val) => {tempUrl.current = val}} />
+        <Button marginTop="$2" onPress={() => confirmServerAddress(tempUrl.current)}>
+          <ButtonText>
+            Save Server Address
+          </ButtonText>
+        </Button>
         <Label>User ID</Label>
-        <Input defaultValue={userId} onBlur={handleUserId} />
+        <Input defaultValue={id} onBlur={handleUserId} />
         <XStack 
             justifyContent="space-between" 
             width="100%" 

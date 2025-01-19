@@ -6,10 +6,17 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { GoogleStrategy } from './strategies/google.strategy';
-import { DiscordStrategy } from './strategies/discord.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { GithubStrategy } from './strategies/github.startegy';
+import { ProvidersService } from './services/providers.service';
+import { GoogleService } from './services/google-provider.service';
+import { GithubService } from './services/github-provider.service';
+import { TwitchService } from './services/twitch-provider.service';
+import { DiscordService } from './services/discord-provider.service';
+import { SpotifyService } from './services/spotify-provider.service';
+import { MicrosoftService } from './services/microsoft-provider.service';
+import { StravaService } from './services/strava-provider.service';
+import { FacebookService } from './services/facebook-provider.service';
+import { LogModule } from 'src/log/log.module';
 
 @Module({
   imports: [
@@ -26,10 +33,13 @@ import { GithubStrategy } from './strategies/github.startegy';
       }),
       inject: [ConfigService],
     }),
+    LogModule,
   ],
 
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy, DiscordStrategy, GithubStrategy, JwtStrategy],
-  exports: [AuthService, JwtModule],
+  providers: [AuthService, ProvidersService, JwtStrategy,
+    GoogleService, DiscordService, GithubService, TwitchService, SpotifyService, MicrosoftService, StravaService, FacebookService
+  ],
+  exports: [AuthService, ProvidersService, JwtModule],
 })
 export class AuthModule {}

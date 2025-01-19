@@ -22,11 +22,11 @@ export function ActionButton({ index } : { index : number }) {
         actionType: "action",
         reactionId: ""
       })}}
+      alignSelf="center"
       borderWidth="$1"
-      borderColor="$color"
+      borderColor="#3B82F6"
       padding="$3"
       borderRadius="$2"
-      borderStyle='dotted'
       height="fit-content"
       width="80%"
       justifyContent='flex-start'
@@ -44,7 +44,7 @@ export function ActionButton({ index } : { index : number }) {
           </XStack>
           <Button.Text
             opacity={0.60}
-          >{index.toString()}. { applet.action.name ? applet.action.name : " Select the event that start the workflow"}</Button.Text>
+          >{index.toString()}. { applet.action.name ? applet.action.name : " Select the trigger"}</Button.Text>
         </YStack>
       </Button>
     </Link>

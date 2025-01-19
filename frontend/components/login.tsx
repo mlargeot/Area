@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'expo-router';
 import {Alert, Linking, Platform, TouchableOpacity} from 'react-native';
-import {Button, Input, Stack, Text, XStack, YStack} from 'tamagui';
+import {Button, ButtonText, Input, Label, Stack, Text, XStack, YStack} from 'tamagui';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,7 +10,7 @@ import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import LoginService from "../hooks/loginService";
-
+import { confirmServerAddress, getServerAddress } from '../components/confirmServerAddress';
 
 
 export default function Login() {
@@ -19,16 +19,21 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
+    const [apiUrl, setApiUrl] = useState<string>("");
+    const tempUrl = useRef("");
 
-    const handlerResetPassword = () => {
+    const handlerResetPassword = async () => {
+        const latestApiUrl = await getServerAddress();
+        if (latestApiUrl === "") {
+          return;
+        }
         if (email === '') {
             alert('Please enter your email address');
             Alert.alert('Please enter your email address');
             return;
         }
         try {
-            axios.post(`${apiUrl}/auth/forgot-password`, {
+            axios.post(`${latestApiUrl}/auth/forgot-password`, {
                 email
             });
             alert('Password reset email sent');
@@ -41,10 +46,13 @@ export default function Login() {
     }
 
     const handleLogin = async () => {
-
+        const latestApiUrl = await getServerAddress();
+        if (latestApiUrl === "") {
+          return;
+        }
         try {
             setIsLoading(true);
-            const response = await axios.post(`${apiUrl}/auth/login`, {
+            const response = await axios.post(`${latestApiUrl}/auth/login`, {
                 email,
                 password
             });
@@ -53,7 +61,7 @@ export default function Login() {
             const token = await AsyncStorage.getItem('access_token');
             console.log("async storage set:" + token);
             setIsLoading(false);
-            console.log("Logged in" + email + " with token " + response.data.access_token);
+            console.log("Logged in as " + email + " with token " + response.data.access_token);
             router.push('/explore');
         } catch (error) {
             setIsLoading(false);
@@ -62,12 +70,15 @@ export default function Login() {
         }
     }
 
-    const handlePrompt = () => {
-        prompt();
-    }
+    useEffect(() => {
+        getServerAddress().then((url) => {
+            setApiUrl(url);
+            tempUrl.current = url;
+        });
+    }, []);
 
     return (
-        <YStack padding="$6" borderRadius="$4" width={320} shadowOffset={{ width: 0, height: 4 }} shadowRadius={6} shadowOpacity={0.3}>
+        <YStack padding="$6" borderRadius="$4" width={320} shadowOffset={{ width: 0, height: 4 }} shadowRadius={6} shadowOpacity={0.3} bg={'$background'}>
             <Text fontSize="$7" fontWeight="700" textAlign="center" marginBottom="$6">Welcome to our AR3M App</Text>
             <XStack width="100%" marginBottom="$4" justifyContent="center" gap={15}>
                 <Button borderRadius="$3" paddingHorizontal="$4" paddingVertical="$2" icon={<FontAwesome name="google" size={24}/>} onPress={() => LoginService('google')}/>
@@ -85,13 +96,34 @@ export default function Login() {
                     <Text fontStyle='italic' fontSize="$2">Forgotten Password ?</Text>
                 </TouchableOpacity>
             </XStack>
-            <Button marginTop="$4" paddingHorizontal="$6" borderRadius="$3" fontWeight="700" onPress={handleLogin}>Sign In</Button>
+            <Button
+            marginTop="$4"
+            paddingHorizontal="$6"
+            borderRadius="$3"
+            onPress={handleLogin}
+            >
+                <Text fontSize="$5" fontWeight="700" color="$color">
+                    Sign In
+                </Text>
+            </Button>
             {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
             <XStack alignItems="center" justifyContent="center" marginTop="$4">
                 <Link href={"/register"}>
                     <Text fontSize="$2">Don't have an AR3M account yet? Sign Up</Text>
                 </Link>
             </XStack>
+            <Label marginTop="$6">Server address :</Label>
+            <Input
+                marginTop="$1"
+                placeholder="Server Address"
+                defaultValue={apiUrl}
+                onChangeText={(val) => {tempUrl.current = val}}
+            />
+            <Button marginTop="$2" onPress={() => confirmServerAddress(tempUrl.current)}>
+                <ButtonText>
+                    Save Server Address
+                </ButtonText>
+            </Button>
         </YStack>
     );
 }

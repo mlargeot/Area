@@ -1,13 +1,13 @@
 import React from 'react';
 import { ScrollView} from 'react-native';
 import { useEffect, useState } from 'react';
-import {Text, Button, YStack, XStack, Card, Paragraph  } from 'tamagui';
+import {Text, Button, YStack, XStack, Card, Paragraph, Image  } from 'tamagui';
 import { useRouter } from 'expo-router';
 import { useMedia } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Header from './../../components/header';
 import axios from 'axios';
-import ConnectService from "../../hooks/connectService";
+import { getServerAddress } from '../../components/confirmServerAddress';
 
 export default function helpcenter() {
     const [services, setServices] = useState<any[]>([]);
@@ -15,10 +15,13 @@ export default function helpcenter() {
     const media = useMedia();
     const router = useRouter();
 
-    const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
-
     const fetchServices = async () => {
         const token = await AsyncStorage.getItem('access_token');
+        const apiUrl = await getServerAddress();
+        if (apiUrl === "") {
+            return;
+        }
+
         try {
             const response = await axios.get(apiUrl + `/services`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -102,6 +105,12 @@ export default function helpcenter() {
                             <YStack>
                                 <Card.Header padded>
                                 <XStack gap="$3" alignItems="center">
+                                    <Image
+                                        source={{ uri: service?.icon_url }}
+                                        width={media.sm ? 24 : 32}
+                                        height={media.sm ? 24 : 32}
+                                        resizeMode="contain"
+                                    />
                                     <XStack flex={1}>
                                         <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">
                                             About {service?.service}

@@ -1,4 +1,4 @@
-import { XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Card, Paragraph, Fieldset, Input, Label, Select, TooltipSimple, Unspaced } from 'tamagui'
+import { XStack, YStack, Text, Button, ScrollView, Stack, Dialog, Card, Paragraph, Fieldset, Input, Label, Select, TooltipSimple, Unspaced, Image } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from '@tamagui/lucide-icons';
@@ -68,6 +68,12 @@ export default function ProfileScreen() {
                             <YStack>
                                 <Card.Header padded>
                                 <XStack gap="$3" alignItems="center">
+                                    <Image
+                                        source={{ uri: service?.icon_url }}
+                                        width={media.sm ? 24 : 32}
+                                        height={media.sm ? 24 : 32}
+                                        resizeMode="contain"
+                                    />
                                     <XStack flex={1}
                                         flexDirection={media.sm ? "column" : "row"}
                                         alignItems="center"
@@ -141,16 +147,16 @@ export default function ProfileScreen() {
                                 </Dialog.Description>
                                 {!selectedService.isActive && (
                                     <Button onPress={() =>ConnectService(selectedService.name.toLowerCase())}>
-                                        <Text color="#fff">Connect</Text>
+                                        <Text>Connect</Text>
                                     </Button>
                                 )}
                                 {selectedService.isActive && (
                                     <Button onPress={() => alert('Connect to ' + selectedService.name)}>
-                                        <Text color="#fff">Sign out</Text>
+                                        <Text>Sign out</Text>
                                     </Button>
                                 )}
                                 <Button onPress={() => setDialogVisible(false)} marginTop="$2">
-                                    <Text color="#fff">Close</Text>
+                                    <Text>Close</Text>
                                 </Button>
                             </>
                         )}

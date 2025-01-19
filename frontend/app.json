@@ -22,7 +22,23 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.areamarmotte.ar3m"
+      "package": "com.areamarmotte.ar3m",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "myapp.com",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -36,8 +52,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "7fdf9fba-9622-4758-a857-6c1ec2a45ae6"
+        "projectId": "aa6e8d0b-a693-479b-ba3e-4f3590fa90ac"
       }
-    }
+    },
+    "owner": "morgan_lgt"
   }
 }

@@ -1,12 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
-import { H2, Input, Label, Text, Button, Image, YStack, XStack } from 'tamagui';
+import { H2, Separator, Label, Text, Button, Image, YStack, XStack, Switch, styled } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, Link } from 'expo-router';
 import { useAuth } from "../../../hooks/useAuth";
+import { useTheme } from '../../../context/themeContext';
+
+const StyledButton = styled(Button, {
+  unstyled: true,
+  flexDirection: "row",
+  alignItems: "center",
+  paddingVertical: "$2",
+  paddingHorizontal: "$3",
+  borderRadius: "$4",
+  backgroundColor: "$backgroundHover",
+  pressStyle: { scale: 0.97, opacity: 0.8 },
+  animation: "quick",
+})  
 
 export default function ProfileScreen() {
   const { email} = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const disconnect = () => {
     AsyncStorage.removeItem('access_token');
@@ -26,18 +40,44 @@ export default function ProfileScreen() {
         {email}
       </Text>
       <YStack ai="flex-start" gap="$5" pr="$10" paddingTop="$5" bg="$background">
-        <Link href="/account" asChild>
-          <Text fontWeight="700" fontSize="$8">Account</Text>
+      <Link href="/account" asChild>
+          <StyledButton>
+            <Text fontWeight="700" fontSize="$8">Account</Text>
+          </StyledButton>
         </Link>
+        
         <Link href="/services" asChild>
-          <Text fontWeight="700" fontSize="$8">My services</Text>
+          <StyledButton>
+            <Text fontWeight="700" fontSize="$8">My services</Text>
+          </StyledButton>
         </Link>
+        
         <Link href="/helpcenter" asChild>
-          <Text fontWeight="700" fontSize="$8">Help Center</Text>
+          <StyledButton>
+            <Text fontWeight="700" fontSize="$8">Help Center</Text>
+          </StyledButton>
         </Link>
+        
         <Link href="#" onPress={disconnect} asChild>
-          <Text fontWeight="700" fontSize="$8">Sign Out</Text>
+          <StyledButton>
+            <Text fontWeight="700" fontSize="$8">Sign Out</Text>
+          </StyledButton>
         </Link>
+        <XStack width={200} alignItems="center" gap="$4">
+          <Label
+            paddingRight="$0"
+            minWidth={90}
+            justifyContent="flex-end"
+            size={"$4"}
+            htmlFor={"themeSwitchLabel"}
+          >
+            Dark Mode
+          </Label>
+          <Separator minHeight={20} vertical />
+          <Switch id={"themeSwitch"} size="$4" defaultChecked={theme === 'dark'} onCheckedChange={toggleTheme}>
+            <Switch.Thumb />
+          </Switch>
+        </XStack>
       </YStack>
       <XStack 
         justifyContent="space-between" 

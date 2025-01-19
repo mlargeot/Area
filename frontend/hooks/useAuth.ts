@@ -1,16 +1,23 @@
 // useAuth.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { getServerAddress } from '../components/confirmServerAddress';
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [email, setemail] = useState('');
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
+
     const checkAuth = async () => {
+      const apiUrl = await getServerAddress();
+      if (apiUrl === "") {
+        return;
+      }
+
       try {
         const token = await AsyncStorage.getItem('access_token');
         console.log("check auth token: " + token + " at " + apiUrl);
@@ -21,7 +28,8 @@ export const useAuth = () => {
           if (response.status === 200) {
             setIsAuthenticated(true);
             setemail(response.data.email);
-            console.log(response.data.email);
+            setUserId(response.data._id);
+            console.log(response.data);
           } else {
             setIsAuthenticated(false);
           }
@@ -39,5 +47,6 @@ export const useAuth = () => {
     checkAuth();
   }, []);
 
-  return { isAuthenticated, loading, email };
+
+  return { isAuthenticated, loading, email, userId };
 };

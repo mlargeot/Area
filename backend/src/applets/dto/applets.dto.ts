@@ -10,8 +10,11 @@ export class AppletDto {
     @ApiProperty({ example: "675628e68b37fadf8ffeaeaczeceq565", description: "Applet id."})
     appletId: string;
 
-    @ApiProperty({ example: "675628e68b37fadf8ff9b9b4", description: "applet user id."})
+    @ApiProperty({ example: "675628e68b37fadf8ff9b9b4", description: "Applet user id."})
     userId: string;
+
+    @ApiProperty({ example: "Discord Tracker", description: "Applet name."})
+    name: string;
 
     @ApiProperty({ example: {
         service: "github",
@@ -45,6 +48,9 @@ export class AppletDto {
 }
 
 export class AppletBodyDto {
+    @ApiProperty({ example: "Discord Tracker", description: "Applet name."})
+    name: string;
+
     @ApiProperty({ example: {
         service: "github",
         name: "pr_assigned",

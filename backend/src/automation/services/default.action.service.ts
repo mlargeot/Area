@@ -2,12 +2,26 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ActionsDto } from 'src/automation/dto/automation.dto';
 import { GithubActionsService } from 'src/automation/services/github.action.service';
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
+import { LeagueofLegendsActionsService } from './leagueoflegends.action.service';
+import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
+import { OutlookActionsService } from './outlook.action.service';
+import { LogService } from 'src/log/log.service';
+import { OutlookEmailsActionsService } from './outlook-emails.action.service';
+import { OutlookEventsActionsService } from './outlook-events.action.service';
+import { YoutubeActionsService } from './youtube.action.service';
 
 @Injectable()
 export class ActionsService {
   constructor(
         private readonly githubActionService : GithubActionsService,
-        private readonly spotifyActionService : SpotifyAcitonsService
+        private readonly spotifyActionService : SpotifyAcitonsService,
+        private readonly leagueofLegendsActionService : LeagueofLegendsActionsService,
+        private readonly twitchActionService : TwitchActionsService,
+        private readonly outlookActionService : OutlookActionsService,
+        private readonly outlookEmailsActionService : OutlookEmailsActionsService,
+        private readonly outlookEventsActionService : OutlookEventsActionsService,
+        private readonly youtubeActionService : YoutubeActionsService,
+        private logService: LogService
   ) {}
   private defaultActions: Array<{
     service: string;
@@ -30,6 +44,146 @@ export class ActionsService {
             },
           ],
         },
+        {
+          name: "pr_reopened",
+          description: "Triggered when a pull request is reopened in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "pr_closed",
+          description: "Triggered when a pull request is closed in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "pr_opened",
+          description: "Triggered when a pull request is opened in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "security_alert",
+          description: "Triggered when a security alert appears by a dependabot alert in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "security_fix",
+          description: "Triggered when a security fix appears by a dependabot alert in the targeted repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "push",
+          description: "Triggered when a push is made on a repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "issue_opened",
+          description: "Triggered when an issue is opened on a requested repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "issue_closed",
+          description: "Triggered when an issue is closed on a requested repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "issue_reopened",
+          description: "Triggered when an issue is reopened on a requested repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        },
+        {
+          name: "issue_deleted",
+          description: "Triggered when an issue is deleted on a requested repository.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+                name: "githubRepoUrl",
+                description: "URL of the github repository with enough rights to create webhooks",
+                example: "https://github.com/owner/repository",
+                type: "string",
+                required: true
+            },
+          ],
+        }
       ],
     },
     {
@@ -50,16 +204,147 @@ export class ActionsService {
           ]
         }
       ]
+    },
+    {
+      service: "League of Legends",
+      actions: [
+        {
+          name: "lol_match_history",
+          description: "Triggered when a new match appears in the user's match history. EUW region only.",
+          argumentsNumber: 2,
+          argumentsExample: [
+            {
+              name: "playerName",
+              description: "Name of the user to check.",
+              example: "player#1234",
+              type: "string",
+              required: true,
+            }
+          ],
+        },
+        {
+          name: "lol_users_activity",
+          description: "Triggered when a user from a list plays a game in the EUW region.",
+          argumentsNumber: 2,
+          argumentsExample: [
+            {
+              name: "playerName",
+              description: "list of users to check.",
+              example: "Diabolo#1234",
+              type: "string",
+              required: true,
+            }
+          ],
+        }
+      ]
+    },
+    {
+      service: "Twitch",
+      actions: [
+        {
+          name: "live_start",
+          description: "Triggered when live of specified streamer start.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+              name: "broadcaster",
+              description: "Login username of the streamer",
+              example: "lekiweak",
+              type: "string",
+              required: true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      service: "Outlook, Microsoft",
+      actions: [
+        {
+          name: "new_task_in_list",
+          description: "Triggered when a new task is added to a specified list.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+              name: "listName",
+              description: "Name of the list to check.",
+              example: "To Do",
+              type: "string",
+              required: true
+            }
+          ]
+        },
+        {
+          name: "new_email",
+          description: "Triggered when a new email is received.",
+          argumentsNumber: 0,
+          argumentsExample: []
+        },
+        {
+          name: "new_calendar_event",
+          description: "Triggered when a new calendar event is added.",
+          argumentsNumber: 0,
+          argumentsExample: []
+        }
+      ]
+    },
+    {
+      service: "Youtube",
+      actions: [
+        {
+          name: "new_video",
+          description: "Triggered when a new video is uploaded to the channel.",
+          argumentsNumber: 1,
+          argumentsExample: [
+            {
+              name: "channelId",
+              description: "Id of the channel to check.",
+              example: "UC-lHJZR3Gqxm24_Vd_AJ5Yw",
+              type: "string",
+              required: true
+            }
+          ]
+        }
+      ]
+
     }
   ];
 
   private actionServiceRegistry: Record<string, Function> = {
     pr_assigned : this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
-    playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService)
+    pr_opened: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
+    pr_reopened: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
+    pr_closed: this.githubActionService.initPullRequestWebhook.bind(this.githubActionService),
+    security_alert : this.githubActionService.initDependabotWebhook.bind(this.githubActionService),
+    security_fix : this.githubActionService.initDependabotWebhook.bind(this.githubActionService),
+    push: this.githubActionService.initPushWebhook.bind(this.githubActionService),
+    issue_opened: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
+    issue_closed: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
+    issue_deleted: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
+    issue_reopened: this.githubActionService.initIssuesWebhook.bind(this.githubActionService),
+    playlist_activity : this.spotifyActionService.initActivityPlaylistCheck.bind(this.spotifyActionService),
+    lol_match_history : this.leagueofLegendsActionService.initLeagueofLegendsAction.bind(this.leagueofLegendsActionService),
+    lol_users_activity : this.leagueofLegendsActionService.initLeagueofLegendsStatusAction.bind(this.leagueofLegendsActionService),
+    live_start: this.twitchActionService.initStreamOnlineEvent.bind(this.twitchActionService),
+    new_task_in_list: this.outlookActionService.initOutlookTaskAction.bind(this.outlookActionService),
+    new_email: this.outlookEmailsActionService.initEmailCheck.bind(this.outlookEmailsActionService),
+    new_calendar_event: this.outlookEventsActionService.initCalendarCheck.bind(this.outlookEventsActionService),
+    new_video: this.youtubeActionService.initYouTubeAction.bind(this.youtubeActionService)
   }
 
   private destroyServiceRegistry: Record<string, Function> = {
-    pr_assigned : this.githubActionService.destroyPullRequestWebhook.bind(this.githubActionService),
+    pr_assigned : this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    pr_opened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    pr_reopened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    pr_closed: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    security_alert: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    security_fix: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    push: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    issue_opened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    issue_closed: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    issue_deleted: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    issue_reopened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
+    live_start: this.twitchActionService.destroyTwitchWebhook.bind(this.twitchActionService),
   }
 
 
