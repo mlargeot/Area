@@ -8,6 +8,7 @@ export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [email, setemail] = useState('');
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
 
@@ -27,7 +28,8 @@ export const useAuth = () => {
           if (response.status === 200) {
             setIsAuthenticated(true);
             setemail(response.data.email);
-            console.log(response.data.email);
+            setUserId(response.data._id);
+            console.log(response.data);
           } else {
             setIsAuthenticated(false);
           }
@@ -46,5 +48,5 @@ export const useAuth = () => {
   }, []);
 
 
-  return { isAuthenticated, loading, email };
+  return { isAuthenticated, loading, email, userId };
 };

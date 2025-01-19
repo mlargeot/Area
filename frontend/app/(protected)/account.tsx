@@ -19,8 +19,8 @@ function Header() {
 }
 
 export default function account() {
-  const { email} = useAuth();
-  const [userId, setUserId] = useState('');
+  const { email, userId} = useAuth();
+  const [id, setUserId] = useState('');
   const [apiUrl, setApiUrl] = useState<string>("");
   const tempUrl = useRef<string>("");
 
@@ -58,6 +58,9 @@ export default function account() {
         <Text fontSize="$5" fontWeight="700">
             {email}
         </Text>
+        <Text fontSize="$5" fontWeight="700">
+            id: {userId}
+        </Text>
         <Label>Server address</Label>
         <Input defaultValue={apiUrl} onChangeText={(val) => {tempUrl.current = val}} />
         <Button marginTop="$2" onPress={() => confirmServerAddress(tempUrl.current)}>
@@ -66,7 +69,7 @@ export default function account() {
           </ButtonText>
         </Button>
         <Label>User ID</Label>
-        <Input defaultValue={userId} onBlur={handleUserId} />
+        <Input defaultValue={id} onBlur={handleUserId} />
         <XStack 
             justifyContent="space-between" 
             width="100%" 
