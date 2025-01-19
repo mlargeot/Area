@@ -72,7 +72,7 @@ export class ServicesService {
       },
       {
         service: "League of Legends",
-        icon_url: "https://static.wikia.nocookie.net/leagueoflegends/images/0/07/League_of_Legends_icon.png/revision/latest?cb=20191018194326",
+        icon_url: "https://freepngimg.com/download/league_of_legends/85643-blue-league-legends-icons-of-symbol-garena.png",
         description: "League of Legends is a popular multiplayer online battle arena (MOBA) game developed by Riot Games. Players compete in teams to destroy the enemy Nexus while battling champions with unique abilities. The game has a large esports scene and a dedicated community of players worldwide.",
         color: "#F89D14"
       }
