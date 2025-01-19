@@ -325,3 +325,218 @@ In this documentation, each API route will be described using the following form
   ...
 ]
 ```
+---
+### Applets
+---
+**Route Name**: *localhost:8080/applets*<br>
+**Method**: GET<br>
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "appletId": "675628e68b37fadf8ffeaeaczeceq565",
+    "userId": "675628e68b37fadf8ff9b9b4",
+    "name": "Discord Tracker",
+    "action": {
+      "service": "github",
+      "name": "pr_assigned",
+      "params": {
+        "githubRepoUrl": "https://github.com/owner/repository"
+      }
+    },
+    "reaction": {
+      "service": "discord",
+      "name": "send_webhook_message",
+      "params": {
+        "url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+        "content": "This is a first example message"
+      }
+    },
+    "active": true,
+    "metadata": {
+      "response": {
+        "id": "123456",
+        "name": "exmaple-webhook-metadata"
+      }
+    }
+  }
+  ...
+]
+```
+---
+**Route Name**: *localhost:8080/applets/{appletId}*<br>
+**Method**: GET<br>
+**Parameters**: 
+
+- *appletId*: Id of the applet to get the inforamtions from.
+
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "appletId": "675628e68b37fadf8ffeaeaczeceq565",
+    "userId": "675628e68b37fadf8ff9b9b4",
+    "name": "Discord Tracker",
+    "action": {
+      "service": "github",
+      "name": "pr_assigned",
+      "params": {
+        "githubRepoUrl": "https://github.com/owner/repository"
+      }
+    },
+    "reaction": {
+      "service": "discord",
+      "name": "send_webhook_message",
+      "params": {
+        "url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+        "content": "This is a first example message"
+      }
+    },
+    "active": true,
+    "metadata": {
+      "response": {
+        "id": "123456",
+        "name": "exmaple-webhook-metadata"
+      }
+    }
+  }
+]
+```
+---
+**Route Name**: *localhost:8080/applets*<br>
+**Method**: POST<br>
+**Body**: 
+
+```json
+{
+  "name": "Discord Tracker",
+  "action": {
+    "service": "github",
+    "name": "pr_assigned",
+    "params": {
+      "email": "example@gmail.com",
+      "githubRepoUrl": "https://github.com/owner/repository"
+    }
+  },
+  "reaction": {
+    "service": "discord",
+    "name": "send_webhook_message",
+    "params": {
+      "webhook_url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+      "content": "This is a first example message"
+    }
+  },
+  "active": true
+}
+```
+
+**Status Code**: *201*<br>
+**Response**:
+```json
+[
+  {
+    "appletId": "675628e68b37fadf8ffeaeaczeceq565",
+    "userId": "675628e68b37fadf8ff9b9b4",
+    "name": "Discord Tracker",
+    "action": {
+      "service": "github",
+      "name": "pr_assigned",
+      "params": {
+        "githubRepoUrl": "https://github.com/owner/repository"
+      }
+    },
+    "reaction": {
+      "service": "discord",
+      "name": "send_webhook_message",
+      "params": {
+        "url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+        "content": "This is a first example message"
+      }
+    },
+    "active": true,
+    "metadata": {
+      "response": {
+        "id": "123456",
+        "name": "exmaple-webhook-metadata"
+      }
+    }
+  }
+]
+```
+---
+**Route Name**: *localhost:8080/applets/{appletId}*<br>
+**Method**: PATCH<br>
+**Parameters**: 
+
+- *appletId*: Id of the applet to modify.
+
+**Body**: 
+
+```json
+{
+  "name": "Discord Tracker",
+  "action": {
+    "service": "github",
+    "name": "pr_assigned",
+    "params": {
+      "email": "example@gmail.com",
+      "githubRepoUrl": "https://github.com/owner/repository"
+    }
+  },
+  "reaction": {
+    "service": "discord",
+    "name": "send_webhook_message",
+    "params": {
+      "webhook_url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+      "content": "This is a first example message"
+    }
+  },
+  "active": true
+}
+```
+
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "appletId": "675628e68b37fadf8ffeaeaczeceq565",
+    "userId": "675628e68b37fadf8ff9b9b4",
+    "name": "Discord Tracker",
+    "action": {
+      "service": "github",
+      "name": "pr_assigned",
+      "params": {
+        "githubRepoUrl": "https://github.com/owner/repository"
+      }
+    },
+    "reaction": {
+      "service": "discord",
+      "name": "send_webhook_message",
+      "params": {
+        "url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+        "content": "This is a first example message"
+      }
+    },
+    "active": true,
+    "metadata": {
+      "response": {
+        "id": "123456",
+        "name": "exmaple-webhook-metadata"
+      }
+    }
+  }
+]
+```
+---
+**Route Name**: *localhost:8080/applets/{appletId}*<br>
+**Method**: DELETE<br>
+**Parameters**: 
+
+- *appletId*: Id of the applet to delete.
+
+**Status Code**: *200*<br>
+
+---
