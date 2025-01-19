@@ -228,9 +228,9 @@ export class ActionsService {
           argumentsNumber: 2,
           argumentsExample: [
             {
-              name: "playerlist",
+              name: "playerName",
               description: "list of users to check.",
-              example: "Diabolo#1234, Diabolo#1234",
+              example: "Diabolo#1234",
               type: "string",
               required: true,
             }

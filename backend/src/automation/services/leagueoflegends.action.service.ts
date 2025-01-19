@@ -50,31 +50,24 @@ export class LeagueofLegendsActionsService {
     };
   }
 
-  async initLeagueofLegendsStatusAction(userId: string, params: { playerlist: string, type: string }) {
-    //list player
-    const playerList : string[] = params.playerlist.split(',');
-    //remove space
-    playerList.forEach((player, index) => {
-      playerList[index] = player.trim();
-    });
-    //get name and tag : name#tag
-    const playerData = playerList.map((player) => {
-      const [name, tag] = player.split('#');
-      return {name, tag};
-    });
-    //get puuid
-    const puuidList = await Promise.all(playerData.map(async (player) => {
-      return await this.getPlayerPUUID(player.name, player.tag);
-    }));
+  async initLeagueofLegendsStatusAction(userId: string, params: { playerName: string, type: string }) {
+    const { playerName } = params;
+    const name = playerName.split('#')[0];
+    const tag = playerName.split('#')[1];
 
-    //get status
-    const statusList = await Promise.all(puuidList.map(async (puuid) => {
-      return await this.getPlayerStatus(puuid);
-    }));
+    console.log(name, tag);
+
+    const puuid = await this.getPlayerPUUID(name, tag);
+    if (!puuid) {
+      throw new NotFoundException('Player not found.');
+    }
+  
+
+    const status = await this.getPlayerStatus(puuid);
 
     return {
-      puuidList,
-      statusList,
+      puuid,
+      status,
     };
   }
 
@@ -109,17 +102,17 @@ export class LeagueofLegendsActionsService {
     }
   }
 
-  private async getPlayerStatus(puuid: string): Promise<any> {
+  private async getPlayerStatus(puuid: string): Promise<boolean> {
     try {
       const response = await axios.get(`https://europe.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/` + puuid, {
         params: {
           api_key: process.env.RIOT_API_KEY,
         },
       });
-      return response.data;
+      return true;
     } catch (error) {
       console.log(`Failed to fetch player status: ${error.message}`);
-      return null;
+      return false;
     }
   }
 
@@ -174,21 +167,21 @@ export class LeagueofLegendsActionsService {
 
           const { appletId, userId, reaction } = applet;
 
-          const { puuidList, statusList } = applet.metadata.response;
-          const currentStatusList = await Promise.all(puuidList.map(async (puuid) => {
-            return await this.getPlayerStatus(puuid);
-          }));
+          const { puuid, status } = applet.metadata.response;
 
-          if (statusList !== currentStatusList) {
-            await this.setNewMatchHistory(
-              {
-                newPUUID: puuidList,
-                newMatchHistory: currentStatusList,
-              },
+          const currentStatus = await this.getPlayerStatus(puuid);
+
+          console.log(status, currentStatus);
+
+          if (status !== currentStatus) {
+            await this.setNewStatus(
+              currentStatus,
               userId,
               appletId
             );
-            await this.reactionsService.executeReaction(userId, reaction.name, reaction.params);
+            if (currentStatus) {
+              await this.reactionsService.executeReaction(userId, reaction.name, reaction.params);
+            }
           }
         }
       }
@@ -208,6 +201,20 @@ export class LeagueofLegendsActionsService {
       {
         $set: {
           'applets.$.metadata.response': newMatchHistory,
+        },
+      }
+    );
+  }
+
+  private async setNewStatus(newStatus: boolean, userId: string, appletId: string) {
+    await this.userModel.updateOne(
+      {
+        _id: new Types.ObjectId(userId),
+        'applets.appletId': appletId,
+      },
+      {
+        $set: {
+          'applets.$.metadata.response': newStatus,
         },
       }
     );
