@@ -33,7 +33,10 @@
               "pathPrefix": "/"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -49,9 +52,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "9550102b-20f3-4018-8eb1-24ff1cd10b33"
+        "projectId": "aa6e8d0b-a693-479b-ba3e-4f3590fa90ac"
       }
     },
-    "owner": "diabolo"
+    "owner": "morgan_lgt"
   }
 }
