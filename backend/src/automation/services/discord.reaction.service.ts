@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
@@ -24,7 +24,7 @@ export class ReactionsDiscordService {
         console.log("Message sent successfully: ", response.data);
     } catch(error) {
         console.error('Error sending webhook message:', error.response?.data || error.message);
-        throw error;
+        throw new BadRequestException(`Failed to execute reaction: ${error.message}`);
     }
   }
 }
