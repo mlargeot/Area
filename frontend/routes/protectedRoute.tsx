@@ -1,28 +1,26 @@
 import React, { ReactNode, useEffect } from 'react';
-import { useRouter } from 'expo-router';
-import { YStack } from 'tamagui'; 
-import { ActivityIndicator } from 'react-native';
+import { Linking, ActivityIndicator } from 'react-native';
+import { YStack } from 'tamagui';
 import { useAuth } from '../hooks/useAuth'; // Adjust the import path as needed
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated, loading } = useAuth();
-  const router = useRouter();
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      router.replace('/login');
+      Linking.openURL('/login');
     }
-  }, [loading, isAuthenticated, router]);
-
+  }, [loading, isAuthenticated]);
 
   if (loading) {
     return (
       <YStack justifyContent="center" alignItems="center" flex={1}>
-        <ActivityIndicator />
+        <ActivityIndicator size="large" />
       </YStack>
     );
   }
-  return <>{isAuthenticated ? children : null}</>;
+
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
