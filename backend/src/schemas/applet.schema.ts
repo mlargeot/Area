@@ -9,7 +9,7 @@ export class AppletModule {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: Object, required: true })
+  @Prop({ type: Object, required: true, default: {} })
   params: Record<string, any>;
 }
 
