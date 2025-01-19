@@ -11,8 +11,8 @@ echo "Last APK URL: $first_apk_url"
 # create public folder if doesnt exist
 mkdir -p public
 
-#return success even if curl fails
-curl $first_apk_url || true
+# download the apk
+wget $first_apk_url
 
 # move the apk to public folder
 filename=$(basename -- "$first_apk_url")
