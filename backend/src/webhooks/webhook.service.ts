@@ -410,4 +410,39 @@ export class WebhookService {
     console.log("\nChallenge Triggered : ", body, "\n", body.challenge);
     return body.challenge;
   }
+
+  async handleStravaChallenge(querry: any): Promise<any> {
+    console.log("\nChallenge Triggered : ", querry, "\n", querry["hub.challenge"]);
+    return {"hub.challenge": querry['hub.challenge']}
+  }
+
+  async handleStravaActivity(body: any): Promise<any> {
+    console.log("\Activity Triggered : ", body);
+    const objectId = body.object_id;
+    if (body.aspect_type != 'create' || body.object_type != 'activity')
+      return ('OK')
+    const triggeredApplets = await this.userModel.aggregate([
+      {
+        $match: {
+          oauthProviders: {
+            $elemMatch: { provider: 'strava'}
+          }
+        }
+      },
+      { $unwind: '$applets' },
+      {
+        $match: {
+          'applets.active': true,
+          'applets.action.name': `new_activity`,
+          'applets.metadata.response.id' : objectId,
+          'applets.metadata.response.event' : 'newactivity'
+        }
+      },
+      { $replaceRoot: { newRoot: '$applets' } }
+    ]);
+    for (const applet of triggeredApplets) {
+      await this.reactionsService.executeReaction(applet.userId, applet.reaction.name, applet.reaction.params);
+    }
+    return ('OK');
+  }
 }

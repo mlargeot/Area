@@ -4,6 +4,7 @@ import { GithubActionsService } from 'src/automation/services/github.action.serv
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
 import { LeagueofLegendsActionsService } from './leagueoflegends.action.service';
 import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
+import { StravaActionsService } from 'src/automation/services/strava.action.service';
 import { OutlookActionsService } from './outlook.action.service';
 import { LogService } from 'src/log/log.service';
 import { OutlookEmailsActionsService } from './outlook-emails.action.service';
@@ -19,6 +20,7 @@ export class ActionsService {
         private readonly outlookActionService : OutlookActionsService,
         private readonly outlookEmailsActionService : OutlookEmailsActionsService,
         private readonly outlookEventsActionService : OutlookEventsActionsService,
+        private readonly stravaActionService : StravaActionsService,
         private logService: LogService
   ) {}
   private defaultActions: Array<{
@@ -312,6 +314,17 @@ export class ActionsService {
         }
       ]
 
+    },
+    {
+      service: "Strava",
+      actions: [
+        { 
+          name: 'new_activity',
+          description: "Triggered when a new activity is post on Strava.",
+          argumentsNumber: 0,
+          argumentsExample: []
+        }
+      ]
     }
   ];
 
@@ -334,6 +347,7 @@ export class ActionsService {
     new_task_in_list: this.outlookActionService.initOutlookTaskAction.bind(this.outlookActionService),
     new_email: this.outlookEmailsActionService.initEmailCheck.bind(this.outlookEmailsActionService),
     new_calendar_event: this.outlookEventsActionService.initCalendarCheck.bind(this.outlookEventsActionService),
+    new_activity: this.stravaActionService.initNewActivityEvent.bind(this.stravaActionService), 
   }
 
   private destroyServiceRegistry: Record<string, Function> = {
@@ -349,6 +363,7 @@ export class ActionsService {
     issue_deleted: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     issue_reopened: this.githubActionService.destroyGithubWebhook.bind(this.githubActionService),
     live_start: this.twitchActionService.destroyTwitchWebhook.bind(this.twitchActionService),
+    new_activity: this.stravaActionService.destroyStravaWebhook.bind(this.stravaActionService),
   }
 
 

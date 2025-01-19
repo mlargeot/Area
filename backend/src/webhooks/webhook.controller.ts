@@ -1,5 +1,6 @@
 import {
     Controller,
+    Get,
     Post,
     Req, 
     Res
@@ -48,5 +49,19 @@ export class WebhookController {
       this.webhookService.handleLiveStart(req.body);
       return res.status(200).setHeader("Content-Type", 'application/json').send({result: "Live triggered"});
     }
+  }
+
+  @Get('starva/newactivity')
+  @ApiOkResponse({ description: "Challenge triggered." })
+  async triggerStravaChallenge(@Req() req, @Res() res: Response) {
+    const challengeResponse = await this.webhookService.handleStravaChallenge(req.query);
+    res.status(200).setHeader('Content-Type', 'application/json').send(challengeResponse);
+  }
+
+  @Post('strava/newactivity')
+  @ApiOkResponse({ description: "Activity triggered." })
+  async triggerStravaActivity(@Req() req, @Res() res: Response) {
+    const response = await this.webhookService.handleStravaActivity(req.body);
+    res.status(200).send(response);
   }
 }
