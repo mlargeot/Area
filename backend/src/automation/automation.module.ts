@@ -12,6 +12,7 @@ import { ServicesController } from 'src/automation/controllers/services.controll
 import { ActionsService } from 'src/automation/services/default.action.service';
 import { GithubActionsService } from 'src/automation/services/github.action.service';
 import { TwitchActionsService } from 'src/automation/services/twitch.action.service';
+import { StravaActionsService } from 'src/automation/services/strava.action.service';
 import { SpotifyAcitonsService } from 'src/automation/services/spotify.action.service';
 import { ReactionsService } from 'src/automation/services/default.reaction.service';
 import { ReactionsDiscordService } from 'src/automation/services/discord.reaction.service';
@@ -41,6 +42,7 @@ import { ReactionsMicrosoftService } from './services/microsoft.reaction.service
         ReactionsMicrosoftService,
         ReactionsGithubService,
         ServicesService,
+        StravaActionsService,
     ],
     controllers: [
         ActionsController,
