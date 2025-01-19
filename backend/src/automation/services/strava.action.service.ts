@@ -47,7 +47,7 @@ export class StravaActionsService {
         $limit: 1
       },
     ]);
-    console.log("\nVoila ce que j'ai trouvé pour existing applet : ", result);
+    console.log("\nVoila ce que j'ai trouvé pour existing applet : ", result[0].metadata);
     if (result.length > 0) {
       console.log("Existing subscription");  
       return result[0].metadata.response.sub_id;
@@ -68,7 +68,7 @@ export class StravaActionsService {
         const headers = { Authorization: `Bearer ${stravaProvider.accessToken}`};
         const userData = await axios.get('https://www.strava.com/api/v3/athlete', { headers });
         const hook = this.isExistingWebhook('newactivity');
-        if (hook == null) {
+        if (hook === null) {
             const body = {
                 client_id: this.configService.get<string>('STRAVA_CLIENT_ID'),
                 client_secret: this.configService.get<string>('STRAVA_CLIENT_SECRET'),
@@ -87,6 +87,11 @@ export class StravaActionsService {
                 throw new InternalServerErrorException(error.message_content);
             }
         }
+        console.log("Je return un hook existant :", {
+            sub_id: hook,
+            id: userData.data.id,
+            event: 'newactivity',}
+        )
         return {
             sub_id: hook,
             id: userData.data.id,
