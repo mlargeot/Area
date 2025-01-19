@@ -61,7 +61,7 @@ export class YoutubeActionsService {
 
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async checkNewVideos() {
     console.log('Checking for new videos...');
     try {
