@@ -13,6 +13,8 @@
   - [Authentication](#authentication)
   - [Actions](#actions)
   - [Reactions](#reactions)
+  - [Services](#services)
+  - [Applets](#applets)
 
 ## Explanations
 
@@ -24,6 +26,8 @@ Swagger is accessible at the following URL:
 ```
 http://localhost:8080/api
 ```
+
+> **Note:** The online version of the swagger is accessible at: `https://ar3m.eu/api/api`
 
 ### Route Format
 
@@ -150,8 +154,50 @@ In this documentation, each API route will be described using the following form
       {
         "name": "issue_assigned",
         "description": "Triggered when an issue is assigned to the user.",
-        "argumentsNumber": 0,
-        "argumentsExample": []
+        "argumentsNumber": 1,
+        "argumentsExample": [
+          {
+            "name": "githubRepoUrl",
+            "description": "URL of the github repository with enough rights to create webhooks",
+            "example": "https://github.com/owner/repository",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    ]
+  }
+  ...
+]
+```
+
+---
+**Route Name**: *localhost:8080/actions/{service}*<br>
+**Method**: GET<br>
+**Parameters**: 
+
+- *service*: service to get the actions from (e.g: Spotify)
+
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "service": "github",
+    "actions": [
+      {
+        "name": "issue_assigned",
+        "description": "Triggered when an issue is assigned to the user.",
+        "argumentsNumber": 1,
+        "argumentsExample": [
+          {
+            "name": "githubRepoUrl",
+            "description": "URL of the github repository with enough rights to create webhooks",
+            "example": "https://github.com/owner/repository",
+            "type": "string",
+            "required": true
+          }
+        ]
       }
     ]
   }
@@ -191,6 +237,307 @@ In this documentation, each API route will be described using the following form
       }
     ]
   }
+  ...
 ]
 ```
+---
+**Route Name**: *localhost:8080/reactions/{service}*<br>
+**Method**: GET<br>
+**Parameters**: 
+
+- *service*: service to get the actions from (e.g: Discord)
+
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "service": "discord",
+    "reactions": [
+      {
+        "name": "send_webhook_message",
+        "description": "Send message to the targeted discord webhook.",
+        "argumentsNumber": 2,
+        "argumentsExample": [
+          {
+            "name": "webhook_url",
+            "description": "URL of the discord webhook to send message to.",
+            "example": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdlzakjd",
+            "required": true
+          },
+          {
+            "name": "message_content",
+            "description": "Content of the message to send.",
+            "example": "A new Issue as been assigned.",
+            "required": true
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+---
+
+### Services
+---
+**Route Name**: *localhost:8080/services*<br>
+**Method**: GET<br>
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "service": "Twitch",
+    "icon_url": "https://docs.expo.dev/static/images/sdk/auth-session/twitch.png",
+    "description": "Twitch is a live streaming platform primarily focused on gaming, where content creators can broadcast their gameplay, interact with their audience in real-time, and share other types of content like music, discussions, or tutorials. It also allows viewers to follow and support streamers through subscriptions and donations.",
+    "color": "#9146FF"
+  },
+  ...
+]
+```
+---
+**Route Name**: *localhost:8080/services/logs/{userId}*<br>
+**Method**: GET<br>
+**Parameters**: 
+
+- *userId*: Id of the user to get the logs from.
+
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "_id": "677d833098b78e7a02b391f0",
+    "userId": "677d033071c847a4b50f9134",
+    "name": "New issue comment",
+    "status": "success",
+    "timestamp": "2025-01-08T10:00:00.000Z",
+    "details": "Comment successfully posted on issue #45 in repository user/repo."
+  },
+  {
+    "_id": "677d833198b78e7a02b391f1",
+    "userId": "677d033071c847a4b50f9134",
+    "name": "Security alert fixed",
+    "status": "failure",
+    "timestamp": "2025-01-08T11:00:00.000Z",
+    "details": "Failed to dismiss security alert in repository user/repo."
+  },
+  ...
+]
+```
+---
+### Applets
+---
+**Route Name**: *localhost:8080/applets*<br>
+**Method**: GET<br>
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "appletId": "675628e68b37fadf8ffeaeaczeceq565",
+    "userId": "675628e68b37fadf8ff9b9b4",
+    "name": "Discord Tracker",
+    "action": {
+      "service": "github",
+      "name": "pr_assigned",
+      "params": {
+        "githubRepoUrl": "https://github.com/owner/repository"
+      }
+    },
+    "reaction": {
+      "service": "discord",
+      "name": "send_webhook_message",
+      "params": {
+        "url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+        "content": "This is a first example message"
+      }
+    },
+    "active": true,
+    "metadata": {
+      "response": {
+        "id": "123456",
+        "name": "exmaple-webhook-metadata"
+      }
+    }
+  }
+  ...
+]
+```
+---
+**Route Name**: *localhost:8080/applets/{appletId}*<br>
+**Method**: GET<br>
+**Parameters**: 
+
+- *appletId*: Id of the applet to get the inforamtions from.
+
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "appletId": "675628e68b37fadf8ffeaeaczeceq565",
+    "userId": "675628e68b37fadf8ff9b9b4",
+    "name": "Discord Tracker",
+    "action": {
+      "service": "github",
+      "name": "pr_assigned",
+      "params": {
+        "githubRepoUrl": "https://github.com/owner/repository"
+      }
+    },
+    "reaction": {
+      "service": "discord",
+      "name": "send_webhook_message",
+      "params": {
+        "url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+        "content": "This is a first example message"
+      }
+    },
+    "active": true,
+    "metadata": {
+      "response": {
+        "id": "123456",
+        "name": "exmaple-webhook-metadata"
+      }
+    }
+  }
+]
+```
+---
+**Route Name**: *localhost:8080/applets*<br>
+**Method**: POST<br>
+**Body**: 
+
+```json
+{
+  "name": "Discord Tracker",
+  "action": {
+    "service": "github",
+    "name": "pr_assigned",
+    "params": {
+      "email": "example@gmail.com",
+      "githubRepoUrl": "https://github.com/owner/repository"
+    }
+  },
+  "reaction": {
+    "service": "discord",
+    "name": "send_webhook_message",
+    "params": {
+      "webhook_url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+      "content": "This is a first example message"
+    }
+  },
+  "active": true
+}
+```
+
+**Status Code**: *201*<br>
+**Response**:
+```json
+[
+  {
+    "appletId": "675628e68b37fadf8ffeaeaczeceq565",
+    "userId": "675628e68b37fadf8ff9b9b4",
+    "name": "Discord Tracker",
+    "action": {
+      "service": "github",
+      "name": "pr_assigned",
+      "params": {
+        "githubRepoUrl": "https://github.com/owner/repository"
+      }
+    },
+    "reaction": {
+      "service": "discord",
+      "name": "send_webhook_message",
+      "params": {
+        "url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+        "content": "This is a first example message"
+      }
+    },
+    "active": true,
+    "metadata": {
+      "response": {
+        "id": "123456",
+        "name": "exmaple-webhook-metadata"
+      }
+    }
+  }
+]
+```
+---
+**Route Name**: *localhost:8080/applets/{appletId}*<br>
+**Method**: PATCH<br>
+**Parameters**: 
+
+- *appletId*: Id of the applet to modify.
+
+**Body**: 
+
+```json
+{
+  "name": "Discord Tracker",
+  "action": {
+    "service": "github",
+    "name": "pr_assigned",
+    "params": {
+      "email": "example@gmail.com",
+      "githubRepoUrl": "https://github.com/owner/repository"
+    }
+  },
+  "reaction": {
+    "service": "discord",
+    "name": "send_webhook_message",
+    "params": {
+      "webhook_url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+      "content": "This is a first example message"
+    }
+  },
+  "active": true
+}
+```
+
+**Status Code**: *200*<br>
+**Response**:
+```json
+[
+  {
+    "appletId": "675628e68b37fadf8ffeaeaczeceq565",
+    "userId": "675628e68b37fadf8ff9b9b4",
+    "name": "Discord Tracker",
+    "action": {
+      "service": "github",
+      "name": "pr_assigned",
+      "params": {
+        "githubRepoUrl": "https://github.com/owner/repository"
+      }
+    },
+    "reaction": {
+      "service": "discord",
+      "name": "send_webhook_message",
+      "params": {
+        "url": "https://discord/webhook/dzkadlzakjdlzakjdlzakjdl/zakjd",
+        "content": "This is a first example message"
+      }
+    },
+    "active": true,
+    "metadata": {
+      "response": {
+        "id": "123456",
+        "name": "exmaple-webhook-metadata"
+      }
+    }
+  }
+]
+```
+---
+**Route Name**: *localhost:8080/applets/{appletId}*<br>
+**Method**: DELETE<br>
+**Parameters**: 
+
+- *appletId*: Id of the applet to delete.
+
+**Status Code**: *200*<br>
+
 ---
