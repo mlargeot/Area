@@ -43,7 +43,7 @@ export class OutlookEmailsActionsService {
   }
 
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async checkEmails() {
     console.log('Checking emails...');
     try {
