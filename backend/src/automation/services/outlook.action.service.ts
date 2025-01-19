@@ -86,7 +86,7 @@ export class OutlookActionsService {
     }
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async checkTasks() {
     console.log('Checking tasks...');
     try {

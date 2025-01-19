@@ -29,23 +29,21 @@ export class OutlookEmailsActionsService {
     private logService: LogService,
   ) {}
 
-  private async getEmails(accessToken: string, lastChecked: string) {
+  private async getEmails(accessToken: string) {
+    //get last ten emails
     const response = await axios.get(
-      `https://graph.microsoft.com/v1.0/me/messages?$filter=receivedDateTime ge ${lastChecked}`, {
+      `https://graph.microsoft.com/v1.0/me/messages?$top=10`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       },
     );
-    return response.data.value.map(email => ({
-      id: email.id,
-      subject: email.subject,
-      sender: email.from.emailAddress.address,
-      receivedDateTime: email.receivedDateTime,
-    }));
+    // return last email
+    return response.data.value[0];
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async checkEmails() {
     console.log('Checking emails...');
     try {
@@ -62,21 +60,23 @@ export class OutlookEmailsActionsService {
           if (!accessToken) {
             throw new UnauthorizedException('Outlook provider not connected.');
           }
+          const { id } = applet.metadata.response;
+          const newlastemail = await this.getEmails(accessToken);
 
-          const lastChecked = applet.metadata.lastChecked || new Date(0).toISOString();
-          const newEmails = await this.getEmails(accessToken, lastChecked);
+          if (newlastemail.id !== id) {
+            console.log('New email found!');
+            await this.setNewEmail(newlastemail.id, userId, appletId);
 
-          if (newEmails.length > 0) {
-            console.log(`New emails found: ${newEmails.length}`);
-            await this.setLastChecked(new Date().toISOString(), userId, appletId);
             await this.logService.createLog(
               userId,
               applet.name,
               'success',
-              `${newEmails.length} new email(s) detected.`,
+              'New email received',
             );
             await this.reactionsService.executeReaction(userId, reaction.name, reaction.params);
+
           }
+
         }
       }
     } catch (error) {
@@ -85,7 +85,29 @@ export class OutlookEmailsActionsService {
     }
   }
 
-  private async setLastChecked(lastChecked: string, userId: string, appletId: string) {
+
+
+  async initEmailCheck(userId: string) {
+    console.log('Init Outlook Mail Action');
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    const { accessToken } = user.oauthProviders.find(provider => provider.provider === 'microsoft');
+    if (!accessToken) {
+      throw new UnauthorizedException('Outlook provider not connected.');
+    }
+
+    const lastemail = await this.getEmails(accessToken);
+    console.log(lastemail);
+    const id = lastemail.id;
+    return {
+      id,
+    };
+  }
+
+  private async setNewEmail(id: string, userId: string, appletId: string) {
     await this.userModel.updateOne(
       {
         _id: new Types.ObjectId(userId),
@@ -93,55 +115,9 @@ export class OutlookEmailsActionsService {
       },
       {
         $set: {
-          'applets.$.metadata.lastChecked': lastChecked,
+          'applets.$.metadata.response.id': id,
         },
       }
     );
-  }
-
-  async initEmailCheck(userId: string, params: {}) {
-    console.log('Initializing email check...');
-    
-    // Step 1: Fetch user
-    const user = await this.userModel.findById(userId);
-    if (!user) {
-      throw new NotFoundException('User not found.');
-    }
-  
-    // Step 2: Check for Microsoft provider
-    const { accessToken } = user.oauthProviders.find(provider => provider.provider === 'microsoft');
-    if (!accessToken) {
-      throw new UnauthorizedException('Outlook provider not connected.');
-    }
-  
-    // Step 3: Fetch initial email state (optional)
-    const lastChecked = new Date().toISOString(); // Use current timestamp as the starting point
-    let initialEmails = [];
-    try {
-      initialEmails = await this.getEmails(accessToken, lastChecked);
-    } catch (error) {
-      console.warn('Failed to fetch initial emails:', error.message);
-    }
-  
-    // Step 4: Update applet metadata
-    const applet = {
-      appletId: new Types.ObjectId().toString(),
-      name: 'new_email',
-      action: { name: 'new_email', params },
-      reaction: {}, // Add the reaction you want to trigger here
-      active: true,
-      metadata: {
-        lastChecked,
-        initialEmails,
-      },
-    };
-  
-    await this.userModel.updateOne(
-      { _id: new Types.ObjectId(userId) },
-      { $push: { applets: applet } }
-    );
-  
-    console.log('Email check initialized successfully.');
-    return applet;
   }
 }

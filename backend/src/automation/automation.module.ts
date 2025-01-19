@@ -24,6 +24,7 @@ import { LogModule } from 'src/log/log.module';
 import { OutlookEmailsActionsService } from './services/outlook-emails.action.service';
 import { OutlookEventsActionsService } from './services/outlook-events.action.service';
 import { ReactionsMicrosoftService } from './services/microsoft.reaction.service';
+import { YoutubeActionsService } from './services/youtube.action.service';
 
 @Module({
     providers: [
@@ -40,6 +41,7 @@ import { ReactionsMicrosoftService } from './services/microsoft.reaction.service
         ReactionsGoogleService,
         ReactionsMicrosoftService,
         ReactionsGithubService,
+        YoutubeActionsService,
         ServicesService,
     ],
     controllers: [

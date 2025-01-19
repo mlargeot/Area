@@ -23,7 +23,7 @@ import { LogService } from 'src/log/log.service';
 
 @Injectable()
 export class YoutubeActionsService {
-  private readonly YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3';
+  private readonly YOUTUBE_API_URL = 'https://www.googleapis.com';
   private readonly YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
@@ -31,40 +31,11 @@ export class YoutubeActionsService {
     private logService: LogService,
   ) {}
 
-  async getUploadsPlaylistId(channelId: string, apiKey: string): Promise<string> {
-    const response = await axios.get(`${this.YOUTUBE_API_URL}/channels`, {
-      params: {
-        part: 'contentDetails',
-        id: channelId,
-        key: apiKey,
-      },
-    });
+  async getVideoNumber(channelId: string, apiKey: string): Promise<any> {
+    console.log(channelId, apiKey);
+    const response = await axios.get(`${this.YOUTUBE_API_URL}/youtube/v3/channels?part=statistics&id=${channelId}&key=${apiKey}`);
 
-    const uploadsPlaylistId = response.data.items[0]?.contentDetails.relatedPlaylists.uploads;
-    if (!uploadsPlaylistId) {
-      throw new NotFoundException('Uploads playlist not found.');
-    }
-    return uploadsPlaylistId;
-  }
-
-  async getPlaylistItems(playlistId: string, apiKey: string): Promise<any[]> {
-    const response = await axios.get(`${this.YOUTUBE_API_URL}/playlistItems`, {
-      params: {
-        part: 'snippet',
-        playlistId,
-        key: apiKey,
-        maxResults: 10,
-      },
-    });
-    return response.data.items;
-  }
-
-  async parseVideoList(videoList: any[]): Promise<any[]> {
-    return videoList.map(video => ({
-      id: video.snippet.resourceId.videoId,
-      title: video.snippet.title,
-      publishedAt: video.snippet.publishedAt,
-    }));
+    return response.data.items[0].statistics.videoCount;
   }
 
   async initYouTubeAction(userId: string, params: { channelId: string }) {
@@ -76,50 +47,43 @@ export class YoutubeActionsService {
 
     const { channelId } = params;
 
-    const uploadsPlaylistId = await this.getUploadsPlaylistId(channelId, this.YOUTUBE_API_KEY);
-    const playlistItems = await this.getPlaylistItems(uploadsPlaylistId, this.YOUTUBE_API_KEY);
-    const parsedVideoList = await this.parseVideoList(playlistItems);
+    try {
+      console.log('Fetching YouTube data...');
+      const videoNumber = await this.getVideoNumber(channelId, this.YOUTUBE_API_KEY);
+      console.log('YouTube data fetched:', videoNumber);
+      return {
+        videoNumber,
+      };
+    } catch (error) {
+      console.error('Failed to fetch YouTube data:', error.message);
+      throw new BadRequestException(error.message);
+    }
 
-    console.log(parsedVideoList);
-    return {
-      uploadsPlaylistId,
-      videoList: parsedVideoList,
-    };
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async checkNewVideos() {
     console.log('Checking for new videos...');
     try {
       const users = await this.userModel.find({
         'applets.active': true,
-        'applets.action.name': 'new_video_on_channel',
+        'applets.action.name': 'new_video',
       }).select('applets apiKeys');
 
       for (const user of users) {
-        const activeApplets = user.applets.filter(applet => applet.active && applet.action.name === 'new_video_on_channel');
+        const activeApplets = user.applets.filter(applet => applet.action.name === 'new_video');
         for (const applet of activeApplets) {
           const { appletId, userId, reaction } = applet;
 
-          const { uploadsPlaylistId, videoList } = applet.metadata.response;
-          const newPlaylistItems = await this.getPlaylistItems(uploadsPlaylistId, this.YOUTUBE_API_KEY);
-          const newParsedVideoList = await this.parseVideoList(newPlaylistItems);
-
-          if (newParsedVideoList.length > videoList.length) {
-            await this.setNewVideoList(
-              {
-                uploadsPlaylistId,
-                videoList: newParsedVideoList,
-              },
-              userId,
-              appletId
-            );
-            await this.logService.createLog(
-              userId,
-              applet.name,
-              'success',
-              `New video detected on channel ${applet.action.params.channelId}`,
-            );
+          const { videoNumber } = applet.metadata.response;
+          console.log('Checking for new videos on channel:', applet.action.params.channelId);
+          console.log('Current video number:', videoNumber);
+          const newVideoNumber = await this.getVideoNumber(applet.action.params.channelId, this.YOUTUBE_API_KEY);
+          console.log('New video number:', newVideoNumber);
+          console.log(videoNumber, newVideoNumber);
+          if (videoNumber < newVideoNumber) {
+            console.log('New video found!');
+            await this.setNewVideoNumber(newVideoNumber, userId, appletId);
             await this.reactionsService.executeReaction(userId, reaction.name, reaction.params);
           }
         }
@@ -130,7 +94,7 @@ export class YoutubeActionsService {
     }
   }
 
-  private async setNewVideoList(newVideoList: { uploadsPlaylistId: string, videoList: any[] }, userId: string, appletId: string) {
+  private async setNewVideoNumber(videoNumber: number, userId: string, appletId: string) {
     await this.userModel.updateOne(
       {
         _id: new Types.ObjectId(userId),
@@ -138,7 +102,7 @@ export class YoutubeActionsService {
       },
       {
         $set: {
-          'applets.$.metadata.response.videoList': newVideoList.videoList,
+          'applets.$.metadata.response.videoNumber': videoNumber,
         },
       }
     );
