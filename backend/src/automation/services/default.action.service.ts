@@ -8,6 +8,7 @@ import { OutlookActionsService } from './outlook.action.service';
 import { LogService } from 'src/log/log.service';
 import { OutlookEmailsActionsService } from './outlook-emails.action.service';
 import { OutlookEventsActionsService } from './outlook-events.action.service';
+import { YoutubeActionsService } from './youtube.action.service';
 
 @Injectable()
 export class ActionsService {
@@ -19,6 +20,7 @@ export class ActionsService {
         private readonly outlookActionService : OutlookActionsService,
         private readonly outlookEmailsActionService : OutlookEmailsActionsService,
         private readonly outlookEventsActionService : OutlookEventsActionsService,
+        private readonly youtubeActionService : YoutubeActionsService,
         private logService: LogService
   ) {}
   private defaultActions: Array<{
@@ -214,14 +216,7 @@ export class ActionsService {
             {
               name: "playerName",
               description: "Name of the user to check.",
-              example: "SummonerName",
-              type: "string",
-              required: true,
-            },
-            {
-              name: "tagLine",
-              description: "Tagline of the user to check.",
-              example: "1234",
+              example: "player#1234",
               type: "string",
               required: true,
             }
@@ -334,6 +329,7 @@ export class ActionsService {
     new_task_in_list: this.outlookActionService.initOutlookTaskAction.bind(this.outlookActionService),
     new_email: this.outlookEmailsActionService.initEmailCheck.bind(this.outlookEmailsActionService),
     new_calendar_event: this.outlookEventsActionService.initCalendarCheck.bind(this.outlookEventsActionService),
+    new_video: this.youtubeActionService.initYouTubeAction.bind(this.youtubeActionService)
   }
 
   private destroyServiceRegistry: Record<string, Function> = {

@@ -27,8 +27,14 @@ export class LeagueofLegendsActionsService {
     private readonly reactionsService : ReactionsService
   ) {}
 
-  async initLeagueofLegendsAction(userId: string, params: { playerName: string, tagLine: string }) {
-    const puuid = await this.getPlayerPUUID(params.playerName, params.tagLine);
+  async initLeagueofLegendsAction(userId: string, params: { playerName: string }) {
+    const { playerName } = params;
+    const name = playerName.split('#')[0];
+    const tag = playerName.split('#')[1];
+
+    console.log(name, tag);
+
+    const puuid = await this.getPlayerPUUID(name, tag);
     if (!puuid) {
       throw new NotFoundException('Player not found.');
     }
@@ -117,22 +123,25 @@ export class LeagueofLegendsActionsService {
     }
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_MINUTE)
   async checkMatchHistory() {
-    console.log('Checking match history...');
+    console.log('Checking match history... at ' + new Date().toISOString());
     try {
       const users = await this.userModel.find({
         'applets.active': true,
-        'applets.action.name': 'new_lol_match',
+        'applets.action.name': 'lol_match_history',
       }).select('applets');
 
       for (const user of users) {
-        const activeApplets = user.applets.filter(applet => applet.active && applet.action.name === 'new_lol_match');
+        const activeApplets = user.applets.filter(applet => applet.active && applet.action.name === 'lol_match_history');
         for (const applet of activeApplets) {
           const { appletId, userId, reaction } = applet;
 
           const { puuid, matchHistory } = applet.metadata.response;
           const currentMatchHistory = await this.getMatchHistory(puuid);
+
+          console.log(matchHistory.length, currentMatchHistory.length);
+          console.log(matchHistory[matchHistory.length - 1], currentMatchHistory[currentMatchHistory.length - 1]);
 
           if (matchHistory[currentMatchHistory.length - 1] !== currentMatchHistory[currentMatchHistory.length - 1]) {
             await this.setNewMatchHistory(
@@ -152,15 +161,15 @@ export class LeagueofLegendsActionsService {
 
       console.error('Failed to process active applets:', error.message);
     }
-    console.log('Checking players status...');
+    console.log('Checking players status... at ' + new Date().toISOString());
     try {
       const users = await this.userModel.find({
         'applets.active': true,
-        'applets.action.name': 'new_lol_status',
+        'applets.action.name': 'lol_users_activity',
       }).select('applets');
 
       for (const user of users) {
-        const activeApplets = user.applets.filter(applet => applet.active && applet.action.name === 'new_lol_status');
+        const activeApplets = user.applets.filter(applet => applet.active && applet.action.name === 'lol_users_activity');
         for (const applet of activeApplets) {
 
           const { appletId, userId, reaction } = applet;
