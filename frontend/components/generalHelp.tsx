@@ -19,6 +19,10 @@ export default function GeneralHelp({title}: any) {
 
   const fetchServices = async () => {
     const token = await AsyncStorage.getItem('access_token');
+    const apiUrl = await getServerAddress();
+    if (apiUrl === "") {
+        return;
+    }
     try {
         const response = await axios.get(apiUrl + `/services`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -34,6 +38,10 @@ export default function GeneralHelp({title}: any) {
 
   const fetchActions = async () => {
     const token = await AsyncStorage.getItem('access_token');
+    const apiUrl = await getServerAddress();
+    if (apiUrl === "") {
+      return;
+    }
     try {
         const response = await axios.get(apiUrl + `/actions/` + title, {
             headers: { Authorization: `Bearer ${token}` },
@@ -51,6 +59,10 @@ export default function GeneralHelp({title}: any) {
 
 const fetchReactions = async () => {
   const token = await AsyncStorage.getItem('access_token');
+  const apiUrl = await getServerAddress();
+  if (apiUrl === "") {
+      return;
+  } 
   try {
       const response = await axios.get(apiUrl + `/reactions/` + title, {
           headers: { Authorization: `Bearer ${token}` },
@@ -67,11 +79,9 @@ const fetchReactions = async () => {
 }
 
   useEffect(() => {
-      if (apiUrl.current !== "") {
-          fetchServices();
-          fetchActions();
-          fetchReactions();
-      }
+    fetchServices();
+    fetchActions();
+    fetchReactions();
   } , [apiUrl.current]);
 
   useEffect(() => {

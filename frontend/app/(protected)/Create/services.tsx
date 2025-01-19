@@ -81,6 +81,7 @@ export default function ServicesScreen() {
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
+        backgroundColor: '$background',
       }}
       style={{ flex: 1 }}
     >
@@ -93,22 +94,21 @@ export default function ServicesScreen() {
             {type === "action" ? "Choose an Action" : "Choose a Reaction"}
           </H1>
           <XStack space="$2" justifyContent="center" marginBottom="$4">
-            <Button 
+          {type === "action" ? <Button 
               icon={Zap} 
               backgroundColor={type === "action" ? "#3B82F6" : "transparent"}
               borderColor="#3B82F6"
               borderWidth={1}
             >
               <Text>Actions</Text>
-            </Button>
-            <Button 
+            </Button> : <Button 
               icon={Workflow} 
               backgroundColor={type !== "action" ? "#7C3AED" : "transparent"}
               borderColor="#7C3AED"
               borderWidth={1}
             >
               <Text>Reactions</Text>
-            </Button>
+            </Button>}
           </XStack>
           <ServiceList type={type} />
         </Card>

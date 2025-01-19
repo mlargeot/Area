@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView} from 'react-native';
 import { useEffect, useState } from 'react';
-import {Text, Button, YStack, XStack, Card, Paragraph  } from 'tamagui';
+import {Text, Button, YStack, XStack, Card, Paragraph, Image  } from 'tamagui';
 import { useRouter } from 'expo-router';
 import { useMedia } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -14,7 +14,6 @@ export default function helpcenter() {
 
     const media = useMedia();
     const router = useRouter();
-
 
     const fetchServices = async () => {
         const token = await AsyncStorage.getItem('access_token');
@@ -106,6 +105,12 @@ export default function helpcenter() {
                             <YStack>
                                 <Card.Header padded>
                                 <XStack gap="$3" alignItems="center">
+                                    <Image
+                                        source={{ uri: service?.icon_url }}
+                                        width={media.sm ? 24 : 32}
+                                        height={media.sm ? 24 : 32}
+                                        resizeMode="contain"
+                                    />
                                     <XStack flex={1}>
                                         <Text fontSize={media.sm ? "$5" : "$6"} fontWeight="bold">
                                             About {service?.service}

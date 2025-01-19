@@ -1,14 +1,13 @@
 import React, { useRef } from 'react'
 import { 
   ScrollView, YStack, XStack, Card, H1, Text, Button, 
-  Image, AnimatePresence, Paragraph
+  Image, AnimatePresence 
 } from 'tamagui'
 import { useApplet, Applet } from '../../../../context/appletContext'
 import { useServiceList } from '../../../../context/serviceListContext'
 import { useNavigationData } from '../../../../context/navigationContext'
 import { Link } from 'expo-router'
 import { ChevronLeft, Workflow, ArrowRight } from '@tamagui/lucide-icons'
-import { useMedia } from 'tamagui'
 
 const getCurrentReactionName = (applet: Applet, reactionId: string): string => {
   return applet.reactions.find(reaction => reaction._id === reactionId)?.name || ""
@@ -24,8 +23,6 @@ export default function ReactionEffectsScreen() {
   const reactions = serviceReactionList.find(
     (service) => service.service.toLowerCase() === currentService.toLowerCase()
   )?.effect || []
-
-  const media = useMedia();
 
   const idIndex = useRef<number>(0)
 
@@ -73,6 +70,7 @@ export default function ReactionEffectsScreen() {
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1, 
+        backgroundColor: '$background'
       }}
       style={{ flex: 1 }}
     >
@@ -118,7 +116,6 @@ export default function ReactionEffectsScreen() {
                       backgroundColor: "$purple10",
                       scale: 1.01,
                     }}
-                    height="auto"
                     paddingVertical="$2"
                     animation="quick"
                   >
@@ -130,16 +127,16 @@ export default function ReactionEffectsScreen() {
                           height={40} 
                           borderRadius="$2"
                         />
-                        <YStack flex={1} textAlign="center">
+                        <YStack>
                           <Text 
                             fontSize="$5"
                             fontWeight="bold"
                           >
                             {reaction.name}
                           </Text>
-                          <Paragraph size={media.sm ? "$2" : "$3"}>
+                          <Text fontSize="$3">
                             {reaction.description || "Déclenche une réaction spécifique"}
-                          </Paragraph>
+                          </Text>
                         </YStack>
                       </XStack>
                       <ArrowRight size={20} color="$purple10" />
