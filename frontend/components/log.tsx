@@ -9,30 +9,40 @@ import { useAuth } from '../hooks/useAuth';
 export default function AppletLog() {
     const [applets, setapplets] = useState<any[]>([]);
     const media = useMedia();
-    const userId = useAuth();
+    const { email, userId} = useAuth();
 
     const apiUrl = process.env.EXPO_PUBLIC_API_URL ||'http://localhost:8080';
   
     const fetchServices = async () => {
       const token = await AsyncStorage.getItem('access_token');
-
-      try {
-          const response = await axios.get(apiUrl + `/services/logs/` + userId, {
-              headers: { Authorization: `Bearer ${token}` },
-          });
-          console.log("response", response);
-          if (response.status === 200) {
-              setapplets(response.data);
-          }
-      } catch (error) {
-          console.error(error);
+    
+      if (!token) {
+        console.error("Token is not available");
+        return;
       }
+    
+      if (!userId) {
+        console.error("User ID is not defined");
+        return;
+      }
+    
+      try {
+        const response = await axios.get(`${apiUrl}/services/logs/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.status === 200) {
+          setapplets(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
 
-  }
-
-  useEffect(() => {
-      fetchServices();
-  } , []);
+    useEffect(() => {
+      if (userId) {
+        fetchServices();
+      }
+    }, [userId]);
 
     const renderLogItem = ({ item }: { item: Log }) => (
       <Text
