@@ -14,6 +14,7 @@
   - [Actions](#actions)
   - [Reactions](#reactions)
   - [Services](#services)
+  - [Applets](#applets)
 
 ## Explanations
 
