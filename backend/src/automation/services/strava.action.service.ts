@@ -47,9 +47,8 @@ export class StravaActionsService {
         $limit: 1
       },
     ]);
-    console.log("\nVoila ce que j'ai trouvé pour existing applet : ", result[0].metadata);
     if (result.length > 0) {
-      console.log("Existing subscription");  
+      console.log("Existing subscription", result[0].metadata.response.sub_id);  
       return result[0].metadata.response.sub_id;
     } else {
       console.log("No existing\n");
